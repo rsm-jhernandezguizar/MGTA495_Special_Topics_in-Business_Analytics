@@ -1,0 +1,7 @@
+---
+title: "Juan's Resume"
+---
+
+Last updated 2025-04-05
+
+{{< pdf 250401 Juan Hernandez Guizar Resume for Blue Origin internal position.pdf width=100% height=800 >}}

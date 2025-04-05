@@ -1,0 +1,35 @@
+---
+title: "Juan Hernández Guizar"
+image: "images/Professional Picture Option 1.jpg"
+about:
+  template: trestles
+  links:
+    - icon: envelope
+      href: mailto:jhernandezguizar@ucsd.edu
+    - icon: linkedin
+      href: https://www.linkedin.com/in/juancarloshernandez8b7/
+---
+
+Juan Hernández Guizar is an Aerospace Systems Engineer at Blue Origin, leading digital transformation and model-based systems engineering efforts on cislunar-focused programs. Passionate about inclusive leadership and technical excellence, Juan also champions community-building.
+
+## Education
+
+**UC San Diego** | San Diego, CA  
+M.S. in Business Analytics (Expected Dec 2025)
+
+**UC Merced** | Merced, CA  
+B.S. in Mechanical Engineering (May 2018)
+
+## Experience
+
+**Blue Origin** | Aerospace Systems Engineer  
+El Segundo, CA | 2025 – Present  
+Leading digital ecosystem initiatives and systems modeling for Project Starbridge.
+
+**Mercury Systems** | Systems Engineering Manager  
+Torrance, CA | 2022 – 2022  
+Managed 10 engineers across multiple aerospace programs.
+
+**Rockwell Collins** | Systems Engineer  
+Cedar Rapids, IA | 2018 – 2021  
+Scrum master and test lead for Embraer and Airbus platforms.

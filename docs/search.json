@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Juan Hernández Guizar",
+    "section": "",
+    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  },
+  {
+    "objectID": "Resume.html",
+    "href": "Resume.html",
+    "title": "Juan’s Resume",
+    "section": "",
+    "text": "Last updated: 2025-04-05\nDownload PDF file."
+  },
+  {
+    "objectID": "index.html#education",
+    "href": "index.html#education",
+    "title": "Juan Hernández Guizar",
+    "section": "Education",
+    "text": "Education\nUC San Diego | San Diego, CA\nM.S. in Business Analytics (Expected Dec 2025)\nUC Merced | Merced, CA\nB.S. in Mechanical Engineering (May 2018)"
+  },
+  {
+    "objectID": "index.html#experience",
+    "href": "index.html#experience",
+    "title": "Juan Hernández Guizar",
+    "section": "Experience",
+    "text": "Experience\nBlue Origin | Aerospace Systems Engineer\nEl Segundo, CA | 2025 – Present\nLeading digital ecosystem initiatives and systems modeling for Project Starbridge.\nMercury Systems | Systems Engineering Manager\nTorrance, CA | 2022 – 2022\nManaged 10 engineers across multiple aerospace programs.\nRockwell Collins | Systems Engineer\nCedar Rapids, IA | 2018 – 2021\nScrum master and test lead for Embraer and Airbus platforms."
+  }
+]
