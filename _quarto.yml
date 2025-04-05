@@ -7,9 +7,9 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: '<i class="bi bi-house"></i> Home'
       - href: Resume.qmd
-        text: Resume
+        text: '<i class="bi bi-newspaper"></i> Resume'
 
 format:
   html:
@@ -18,6 +18,5 @@ format:
       - brand
     css: styles.css
     toc: true
-
-
-
+    includes:
+      in-header: bootstrap-icons.html
