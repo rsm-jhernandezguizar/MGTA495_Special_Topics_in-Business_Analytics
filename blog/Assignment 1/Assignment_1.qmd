@@ -1,3 +1,21 @@
 ---
 title: "Assignment 1"
+author: Juan Hernández Guizar
 ---
+
+# Question 1
+
+Professor requests a chart be added about XYZ. Below is a test of code.
+
+
+```{python}
+print("Hello World!")
+```
+
+# Question 2
+
+...
+
+# Question 3
+
+...
