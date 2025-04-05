@@ -1,0 +1,8 @@
+---
+title: "My Projects for MGTA 459"
+listing:
+  contents: blog
+  type: grid
+  sort: "date desc"
+  categories: false
+---
