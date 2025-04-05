@@ -10,5 +10,20 @@
   },
   "blog.qmd": {
     "blog.html": "cfd88827"
+  },
+  "blog/Assignment 1/Assignment_1.qmd": {
+    "Assignment_1.html": "e729e4dc"
+  },
+  "blog/Assignment 4/Assignment_4.qmd": {
+    "Assignment_4.html": "a022b1b8"
+  },
+  "blog/Assignment 3/Assignment_3.qmd": {
+    "Assignment_3.html": "6ee877a1"
+  },
+  "blog/Assignment 2/Assignment_2.qmd": {
+    "Assignment_2.html": "8dba9a94"
+  },
+  "blog/Assignment 5/Assignment_5.qmd": {
+    "Assignment_5.html": "ec010af9"
   }
 }

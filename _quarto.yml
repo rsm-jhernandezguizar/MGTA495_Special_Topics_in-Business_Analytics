@@ -10,6 +10,8 @@ website:
         text: '<i class="bi bi-house"></i> Home'
       - href: Resume.qmd
         text: '<i class="bi bi-newspaper"></i> Resume'
+      - href: blog.qmd
+        text: '<i class="bi bi-journal-text"></i> Blog'
 
 format:
   html:
