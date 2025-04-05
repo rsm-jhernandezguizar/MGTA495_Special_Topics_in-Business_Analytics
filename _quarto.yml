@@ -11,7 +11,7 @@ website:
       - href: Resume.qmd
         text: '<i class="bi bi-newspaper"></i> Resume'
       - href: blog.qmd
-        text: '<i class="bi bi-journal-text"></i> Blog'
+        text: '<i class="bi bi-pencil"></i> Blog'
 
 format:
   html:
