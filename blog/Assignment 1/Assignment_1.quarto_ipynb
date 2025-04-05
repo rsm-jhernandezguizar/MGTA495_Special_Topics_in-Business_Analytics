@@ -1,0 +1,39 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Assignment 1\"\n",
+        "author: Juan Hernández Guizar\n",
+        "---\n",
+        "\n",
+        "# Question 1\n",
+        "\n",
+        "Professor requests a chart be added about XYZ. Below is a test of code.\n"
+      ],
+      "id": "74be33b5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(\"Hello World!\")"
+      ],
+      "id": "804a2d0d",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/opt/conda/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

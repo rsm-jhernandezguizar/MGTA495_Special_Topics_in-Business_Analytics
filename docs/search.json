@@ -32,6 +32,13 @@
     "href": "blog.html",
     "title": "My Projects for MGTA 459",
     "section": "",
-    "text": "Assignment 1\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 4\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 3\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 2\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 5\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Assignment 1\n\n\n\n\nJuan Hernández Guizar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 4\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 3\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 2\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 5\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "blog/Assignment 1/Assignment_1.html",
+    "href": "blog/Assignment 1/Assignment_1.html",
+    "title": "Assignment 1",
+    "section": "",
+    "text": "Question 1\nProfessor requests a chart be added about XYZ. Below is a test of code.\n\nprint(\"Hello World!\")\n\nHello World!"
   }
 ]
