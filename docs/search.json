@@ -39,6 +39,6 @@
     "href": "blog/Assignment 1/Assignment_1.html",
     "title": "Assignment 1",
     "section": "",
-    "text": "Question 1\nProfessor requests a chart be added about XYZ. Below is a test of code.\n\nprint(\"Hello World!\")\n\nHello World!"
+    "text": "Question 1\nProfessor requests a chart be added about XYZ. Below is a test of code.\n\nprint(\"Hello World!\")\n\nHello World!\n\n\n\n\nQuestion 2\nNote: Ctrl + Shift + I to get the skeleton below\nUsing echo false hides the code\n\n# / echo: false\nprint(\"Hello World!\")\n\nHello World!\n\n\n\n\nQuestion 3\n…"
   }
 ]

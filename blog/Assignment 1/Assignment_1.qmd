@@ -14,8 +14,14 @@ print("Hello World!")
 
 # Question 2
 
-...
+Note: Ctrl + Shift + I to get the skeleton below
 
+Using echo false hides the code
+
+```{python}
+# / echo: false
+print("Hello World!")
+```
 # Question 3
 
 ...

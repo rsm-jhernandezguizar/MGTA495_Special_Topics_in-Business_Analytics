@@ -1,1 +1,38 @@
 /* css styles */
+
+/* 
+Set the space-themed background from Unsplash 
+body {
+    background-image: url('https://images.unsplash.com/photo-1610878180933-c3ce17c02471?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-color: #e8f0ff;
+}
+
+main {
+    background-color: rgba(255, 255, 255, 0.88);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+*/
+
+/* Dark navy navbar background to match the suit */
+.navbar {
+    background-color: #1b263b;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Navbar text and icon styling */
+.navbar .nav-link,
+.navbar-brand {
+    color: #ffffff !important;
+}
+
+/* Hover effect */
+.navbar .nav-link:hover {
+    color: #aad4ff !important;
+    text-shadow: 0 0 5px rgba(173, 216, 230, 0.6);
+}
