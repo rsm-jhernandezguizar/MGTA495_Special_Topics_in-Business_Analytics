@@ -1,5 +1,8 @@
 ---
 title: "Assignment 1"
+description: Why and When Are Experiments the Best Choice?
+image: /images/assignment1.jpg
+date: 2025-04-01
 author: Juan Hernández Guizar
 ---
 

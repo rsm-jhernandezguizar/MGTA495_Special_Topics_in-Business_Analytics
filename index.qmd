@@ -10,7 +10,7 @@ about:
       href: https://www.linkedin.com/in/juancarloshernandez8b7/
 ---
 
-Juan Hernández Guizar is an Aerospace Systems Engineer at Blue Origin, leading digital transformation and model-based systems engineering efforts on cislunar-focused programs. Passionate about inclusive leadership and technical excellence, Juan also champions community-building.
+**Juan Hernández Guizar** is an Aerospace Systems Engineer at Blue Origin, leading digital transformation and model-based systems engineering efforts on cislunar and beyond focused programs. Passionate about inclusive leadership and technical excellence, Juan also champions community-building.
 
 ## Education
 
