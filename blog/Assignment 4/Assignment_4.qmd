@@ -1,3 +1,7 @@
 ---
-title: "Assignment 4"
+title: "TBD"
+description: "Assignment 4"
+image: /images/assignment4.jpg
+date: 2025-06-04
+author: Juan Hernández Guizar
 ---

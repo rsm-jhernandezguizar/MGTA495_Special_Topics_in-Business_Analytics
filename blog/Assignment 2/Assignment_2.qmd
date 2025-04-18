@@ -1,5 +1,9 @@
 ---
-title: "Assignment 2"
+title: "TBD"
+description: "Assignment 2"
+image: /images/assignment2.jpg
+date: 2025-05-07
+author: Juan Hernández Guizar
 ---
 
 # Question 1
