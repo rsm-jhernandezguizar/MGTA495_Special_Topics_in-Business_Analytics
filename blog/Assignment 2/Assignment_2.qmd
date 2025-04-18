@@ -1,3 +1,26 @@
 ---
 title: "Assignment 2"
 ---
+
+# Question 1
+
+Professor requests a chart be added about XYZ. Below is a test of code.
+
+
+```{python}
+print("Hello World!")
+```
+
+# Question 2
+
+Note: Ctrl + Shift + I to get the skeleton below
+
+Using echo false hides the code
+
+```{python}
+# / echo: false
+print("Hello World!")
+```
+# Question 3
+
+...
