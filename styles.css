@@ -36,3 +36,32 @@ main {
     color: #aad4ff !important;
     text-shadow: 0 0 5px rgba(173, 216, 230, 0.6);
 }
+
+/* Make each listing item look like a card */
+.quarto-listing-container-default .metadata,
+.quarto-listing-container-default .listing-description,
+.quarto-listing-container-default .listing-title {
+    margin-bottom: 0.3rem;
+}
+
+.quarto-listing-container-default .thumbnail img {
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Add background and padding to card */
+.quarto-listing-container-default .listing-item {
+    background-color: #fff;
+    padding: 1.2rem;
+    border: 1px solid #e2e2e2;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1.2rem;
+}
+
+/* Give some spacing between content and image */
+.quarto-listing-container-default .thumbnail {
+    flex-shrink: 0;
+}
