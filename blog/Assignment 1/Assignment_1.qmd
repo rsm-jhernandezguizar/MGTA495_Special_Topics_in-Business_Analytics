@@ -1,7 +1,7 @@
 ---
 title: "A Replication of Karlan and List (2007)"
 description: "Assignment 1"
-image: /images/assignment1.jpg
+image: /images/assignment1.jpg #updated image to be that of fundraising
 date: 2025-04-23
 author: Juan Hernández Guizar
 callout-appearance: minimal # this hides the blue "i" icon on .callout-notes
