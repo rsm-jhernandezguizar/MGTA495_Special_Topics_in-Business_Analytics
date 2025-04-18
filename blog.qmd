@@ -8,5 +8,4 @@ listing:
   fields: [image, title, description, date, author]
   image-align: left
   page-size: 10
-  style: journal
 ---
