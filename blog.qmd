@@ -2,7 +2,11 @@
 title: "My Projects for MGTA 459"
 listing:
   contents: blog
-  type: grid
+  type: default
   sort: "date desc"
   categories: false
+  fields: [image, title, description, date, author]
+  image-align: left
+  page-size: 10
+  style: journal
 ---
