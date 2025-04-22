@@ -22,21 +22,6 @@ This project seeks to replicate their results.
 
 _todo: Read the data into R/Python and describe the data_
 
-```{python}
-# | echo: false
-import pandas as pd
-
-# Correct path to file stored in the local _files folder
-file_path = "Assignment_1_data/karlan_list_2007.dta"
-
-# Load the .dta file using the correct relative path
-karlan_list_2007_pretty = pd.read_stata(file_path)
-karlan_list_2007_int_codes = pd.read_stata(file_path)
-
-# Preview
-karlan_list_2007_pretty.head()
-```
-
 :::: {.callout-note collapse="true"}
 ### Variable Definitions
 
@@ -96,6 +81,68 @@ karlan_list_2007_pretty.head()
 
 ::::
 
+Preview of Results
+
+```{python}
+# | echo: false
+import pandas as pd
+
+# Correct path to file stored in the local _files folder
+file_path = "Assignment_1_data/karlan_list_2007.dta"
+
+# Load the .dta file using the correct relative path
+karlan_list_2007_pretty = pd.read_stata(file_path)
+karlan_list_2007_int_codes = pd.read_stata(file_path)
+
+# Preview
+karlan_list_2007_pretty.head()
+```
+
+Bar plot – Proportion Who Donated by Treatment Group
+
+```{python}
+#| echo: false
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Load data
+df = pd.read_stata("Assignment_1_data/karlan_list_2007.dta")
+
+# Calculate donation rates
+donation_rates = df.groupby("treatment")["gave"].mean().reset_index()
+
+# Create barplot
+plt.figure(figsize=(6, 4))
+sns.barplot(x="treatment", y="gave", data=donation_rates)
+plt.ylabel("Proportion Donated")
+plt.xlabel("Group (0 = Control, 1 = Treatment)")
+plt.title("Donation Rate by Treatment Group")
+plt.ylim(0, 0.03)
+plt.grid(axis="y")
+plt.show()
+```
+
+Histogram – Donation Amounts (Among Donors Only)
+
+```{python}
+#| echo: false
+# Filter to donors only
+donors = df[df["gave"] == 1]
+
+# Plot histograms
+plt.figure(figsize=(10, 4))
+
+for i, group in enumerate([0, 1]):
+    plt.subplot(1, 2, i+1)
+    sns.histplot(donors[donors["treatment"] == group]["amount"], bins=30, kde=False)
+    plt.axvline(donors[donors["treatment"] == group]["amount"].mean(), color='red', linestyle='--')
+    plt.title(f"{'Control' if group == 0 else 'Treatment'} Group")
+    plt.xlabel("Donation Amount")
+    plt.ylabel("Frequency")
+
+plt.tight_layout()
+plt.show()
+```
 
 ### Balance Test 
 
