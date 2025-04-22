@@ -23,16 +23,18 @@ This project seeks to replicate their results.
 _todo: Read the data into R/Python and describe the data_
 
 ```{python}
-# / echo: false
+# | echo: false
 import pandas as pd
 
-# Load the .dta file
-karlan_list_2007_pretty = pd.read_stata("karlan_list_2007.dta")
-karlan_list_2007_int_codes = pd.read_stata("karlan_list_2007.dta")
+# Correct path to file stored in the local _files folder
+file_path = "Assignment_1_data/karlan_list_2007.dta"
 
-# Display the first few rows
+# Load the .dta file using the correct relative path
+karlan_list_2007_pretty = pd.read_stata(file_path)
+karlan_list_2007_int_codes = pd.read_stata(file_path)
+
+# Preview
 karlan_list_2007_pretty.head()
-karlan_list_2007_int_codes.head()
 ```
 
 :::: {.callout-note collapse="true"}
