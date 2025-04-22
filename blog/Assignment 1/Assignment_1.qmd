@@ -101,15 +101,14 @@ karlan_list_2007_pretty.head()
 Bar plot – Proportion Who Donated by Treatment Group
 
 ```{python}
-#| echo: false
+# | echo: false
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Load data
-df = pd.read_stata("Assignment_1_data/karlan_list_2007.dta")
-
 # Calculate donation rates
-donation_rates = df.groupby("treatment")["gave"].mean().reset_index()
+donation_rates = (
+    karlan_list_2007_pretty.groupby("treatment")["gave"].mean().reset_index()
+)
 
 # Create barplot
 plt.figure(figsize=(6, 4))
@@ -125,17 +124,21 @@ plt.show()
 Histogram – Donation Amounts (Among Donors Only)
 
 ```{python}
-#| echo: false
+# | echo: false
 # Filter to donors only
-donors = df[df["gave"] == 1]
+donors = karlan_list_2007_pretty[karlan_list_2007_pretty["gave"] == 1]
 
 # Plot histograms
 plt.figure(figsize=(10, 4))
 
 for i, group in enumerate([0, 1]):
-    plt.subplot(1, 2, i+1)
+    plt.subplot(1, 2, i + 1)
     sns.histplot(donors[donors["treatment"] == group]["amount"], bins=30, kde=False)
-    plt.axvline(donors[donors["treatment"] == group]["amount"].mean(), color='red', linestyle='--')
+    plt.axvline(
+        donors[donors["treatment"] == group]["amount"].mean(),
+        color="red",
+        linestyle="--",
+    )
     plt.title(f"{'Control' if group == 0 else 'Treatment'} Group")
     plt.xlabel("Donation Amount")
     plt.ylabel("Frequency")
