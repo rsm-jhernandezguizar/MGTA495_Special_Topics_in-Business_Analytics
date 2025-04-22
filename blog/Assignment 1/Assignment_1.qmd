@@ -20,7 +20,7 @@ This project seeks to replicate their results.
 
 ### Description
 
-_todo: Read the data into R/Python and describe the data_
+Detailed explanation of all the variables captured
 
 :::: {.callout-note collapse="true"}
 ### Variable Definitions
