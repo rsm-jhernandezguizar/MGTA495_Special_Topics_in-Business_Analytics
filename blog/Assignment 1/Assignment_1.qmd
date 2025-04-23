@@ -20,6 +20,8 @@ This project seeks to replicate their results.
 
 ### Description
 
+To replicate Karlan and List’s findings, I first loaded their dataset and generated preliminary plots to get a feel for its contents. After displaying the first few rows to confirm the structure, I computed donation rates by treatment group and then prepared side-by-side visuals—bar plots for participation and histograms of donation amounts—to highlight the core outcome measures. These initial checks ensure that the data aligns with the original study’s composition before we proceed with more in-depth statistical testing and analysis.
+
 Detailed explanation of all the variables captured
 
 :::: {.callout-note collapse="true"}
@@ -121,6 +123,8 @@ plt.grid(axis="y")
 plt.show()
 ```
 
+In this bar plot, each bar shows the proportion of people in the treatment or control group who made a donation, illustrating the immediate difference in participation rates.
+
 Histogram – Donation Amounts (Among Donors Only)
 
 ```{python}
@@ -146,6 +150,8 @@ for i, group in enumerate([0, 1]):
 plt.tight_layout()
 plt.show()
 ```
+
+Here, the histogram reveals the distribution of how much donors gave, helping us detect outliers, skewness, or other patterns in giving behavior.
 
 ### Balance Test 
 
