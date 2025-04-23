@@ -159,6 +159,66 @@ As an ad hoc test of the randomization mechanism, I provide a series of tests th
 
 _todo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. For at least one variable, perform the test as both t-test (use the formula in the class slides) and separately as a linear regression (regress for example mrm2 on treatment); confirm both methods yield the exact same results. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper)._
 
+```{python}
+# | echo: false
+# We'll do a hand-computed two-sample t-test for "mrm2"
+# using the formula from the class slides:
+#
+#         t = (X̄_treatment - X̄_control)
+#             --------------------------
+#             sqrt((s_t^2 / n_t) + (s_c^2 / n_c))
+#
+# We'll then derive a two-sided p-value from that t-statistic.
+
+import pandas as pd
+import math
+from math import sqrt
+from scipy.stats import t
+
+# 1) Load file (already done above)
+
+# 2) Separate "mrm2" for treatment (1) and control (0)
+mrm2_treatment = karlan_list_2007_pretty.loc[
+    karlan_list_2007_pretty["treatment"] == 1, "mrm2"
+].dropna()
+mrm2_control = karlan_list_2007_pretty.loc[
+    karlan_list_2007_pretty["treatment"] == 0, "mrm2"
+].dropna()
+
+# 3) Calculate sample sizes
+n_t = len(mrm2_treatment)
+n_c = len(mrm2_control)
+
+# 4) Calculate sample means
+Xbar_t = mrm2_treatment.mean()
+Xbar_c = mrm2_control.mean()
+
+# 5) Calculate sample variances (unbiased sample variance)
+s_t2 = mrm2_treatment.var()  # ddof=1 by default
+s_c2 = mrm2_control.var()
+
+# 6) Compute the t-value using the manual formula (Welch's approach for unequal var)
+numerator = Xbar_t - Xbar_c
+denominator = math.sqrt((s_t2 / n_t) + (s_c2 / n_c))
+t_stat = numerator / denominator
+
+# 7) Approximate degrees of freedom (Welch-Satterthwaite)
+num_df = ((s_t2 / n_t) + (s_c2 / n_c)) ** 2
+den_df = ((s_t2 / n_t) ** 2 / (n_t - 1)) + ((s_c2 / n_c) ** 2 / (n_c - 1))
+df_approx = num_df / den_df
+
+# 8) Two-sided p-value
+p_value = 2.0 * (1.0 - t.cdf(abs(t_stat), df_approx))
+
+# 9) Print results
+print("Hand-Composed Two-Sample t-Test for mrm2")
+print("=========================================")
+print(f"Treatment Mean (mrm2): {Xbar_t:.3f}, n={n_t}")
+print(f"Control Mean (mrm2):   {Xbar_c:.3f}, n={n_c}")
+print(f"t-statistic:           {t_stat:.3f}")
+print(f"Degrees of freedom:    {df_approx:.2f}")
+print(f"p-value (two-sided):   {p_value:.4g}")
+```
 
 ## Experimental Results
 
