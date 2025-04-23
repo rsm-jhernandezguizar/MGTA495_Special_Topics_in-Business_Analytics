@@ -1,17 +1,24 @@
 [
   {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "My Projects for MGTA 459",
+    "section": "",
+    "text": "TBD\n\n\n \n\nAssignment 5\n\n\n\nJun 11, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTBD\n\n\n \n\nAssignment 4\n\n\n\nJun 4, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTBD\n\n\n \n\nAssignment 3\n\n\n\nMay 21, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTBD\n\n\n \n\nAssignment 2\n\n\n\nMay 7, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nA Replication of Karlan and List (2007)\n\n\n \n\nAssignment 1\n\n\n\nApr 23, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "blog/Assignment 2/Assignment_2.html",
+    "href": "blog/Assignment 2/Assignment_2.html",
+    "title": "TBD",
+    "section": "",
+    "text": "Question 1\nProfessor requests a chart be added about XYZ. Below is a test of code.\n\nprint(\"Hello World!\")\n\nHello World!\n\n\n\n\nQuestion 2\nNote: Ctrl + Shift + I to get the skeleton below\nUsing echo false hides the code\n\n# / echo: false\nprint(\"Hello World!\")\n\nHello World!\n\n\n\n\nQuestion 3\n…"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Juan Hernández Guizar",
     "section": "",
     "text": "Juan Hernández Guizar is an Aerospace Systems Engineer at Blue Origin, leading digital transformation and model-based systems engineering efforts on cislunar and beyond focused programs. Passionate about inclusive leadership and technical excellence, Juan also champions community-building."
-  },
-  {
-    "objectID": "Resume.html",
-    "href": "Resume.html",
-    "title": "Juan’s Resume",
-    "section": "",
-    "text": "Last updated: 2025-04-05\nDownload PDF file."
   },
   {
     "objectID": "index.html#education",
@@ -28,11 +35,18 @@
     "text": "Experience\nBlue Origin | Aerospace Systems Engineer\nEl Segundo, CA | 2025 – Present\nLeading digital ecosystem initiatives and systems modeling for Project Starbridge.\nMercury Systems | Systems Engineering Manager\nTorrance, CA | 2022 – 2022\nManaged 10 engineers across multiple aerospace programs.\nRockwell Collins | Systems Engineer\nCedar Rapids, IA | 2018 – 2021\nScrum master and test lead for Embraer and Airbus platforms."
   },
   {
-    "objectID": "blog.html",
-    "href": "blog.html",
-    "title": "My Projects for MGTA 459",
+    "objectID": "Resume.html",
+    "href": "Resume.html",
+    "title": "Juan’s Resume",
     "section": "",
-    "text": "TBD\n\n\n \n\nAssignment 5\n\n\n\nJun 11, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTBD\n\n\n \n\nAssignment 4\n\n\n\nJun 4, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTBD\n\n\n \n\nAssignment 3\n\n\n\nMay 21, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTBD\n\n\n \n\nAssignment 2\n\n\n\nMay 7, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nA Replication of Karlan and List (2007)\n\n\n \n\nAssignment 1\n\n\n\nApr 23, 2025\nJuan Hernández Guizar\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Last updated: 2025-04-05\nDownload PDF file."
+  },
+  {
+    "objectID": "Other/Assignment_1_Stuff/File_Conversion.html",
+    "href": "Other/Assignment_1_Stuff/File_Conversion.html",
+    "title": "Juan Hernández Guizar",
+    "section": "",
+    "text": "import pandas as pd\n\nkarlan_list_2007_csv = pd.read_stata(\"karlan_list_2007.dta\")\n\nkarlan_list_2007_csv.to_csv(\"karlan_list_2007_csv.csv\", index=False)"
   },
   {
     "objectID": "blog/Assignment 1/Assignment_1.html",
@@ -53,7 +67,7 @@
     "href": "blog/Assignment 1/Assignment_1.html#data",
     "title": "A Replication of Karlan and List (2007)",
     "section": "Data",
-    "text": "Data\n\nDescription\nDetailed explanation of all the variables captured\n\n\n\n\n\n\nVariable Definitions\n\n\n\n\n\n\n\n\n\n\n\n\nVariable\nDescription\n\n\n\n\ntreatment\nTreatment\n\n\ncontrol\nControl\n\n\nratio\nMatch ratio\n\n\nratio2\n2:1 match ratio\n\n\nratio3\n3:1 match ratio\n\n\nsize\nMatch threshold\n\n\nsize25\n$25,000 match threshold\n\n\nsize50\n$50,000 match threshold\n\n\nsize100\n$100,000 match threshold\n\n\nsizeno\nUnstated match threshold\n\n\nask\nSuggested donation amount\n\n\naskd1\nSuggested donation was highest previous contribution\n\n\naskd2\nSuggested donation was 1.25 x highest previous contribution\n\n\naskd3\nSuggested donation was 1.50 x highest previous contribution\n\n\nask1\nHighest previous contribution (for suggestion)\n\n\nask2\n1.25 x highest previous contribution (for suggestion)\n\n\nask3\n1.50 x highest previous contribution (for suggestion)\n\n\namount\nDollars given\n\n\ngave\nGave anything\n\n\namountchange\nChange in amount given\n\n\nhpa\nHighest previous contribution\n\n\nltmedmra\nSmall prior donor: last gift was less than median $35\n\n\nfreq\nNumber of prior donations\n\n\nyears\nNumber of years since initial donation\n\n\nyear5\nAt least 5 years since initial donation\n\n\nmrm2\nNumber of months since last donation\n\n\ndormant\nAlready donated in 2005\n\n\nfemale\nFemale\n\n\ncouple\nCouple\n\n\nstate50one\nState tag: 1 for one observation of each of 50 states; 0 otherwise\n\n\nnonlit\nNonlitigation\n\n\ncases\nCourt cases from state in 2004-5 in which organization was involved\n\n\nstatecnt\nPercent of sample from state\n\n\nstateresponse\nProportion of sample from the state who gave\n\n\nstateresponset\nProportion of treated sample from the state who gave\n\n\nstateresponsec\nProportion of control sample from the state who gave\n\n\nstateresponsetminc\nstateresponset - stateresponsec\n\n\nperbush\nState vote share for Bush\n\n\nclose25\nState vote share for Bush between 47.5% and 52.5%\n\n\nred0\nRed state\n\n\nblue0\nBlue state\n\n\nredcty\nRed county\n\n\nbluecty\nBlue county\n\n\npwhite\nProportion white within zip code\n\n\npblack\nProportion black within zip code\n\n\npage18_39\nProportion age 18-39 within zip code\n\n\nave_hh_sz\nAverage household size within zip code\n\n\nmedian_hhincome\nMedian household income within zip code\n\n\npowner\nProportion house owner within zip code\n\n\npsch_atlstba\nProportion who finished college within zip code\n\n\npop_propurban\nProportion of population urban within zip code\n\n\n\n\n\n\nPreview of Results\n\n\n\n\n\n\n\n\n\ntreatment\ncontrol\nratio\nratio2\nratio3\nsize\nsize25\nsize50\nsize100\nsizeno\n...\nredcty\nbluecty\npwhite\npblack\npage18_39\nave_hh_sz\nmedian_hhincome\npowner\npsch_atlstba\npop_propurban\n\n\n\n\n0\n0\n1\nControl\n0\n0\nControl\n0\n0\n0\n0\n...\n0.0\n1.0\n0.446493\n0.527769\n0.317591\n2.10\n28517.0\n0.499807\n0.324528\n1.0\n\n\n1\n0\n1\nControl\n0\n0\nControl\n0\n0\n0\n0\n...\n1.0\n0.0\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n2\n1\n0\n1\n0\n0\n$100,000\n0\n0\n1\n0\n...\n0.0\n1.0\n0.935706\n0.011948\n0.276128\n2.48\n51175.0\n0.721941\n0.192668\n1.0\n\n\n3\n1\n0\n1\n0\n0\nUnstated\n0\n0\n0\n1\n...\n1.0\n0.0\n0.888331\n0.010760\n0.279412\n2.65\n79269.0\n0.920431\n0.412142\n1.0\n\n\n4\n1\n0\n1\n0\n0\n$50,000\n0\n1\n0\n0\n...\n0.0\n1.0\n0.759014\n0.127421\n0.442389\n1.85\n40908.0\n0.416072\n0.439965\n1.0\n\n\n\n\n5 rows × 51 columns\n\n\n\nBar plot – Proportion Who Donated by Treatment Group\n\n\n\n\n\n\n\n\n\nHistogram – Donation Amounts (Among Donors Only)\n\n\n\n\n\n\n\n\n\n\n\nBalance Test\nAs an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.\ntodo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. For at least one variable, perform the test as both t-test (use the formula in the class slides) and separately as a linear regression (regress for example mrm2 on treatment); confirm both methods yield the exact same results. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper)."
+    "text": "Data\n\nDescription\nDetailed explanation of all the variables captured\n\n\n\n\n\n\nVariable Definitions\n\n\n\n\n\n\n\n\n\n\n\n\nVariable\nDescription\n\n\n\n\ntreatment\nTreatment\n\n\ncontrol\nControl\n\n\nratio\nMatch ratio\n\n\nratio2\n2:1 match ratio\n\n\nratio3\n3:1 match ratio\n\n\nsize\nMatch threshold\n\n\nsize25\n$25,000 match threshold\n\n\nsize50\n$50,000 match threshold\n\n\nsize100\n$100,000 match threshold\n\n\nsizeno\nUnstated match threshold\n\n\nask\nSuggested donation amount\n\n\naskd1\nSuggested donation was highest previous contribution\n\n\naskd2\nSuggested donation was 1.25 x highest previous contribution\n\n\naskd3\nSuggested donation was 1.50 x highest previous contribution\n\n\nask1\nHighest previous contribution (for suggestion)\n\n\nask2\n1.25 x highest previous contribution (for suggestion)\n\n\nask3\n1.50 x highest previous contribution (for suggestion)\n\n\namount\nDollars given\n\n\ngave\nGave anything\n\n\namountchange\nChange in amount given\n\n\nhpa\nHighest previous contribution\n\n\nltmedmra\nSmall prior donor: last gift was less than median $35\n\n\nfreq\nNumber of prior donations\n\n\nyears\nNumber of years since initial donation\n\n\nyear5\nAt least 5 years since initial donation\n\n\nmrm2\nNumber of months since last donation\n\n\ndormant\nAlready donated in 2005\n\n\nfemale\nFemale\n\n\ncouple\nCouple\n\n\nstate50one\nState tag: 1 for one observation of each of 50 states; 0 otherwise\n\n\nnonlit\nNonlitigation\n\n\ncases\nCourt cases from state in 2004-5 in which organization was involved\n\n\nstatecnt\nPercent of sample from state\n\n\nstateresponse\nProportion of sample from the state who gave\n\n\nstateresponset\nProportion of treated sample from the state who gave\n\n\nstateresponsec\nProportion of control sample from the state who gave\n\n\nstateresponsetminc\nstateresponset - stateresponsec\n\n\nperbush\nState vote share for Bush\n\n\nclose25\nState vote share for Bush between 47.5% and 52.5%\n\n\nred0\nRed state\n\n\nblue0\nBlue state\n\n\nredcty\nRed county\n\n\nbluecty\nBlue county\n\n\npwhite\nProportion white within zip code\n\n\npblack\nProportion black within zip code\n\n\npage18_39\nProportion age 18-39 within zip code\n\n\nave_hh_sz\nAverage household size within zip code\n\n\nmedian_hhincome\nMedian household income within zip code\n\n\npowner\nProportion house owner within zip code\n\n\npsch_atlstba\nProportion who finished college within zip code\n\n\npop_propurban\nProportion of population urban within zip code\n\n\n\n\n\n\nPreview of results from study\n\n\n\n\n\n\n\n\n\ntreatment\ncontrol\nratio\nratio2\nratio3\nsize\nsize25\nsize50\nsize100\nsizeno\n...\nredcty\nbluecty\npwhite\npblack\npage18_39\nave_hh_sz\nmedian_hhincome\npowner\npsch_atlstba\npop_propurban\n\n\n\n\n0\n0\n1\nControl\n0\n0\nControl\n0\n0\n0\n0\n...\n0.0\n1.0\n0.446493\n0.527769\n0.317591\n2.10\n28517.0\n0.499807\n0.324528\n1.0\n\n\n1\n0\n1\nControl\n0\n0\nControl\n0\n0\n0\n0\n...\n1.0\n0.0\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n2\n1\n0\n1\n0\n0\n$100,000\n0\n0\n1\n0\n...\n0.0\n1.0\n0.935706\n0.011948\n0.276128\n2.48\n51175.0\n0.721941\n0.192668\n1.0\n\n\n3\n1\n0\n1\n0\n0\nUnstated\n0\n0\n0\n1\n...\n1.0\n0.0\n0.888331\n0.010760\n0.279412\n2.65\n79269.0\n0.920431\n0.412142\n1.0\n\n\n4\n1\n0\n1\n0\n0\n$50,000\n0\n1\n0\n0\n...\n0.0\n1.0\n0.759014\n0.127421\n0.442389\n1.85\n40908.0\n0.416072\n0.439965\n1.0\n\n\n\n\n5 rows × 51 columns\n\n\n\nBar plot – Proportion Who Donated by Treatment Group\n\n\n\n\n\n\n\n\n\nHistogram – Donation Amounts (Among Donors Only)\n\n\n\n\n\n\n\n\n\n\n\nBalance Test\nAs an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.\ntodo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. For at least one variable, perform the test as both t-test (use the formula in the class slides) and separately as a linear regression (regress for example mrm2 on treatment); confirm both methods yield the exact same results. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper)."
   },
   {
     "objectID": "blog/Assignment 1/Assignment_1.html#experimental-results",
@@ -68,33 +82,5 @@
     "title": "A Replication of Karlan and List (2007)",
     "section": "Simulation Experiment",
     "text": "Simulation Experiment\nAs a reminder of how the t-statistic “works,” in this section I use simulation to demonstrate the Law of Large Numbers and the Central Limit Theorem.\nSuppose the true distribution of respondents who do not get a charitable donation match is Bernoulli with probability p=0.018 that a donation is made.\nFurther suppose that the true distribution of respondents who do get a charitable donation match of any size is Bernoulli with probability p=0.022 that a donation is made.\n\nLaw of Large Numbers\nto do: Simulate 10,000 draws from the control distribution and 10,000 draws from the treatment distribution. You’ll then calculate a vector of 10,000 differences, and then you’ll plot the cumulative average of that vector of differences. This average will likely be “noisey” when only averaging a few numbers, but should “settle down” and approximate the treatment effect (0.004 = 0.022 - 0.018) as the sample size gets large. Explain the chart to the reader.\n\n\nCentral Limit Theorem\nto do: Make 4 histograms at sample sizes 50, 200, 500, and 1000. To do this for a sample size of e.g. 50, take 50 draws from each of the control and treatment distributions, and calculate the average difference between those draws. Then repeat that process 999 more times so that you have 1000 averages. Plot the histogram of those averages. The repeat for the other 3 histograms. Explain this sequence of histograms and its relationship to the central limit theorem to the reader."
-  },
-  {
-    "objectID": "blog/Assignment 2/Assignment_2.html",
-    "href": "blog/Assignment 2/Assignment_2.html",
-    "title": "TBD",
-    "section": "",
-    "text": "Question 1\nProfessor requests a chart be added about XYZ. Below is a test of code.\n\nprint(\"Hello World!\")\n\nHello World!\n\n\n\n\nQuestion 2\nNote: Ctrl + Shift + I to get the skeleton below\nUsing echo false hides the code\n\n# / echo: false\nprint(\"Hello World!\")\n\nHello World!\n\n\n\n\nQuestion 3\n…"
-  },
-  {
-    "objectID": "blog/Assignment 1/Assignment_1_data/File_Conversion.html",
-    "href": "blog/Assignment 1/Assignment_1_data/File_Conversion.html",
-    "title": "Juan Hernández Guizar",
-    "section": "",
-    "text": "import pandas as pd\n\nkarlan_list_2007_csv = pd.read_stata(\"karlan_list_2007.dta\")\n\nkarlan_list_2007_csv.to_csv(\"karlan_list_2007_csv.csv\", index=False)"
-  },
-  {
-    "objectID": "Other/File_Conversion.html",
-    "href": "Other/File_Conversion.html",
-    "title": "Juan Hernández Guizar",
-    "section": "",
-    "text": "import pandas as pd\n\nkarlan_list_2007_csv = pd.read_stata(\"karlan_list_2007.dta\")\n\nkarlan_list_2007_csv.to_csv(\"karlan_list_2007_csv.csv\", index=False)"
-  },
-  {
-    "objectID": "Other/Assignment_1_Stuff/File_Conversion.html",
-    "href": "Other/Assignment_1_Stuff/File_Conversion.html",
-    "title": "Juan Hernández Guizar",
-    "section": "",
-    "text": "import pandas as pd\n\nkarlan_list_2007_csv = pd.read_stata(\"karlan_list_2007.dta\")\n\nkarlan_list_2007_csv.to_csv(\"karlan_list_2007_csv.csv\", index=False)"
   }
 ]

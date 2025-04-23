@@ -81,7 +81,7 @@ Detailed explanation of all the variables captured
 
 ::::
 
-Preview of Results
+Preview of results from study
 
 ```{python}
 # | echo: false
