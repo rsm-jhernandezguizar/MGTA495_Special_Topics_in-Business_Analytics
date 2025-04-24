@@ -326,7 +326,9 @@ These results conclude the Balance Test section and provide strong support for t
 
 First, I analyze whether matched donations lead to an increased response rate of making a donation. 
 
-_todo: make a barplot with two bars. Each bar is the proportion of people who donated. One bar for treatment and one bar for control._
+Here’s a short paragraph you can use to replace the todo sentence in the screenshot:
+
+The bar plot below shows the proportion of individuals who made a donation in the treatment and control groups. This visualization offers an early look at the potential impact of being assigned to the treatment group, with a slightly higher donation rate observed. While this plot conveys similar information to the one presented in the Data section, it is revisited here in the context of hypothesis testing to begin assessing whether the observed difference is statistically significant.
 
 ```{python}
 # | echo: false
@@ -353,18 +355,79 @@ plt.tight_layout()
 plt.show()
 ```
 
-_todo: run a t-test between the treatment and control groups on the binary outcome of whether any charitable donation was made (you can do this as a bivariate linear regression if you want). It may help to confirm your calculations match Table 2a Panel A. Report your statistical results and interpret them in the context of the experiment (e.g., if you found a difference with a small p-value or something that was statistically significant at some threshold, what have you learned about human behavior? Use mostly English words, not numbers or stats, to explain your finding.)_
+Based on the code used in our earlier balance checks, I ran a t‐test comparing the proportion who donated (gave == 1) across the treatment and control groups. The results show that the treatment group’s average donation rate is modestly but meaningfully higher than the control group’s rate, closely mirroring the figures in Karlan and List’s Table 2a Panel A. The p‐value from this test is well below the usual 5 percent threshold, indicating that the difference is unlikely to be by chance. In real terms, such a small bump in donation rates can significantly boost total contributions, demonstrating that even a simple intervention like a matching grant can alter donor behavior. This supports the broader conclusion that small “price” or matching signals can nudge people to act, thereby increasing charitable giving.
 
-_todo: run a probit regression where the outcome variable is whether any charitable donation was made and the explanatory variable is assignment to treatment or control._ 
+Here’s a clear paragraph you can use to summarize the probit regression results in context with Table 3, Column 1 from the Karlan and List (2007) paper:
 
-_NOTE: Linear regression results appear replicate Table 3 column 1 in the paper. Probit results do not, despite Table 3 indicating its results come from probit regressions..._
+I ran a probit regression to estimate whether being assigned to the treatment group significantly increased the likelihood of making a charitable donation. The model used gave as the binary outcome and treatment as the explanatory variable. The results show a positive and statistically significant coefficient of 0.0868 (p = 0.002), indicating that assignment to the treatment group is associated with a higher probability of donating. However, this estimate does not match the coefficient reported in Table 3, Column 1 of the original paper, which shows a much smaller effect size of 0.004 with a standard error of 0.001. Despite the model setup appearing consistent, the difference in results suggests there may be differences in the underlying implementation or sample filtering. Still, the significance of the treatment variable aligns with the paper’s broader conclusion: matching grants, even modest ones, can meaningfully shift donation behavior.
 
+```{python}
+# | echo: false
+# Run a probit regression: gave ~ treatment
+# This tests whether being assigned to the treatment group changes the likelihood of making a donation
+
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+# Step 1: Fit the probit model
+# 'gave' is a binary variable (1 = donated, 0 = didn't donate)
+# 'treatment' is the binary explanatory variable
+probit_model = smf.probit("gave ~ treatment", data=karlan_list_2007_pretty).fit()
+
+# Step 2: Show a summary of the results
+probit_model.summary()
+```
 
 ### Differences between Match Rates
 
 Next, I assess the effectiveness of different sizes of matched donations on the response rate.
 
 _todo: Use a series of t-tests to test whether the size of the match ratio has an effect on whether people donate or not. For example, does the 2:1 match rate lead increase the likelihood that someone donates as compared to the 1:1 match rate? Do your results support the "figures suggest" comment the authors make on page 8?_
+
+```{python}
+# | echo: false
+# We'll run t-tests to compare the proportion donating across different match ratio groups
+#
+# For example, does 2:1 lead to a higher 'gave' rate than 1:1?
+
+import pandas as pd
+from scipy.stats import ttest_ind
+
+# 1) Define subsets by ratio group
+#    (Adjust your queries if your 'ratio' column stores numeric vs. string values)
+df_ratio_1_1 = karlan_list_2007_pretty.query("ratio == '1:1'")
+df_ratio_2_1 = karlan_list_2007_pretty.query("ratio == '2:1'")
+df_ratio_3_1 = karlan_list_2007_pretty.query("ratio == '3:1'")
+
+# 2) Define a helper function for Welch's two-sample t-test on 'gave'
+def compare_ratios(df_a, df_b, label_a, label_b):
+    """
+    Runs a Welch t-test comparing the proportion donating in two ratio groups.
+    df_a, df_b: data subsets
+    label_a, label_b: strings for printing
+    """
+    # Extract the binary outcome arrays
+    gave_a = df_a["gave"].dropna()
+    gave_b = df_b["gave"].dropna()
+    
+    # Perform Welch's t-test (equal_var=False)
+    t_stat, p_val = ttest_ind(gave_a, gave_b, equal_var=False)
+    
+    print(f"=== Comparing ratio {label_a} vs ratio {label_b} ===")
+    print(f"Mean(gave) for {label_a}: {gave_a.mean():.4f}  (n={len(gave_a)})")
+    print(f"Mean(gave) for {label_b}: {gave_b.mean():.4f}  (n={len(gave_b)})")
+    print(f"T-statistic: {t_stat:.4f} | P-value: {p_val:.4g}")
+    print("--------------------------------------\n")
+
+# 3) Compare 2:1 vs 1:1
+compare_ratios(df_ratio_2_1, df_ratio_1_1, "2:1", "1:1")
+
+# Compare 3:1 vs 1:1
+compare_ratios(df_ratio_3_1, df_ratio_1_1, "3:1", "1:1")
+
+# Optionally, compare 2:1 vs 3:1
+compare_ratios(df_ratio_2_1, df_ratio_3_1, "2:1", "3:1")
+```
 
 _todo: Assess the same issue using a regression. Specifically, create the variable `ratio1` then regress `gave` on `ratio1`, `ratio2`, and `ratio3` (or alternatively, regress `gave` on the categorical variable `ratio`). Interpret the coefficients and their statistical precision._
 
