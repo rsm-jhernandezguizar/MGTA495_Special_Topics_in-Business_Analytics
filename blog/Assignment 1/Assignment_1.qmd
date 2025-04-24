@@ -159,6 +159,8 @@ As an ad hoc test of the randomization mechanism, I provide a series of tests th
 
 _todo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. For at least one variable, perform the test as both t-test (use the formula in the class slides) and separately as a linear regression (regress for example mrm2 on treatment); confirm both methods yield the exact same results. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper)._
 
+As part of the balance test, I conducted a hand-computed two-sample t-test to determine whether the treatment and control groups differed significantly on the variable mrm2 (months since last donation). The results showed that the treatment group had a mean of 13.012 months, while the control group had a mean of 12.998 months. The calculated t-statistic was 0.120 with an associated p-value of 0.9049. Since the p-value is well above the 0.05 threshold, we fail to reject the null hypothesis and conclude that there is no statistically significant difference between the groups. This result supports the validity of the randomization mechanism, as it suggests that both groups were balanced on this pre-treatment variable.
+
 ```{python}
 # | echo: false
 # We'll do a hand-computed two-sample t-test for "mrm2"
@@ -218,6 +220,25 @@ print(f"Control Mean (mrm2):   {Xbar_c:.3f}, n={n_c}")
 print(f"t-statistic:           {t_stat:.3f}")
 print(f"Degrees of freedom:    {df_approx:.2f}")
 print(f"p-value (two-sided):   {p_value:.4g}")
+```
+
+To validate these results using a different method, I also ran a simple linear regression where mrm2 was regressed on the treatment variable. This approach tests the same hypothesis as the t-test—that the average months since last donation is equal across groups. The estimated treatment effect (0.014) is nearly identical to the difference in group means, and the associated p-value (0.905) confirms the same conclusion: there is no statistically significant difference between the groups. This reinforces the finding that the randomization successfully created balanced groups.
+
+```{python}
+# | echo: false
+# Run a regression of mrm2 on treatment using rsm.model.regress
+
+import pyrsm as rsm
+
+# Run the model (mrm2 ~ treatment)
+reg_mrm2 = rsm.regress(
+    data={"karlan_list_2007_pretty": karlan_list_2007_pretty},
+    rvar="mrm2",  # Response variable (target)
+    evar=["treatment"],  # Explanatory variable (binary group)
+)
+
+# Show the regression summary
+reg_mrm2.summary()
 ```
 
 ## Experimental Results

@@ -427,7 +427,7 @@ Variable Definitions
 </div>
 </div>
 <p>Preview of results from study</p>
-<div id="530cc58b" class="cell" data-execution_count="1">
+<div id="bee85aa4" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -588,7 +588,7 @@ Variable Definitions
 </div>
 </div>
 <p>Bar plot – Proportion Who Donated by Treatment Group</p>
-<div id="5ed33a34" class="cell" data-execution_count="2">
+<div id="7ec5f447" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -599,7 +599,7 @@ Variable Definitions
 </div>
 <p>In this bar plot, each bar shows the proportion of people in the treatment or control group who made a donation, illustrating the immediate difference in participation rates.</p>
 <p>Histogram – Donation Amounts (Among Donors Only)</p>
-<div id="53963a57" class="cell" data-execution_count="3">
+<div id="009359bd" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -614,7 +614,8 @@ Variable Definitions
 <h3 class="anchored" data-anchor-id="balance-test">Balance Test</h3>
 <p>As an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.</p>
 <p><em>todo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. For at least one variable, perform the test as both t-test (use the formula in the class slides) and separately as a linear regression (regress for example mrm2 on treatment); confirm both methods yield the exact same results. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper).</em></p>
-<div id="3348d59e" class="cell" data-execution_count="4">
+<p>As part of the balance test, I conducted a hand-computed two-sample t-test to determine whether the treatment and control groups differed significantly on the variable mrm2 (months since last donation). The results showed that the treatment group had a mean of 13.012 months, while the control group had a mean of 12.998 months. The calculated t-statistic was 0.120 with an associated p-value of 0.9049. Since the p-value is well above the 0.05 threshold, we fail to reject the null hypothesis and conclude that there is no statistically significant difference between the groups. This result supports the validity of the randomization mechanism, as it suggests that both groups were balanced on this pre-treatment variable.</p>
+<div id="53bab0ff" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-stdout">
 <pre><code>Hand-Composed Two-Sample t-Test for mrm2
 =========================================
@@ -623,6 +624,26 @@ Control Mean (mrm2):   12.998, n=16687
 t-statistic:           0.120
 Degrees of freedom:    33394.48
 p-value (two-sided):   0.9049</code></pre>
+</div>
+</div>
+<div id="a764ebe6" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear regression (OLS)
+Data                 : karlan_list_2007_pretty
+Response variable    : mrm2
+Explanatory variables: treatment
+Null hyp.: the effect of x on mrm2 is zero
+Alt. hyp.: the effect of x on mrm2 is not zero
+
+           coefficient  std.error  t.value p.value     
+Intercept       12.998      0.094  138.979  &lt; .001  ***
+treatment        0.014      0.115    0.119   0.905     
+
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+R-squared: 0.0, Adjusted R-squared: -0.0
+F-statistic: 0.014 df(1, 50080), p.value 0.905
+Nr obs: 50,082</code></pre>
 </div>
 </div>
 </section>
