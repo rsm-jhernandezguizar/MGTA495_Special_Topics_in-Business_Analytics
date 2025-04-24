@@ -691,3 +691,7 @@ for i, n in enumerate(sample_sizes):
 plt.tight_layout()
 plt.show()
 ```
+
+## Summary / Conclusion
+
+In summary, this replication of Karlan and List’s (2007) study successfully validated their key findings. Matching grants indeed significantly increased the likelihood of donors contributing, confirming the power of simple financial incentives. Interestingly, while the presence of a match effectively boosted participation, increasing the match ratio beyond a basic 1:1 offer showed minimal additional impact, highlighting diminishing returns for more generous incentives. Further, the analysis indicated that the treatment primarily influences the decision to donate rather than the amount donated among those who chose to give. Lastly, simulation experiments effectively illustrated fundamental statistical principles: the Law of Large Numbers demonstrated how averages stabilize around true effects with larger samples, while the Central Limit Theorem showed how sampling distributions become increasingly normal and precise as sample sizes grow. Together, these analyses reinforce the importance of robust experimental design and statistical reasoning in evaluating charitable fundraising strategies.
