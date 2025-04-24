@@ -382,54 +382,83 @@ probit_model.summary()
 
 Next, I assess the effectiveness of different sizes of matched donations on the response rate.
 
-_todo: Use a series of t-tests to test whether the size of the match ratio has an effect on whether people donate or not. For example, does the 2:1 match rate lead increase the likelihood that someone donates as compared to the 1:1 match rate? Do your results support the "figures suggest" comment the authors make on page 8?_
+I ran a series of Welch’s t-tests comparing donation rates across match ratio groups (1:1, 2:1, and 3:1). Here’s what we learned:
+
+Comparison	Difference in Means	T-statistic	P-value	Stat. Sig.?
+2:1 vs 1:1	+0.0019	0.9650	0.3345	❌ No
+3:1 vs 1:1	+0.0020	1.0150	0.3101	❌ No
+2:1 vs 3:1	–0.0001	–0.0501	0.9600	❌ No
+
+	•	Interpretation: None of the comparisons show statistically significant differences. The p-values are all much higher than 0.05, so we fail to reject the null hypothesis in each case.
+	•	Means are very close: Around 2.07%–2.27% donation rates—tiny differences that are not meaningful in practice or statistical significance.
+
+On page 8 of the original paper (Table 2A, Panel A), Karlan and List state:
+
+“Larger match ratios ($3:$1 and $2:$1) relative to a smaller match ratio ($1:$1) had no additional impact.”
+
+✔️ My findings directly support this conclusion. The statistical evidence from your t-tests aligns with theirs: increasing the match ratio doesn’t significantly increase the likelihood of donating.
+
+This suggests that, while having a match at all helps (compared to no match), larger matches do not continue to increase response rates. So, from a fundraising strategy perspective, offering a simple 1:1 match is just as effective as offering a more generous match—and much cheaper for the matching donor 😅.
 
 ```{python}
 # | echo: false
-# We'll run t-tests to compare the proportion donating across different match ratio groups
-#
-# For example, does 2:1 lead to a higher 'gave' rate than 1:1?
-
 import pandas as pd
+import numpy as np
 from scipy.stats import ttest_ind
 
-# 1) Define subsets by ratio group
-#    (Adjust your queries if your 'ratio' column stores numeric vs. string values)
-df_ratio_1_1 = karlan_list_2007_pretty.query("ratio == '1:1'")
-df_ratio_2_1 = karlan_list_2007_pretty.query("ratio == '2:1'")
-df_ratio_3_1 = karlan_list_2007_pretty.query("ratio == '3:1'")
+# 1) Create subsets for each match group.
+#    ratio == 1 => 1:1 match (no quotes, since "ratio" is numeric for 1:1)
+#    ratio2 == 1 => 2:1 match (dummy column)
+#    ratio3 == 1 => 3:1 match (dummy column)
 
-# 2) Define a helper function for Welch's two-sample t-test on 'gave'
+df_ratio_1 = karlan_list_2007_pretty.loc[karlan_list_2007_pretty["ratio"] == 1]
+df_ratio_2 = karlan_list_2007_pretty.loc[karlan_list_2007_pretty["ratio2"] == 1]
+df_ratio_3 = karlan_list_2007_pretty.loc[karlan_list_2007_pretty["ratio3"] == 1]
+
+
 def compare_ratios(df_a, df_b, label_a, label_b):
     """
-    Runs a Welch t-test comparing the proportion donating in two ratio groups.
-    df_a, df_b: data subsets
-    label_a, label_b: strings for printing
+    Runs a Welch t-test comparing the proportion donating (gave) in two groups.
+    df_a, df_b:  DataFrame subsets for the two ratio groups
+    label_a, label_b:  Strings for printing (e.g. '1:1', '2:1', '3:1')
     """
-    # Extract the binary outcome arrays
+    # Extract and drop missing values from "gave"
     gave_a = df_a["gave"].dropna()
     gave_b = df_b["gave"].dropna()
-    
-    # Perform Welch's t-test (equal_var=False)
+
+    print(f"\n=== Checking ratio {label_a} vs. ratio {label_b} ===")
+    print(f"Observations in {label_a}: {len(gave_a)}")
+    print(f"Observations in {label_b}: {len(gave_b)}")
+
+    # If either group has <2 observations or no variance, skip
+    if (
+        len(gave_a) < 2
+        or len(gave_b) < 2
+        or gave_a.nunique() < 2
+        or gave_b.nunique() < 2
+    ):
+        print(
+            "Insufficient data or zero variance in at least one group. Skipping t-test.\n"
+        )
+        return
+
+    # Perform Welch’s t-test
     t_stat, p_val = ttest_ind(gave_a, gave_b, equal_var=False)
-    
-    print(f"=== Comparing ratio {label_a} vs ratio {label_b} ===")
-    print(f"Mean(gave) for {label_a}: {gave_a.mean():.4f}  (n={len(gave_a)})")
-    print(f"Mean(gave) for {label_b}: {gave_b.mean():.4f}  (n={len(gave_b)})")
-    print(f"T-statistic: {t_stat:.4f} | P-value: {p_val:.4g}")
-    print("--------------------------------------\n")
 
-# 3) Compare 2:1 vs 1:1
-compare_ratios(df_ratio_2_1, df_ratio_1_1, "2:1", "1:1")
+    print(f"Mean(gave) for {label_a}: {gave_a.mean():.4f}")
+    print(f"Mean(gave) for {label_b}: {gave_b.mean():.4f}")
+    print(f"T-statistic: {t_stat:.4f}  |  P-value: {p_val:.4g}")
 
-# Compare 3:1 vs 1:1
-compare_ratios(df_ratio_3_1, df_ratio_1_1, "3:1", "1:1")
 
-# Optionally, compare 2:1 vs 3:1
-compare_ratios(df_ratio_2_1, df_ratio_3_1, "2:1", "3:1")
+# 2) Compare each pair
+compare_ratios(df_ratio_2, df_ratio_1, "2:1", "1:1")
+compare_ratios(df_ratio_3, df_ratio_1, "3:1", "1:1")
+compare_ratios(df_ratio_2, df_ratio_3, "2:1", "3:1")
 ```
 
 _todo: Assess the same issue using a regression. Specifically, create the variable `ratio1` then regress `gave` on `ratio1`, `ratio2`, and `ratio3` (or alternatively, regress `gave` on the categorical variable `ratio`). Interpret the coefficients and their statistical precision._
+
+
 
 _todo: Calculate the response rate difference between the 1:1 and 2:1 match ratios and the 2:1 and 3:1 ratios.  Do this directly from the data, and do it by computing the differences in the fitted coefficients of the previous regression. what do you conclude regarding the effectiveness of different sizes of matched donations?_
 
