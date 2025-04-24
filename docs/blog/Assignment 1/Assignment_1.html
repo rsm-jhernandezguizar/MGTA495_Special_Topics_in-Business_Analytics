@@ -427,7 +427,7 @@ Variable Definitions
 </div>
 </div>
 <p>Preview of results from study</p>
-<div id="bee85aa4" class="cell" data-execution_count="1">
+<div id="e29357d7" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -588,7 +588,7 @@ Variable Definitions
 </div>
 </div>
 <p>Bar plot – Proportion Who Donated by Treatment Group</p>
-<div id="7ec5f447" class="cell" data-execution_count="2">
+<div id="8a2f466a" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -599,7 +599,7 @@ Variable Definitions
 </div>
 <p>In this bar plot, each bar shows the proportion of people in the treatment or control group who made a donation, illustrating the immediate difference in participation rates.</p>
 <p>Histogram – Donation Amounts (Among Donors Only)</p>
-<div id="009359bd" class="cell" data-execution_count="3">
+<div id="fa9b9388" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -613,9 +613,8 @@ Variable Definitions
 <section id="balance-test" class="level3">
 <h3 class="anchored" data-anchor-id="balance-test">Balance Test</h3>
 <p>As an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.</p>
-<p><em>todo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. For at least one variable, perform the test as both t-test (use the formula in the class slides) and separately as a linear regression (regress for example mrm2 on treatment); confirm both methods yield the exact same results. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper).</em></p>
 <p>As part of the balance test, I conducted a hand-computed two-sample t-test to determine whether the treatment and control groups differed significantly on the variable mrm2 (months since last donation). The results showed that the treatment group had a mean of 13.012 months, while the control group had a mean of 12.998 months. The calculated t-statistic was 0.120 with an associated p-value of 0.9049. Since the p-value is well above the 0.05 threshold, we fail to reject the null hypothesis and conclude that there is no statistically significant difference between the groups. This result supports the validity of the randomization mechanism, as it suggests that both groups were balanced on this pre-treatment variable.</p>
-<div id="53bab0ff" class="cell" data-execution_count="4">
+<div id="d84f609f" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-stdout">
 <pre><code>Hand-Composed Two-Sample t-Test for mrm2
 =========================================
@@ -626,7 +625,8 @@ Degrees of freedom:    33394.48
 p-value (two-sided):   0.9049</code></pre>
 </div>
 </div>
-<div id="a764ebe6" class="cell" data-execution_count="5">
+<p>To validate these results using a different method, I also ran a simple linear regression where mrm2 was regressed on the treatment variable. This approach tests the same hypothesis as the t-test—that the average months since last donation is equal across groups. The estimated treatment effect (0.014) is nearly identical to the difference in group means, and the associated p-value (0.905) confirms the same conclusion: there is no statistically significant difference between the groups. This reinforces the finding that the randomization successfully created balanced groups.</p>
+<div id="4a8d2411" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear regression (OLS)
 Data                 : karlan_list_2007_pretty
@@ -646,6 +646,40 @@ F-statistic: 0.014 df(1, 50080), p.value 0.905
 Nr obs: 50,082</code></pre>
 </div>
 </div>
+<p>As part of the balance test, I conducted a hand-computed two-sample t-test to determine whether the treatment and control groups differed significantly on the variable freq (number of prior donations). This represents the second variable tested for robustness, following the initial test on mrm2 (months since last donation). The results showed that the treatment group had a mean of 8.035 donations, while the control group had a mean of 8.047 donations. The calculated t-statistic was -0.111 with an associated p-value of 0.9117. Since the p-value is well above the 0.05 threshold, we fail to reject the null hypothesis and conclude that there is no statistically significant difference between the groups. The fact that both mrm2 and freq are balanced across treatment and control groups further validates the randomization mechanism, confirming that the two groups are comparable on key pre-treatment characteristics.</p>
+<div id="eb0f0c33" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-stdout">
+<pre><code>Hand-Composed Two-Sample t-Test for freq
+=========================================
+Treatment Mean (freq): 8.035, n=33396
+Control Mean (freq):   8.047, n=16687
+t-statistic:           -0.111
+Degrees of freedom:    33326.35
+p-value (two-sided):   0.9117</code></pre>
+</div>
+</div>
+<p>To validate the results from the t-test, I also performed a linear regression of freq on the treatment variable. Like the t-test, this regression assesses whether there is a statistically significant difference in the number of prior donations between treatment and control groups. The coefficient on treatment (-0.012) closely matches the difference in group means, and the p-value (0.912) confirms the same conclusion: no significant difference exists. This consistency between the regression and the hand-calculated t-test reinforces the finding that the treatment assignment did not systematically influence pre-treatment donation frequency.</p>
+<div id="d69ac075" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear regression (OLS)
+Data                 : karlan_list_2007_pretty
+Response variable    : freq
+Explanatory variables: treatment
+Null hyp.: the effect of x on freq is zero
+Alt. hyp.: the effect of x on freq is not zero
+
+           coefficient  std.error  t.value p.value     
+Intercept        8.047      0.088   91.231  &lt; .001  ***
+treatment       -0.012      0.108   -0.111   0.912     
+
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+R-squared: 0.0, Adjusted R-squared: -0.0
+F-statistic: 0.012 df(1, 50081), p.value 0.912
+Nr obs: 50,083</code></pre>
+</div>
+</div>
+<p>These results conclude the Balance Test section and provide strong support for the success of the randomization mechanism.</p>
 </section>
 </section>
 <section id="experimental-results" class="level2">
@@ -654,6 +688,15 @@ Nr obs: 50,082</code></pre>
 <h3 class="anchored" data-anchor-id="charitable-contribution-made">Charitable Contribution Made</h3>
 <p>First, I analyze whether matched donations lead to an increased response rate of making a donation.</p>
 <p><em>todo: make a barplot with two bars. Each bar is the proportion of people who donated. One bar for treatment and one bar for control.</em></p>
+<div id="08183a32" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_1_files/figure-html/cell-9-output-1.png" width="565" height="372" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 <p><em>todo: run a t-test between the treatment and control groups on the binary outcome of whether any charitable donation was made (you can do this as a bivariate linear regression if you want). It may help to confirm your calculations match Table 2a Panel A. Report your statistical results and interpret them in the context of the experiment (e.g., if you found a difference with a small p-value or something that was statistically significant at some threshold, what have you learned about human behavior? Use mostly English words, not numbers or stats, to explain your finding.)</em></p>
 <p><em>todo: run a probit regression where the outcome variable is whether any charitable donation was made and the explanatory variable is assignment to treatment or control.</em></p>
 <p><em>NOTE: Linear regression results appear replicate Table 3 column 1 in the paper. Probit results do not, despite Table 3 indicating its results come from probit regressions…</em></p>

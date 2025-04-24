@@ -157,8 +157,6 @@ Here, the histogram reveals the distribution of how much donors gave, helping us
 
 As an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.
 
-_todo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. For at least one variable, perform the test as both t-test (use the formula in the class slides) and separately as a linear regression (regress for example mrm2 on treatment); confirm both methods yield the exact same results. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper)._
-
 As part of the balance test, I conducted a hand-computed two-sample t-test to determine whether the treatment and control groups differed significantly on the variable mrm2 (months since last donation). The results showed that the treatment group had a mean of 13.012 months, while the control group had a mean of 12.998 months. The calculated t-statistic was 0.120 with an associated p-value of 0.9049. Since the p-value is well above the 0.05 threshold, we fail to reject the null hypothesis and conclude that there is no statistically significant difference between the groups. This result supports the validity of the randomization mechanism, as it suggests that both groups were balanced on this pre-treatment variable.
 
 ```{python}
@@ -241,6 +239,87 @@ reg_mrm2 = rsm.regress(
 reg_mrm2.summary()
 ```
 
+As part of the balance test, I conducted a hand-computed two-sample t-test to determine whether the treatment and control groups differed significantly on the variable freq (number of prior donations). This represents the second variable tested for robustness, following the initial test on mrm2 (months since last donation). The results showed that the treatment group had a mean of 8.035 donations, while the control group had a mean of 8.047 donations. The calculated t-statistic was -0.111 with an associated p-value of 0.9117. Since the p-value is well above the 0.05 threshold, we fail to reject the null hypothesis and conclude that there is no statistically significant difference between the groups. The fact that both mrm2 and freq are balanced across treatment and control groups further validates the randomization mechanism, confirming that the two groups are comparable on key pre-treatment characteristics.
+
+```{python}
+# | echo: false
+# We'll do a hand-computed two-sample t-test for "freq"
+# using the formula from the class slides:
+#
+#         t = (X̄_treatment - X̄_control)
+#             --------------------------
+#             sqrt((s_t^2 / n_t) + (s_c^2 / n_c))
+#
+# We'll then derive a two-sided p-value from that t-statistic.
+
+import math
+from math import sqrt
+from scipy.stats import t
+
+# 1) Separate "freq" for treatment (1) and control (0)
+freq_treatment = karlan_list_2007_pretty.loc[
+    karlan_list_2007_pretty["treatment"] == 1, "freq"
+].dropna()
+freq_control = karlan_list_2007_pretty.loc[
+    karlan_list_2007_pretty["treatment"] == 0, "freq"
+].dropna()
+
+# 2) Calculate sample sizes
+n_t = len(freq_treatment)
+n_c = len(freq_control)
+
+# 3) Calculate sample means
+Xbar_t = freq_treatment.mean()
+Xbar_c = freq_control.mean()
+
+# 4) Calculate sample variances (unbiased sample variance)
+s_t2 = freq_treatment.var()
+s_c2 = freq_control.var()
+
+# 5) Compute the t-value using the manual formula (Welch's approach)
+numerator = Xbar_t - Xbar_c
+denominator = math.sqrt((s_t2 / n_t) + (s_c2 / n_c))
+t_stat = numerator / denominator
+
+# 6) Approximate degrees of freedom (Welch-Satterthwaite)
+num_df = ((s_t2 / n_t) + (s_c2 / n_c)) ** 2
+den_df = ((s_t2 / n_t) ** 2 / (n_t - 1)) + ((s_c2 / n_c) ** 2 / (n_c - 1))
+df_approx = num_df / den_df
+
+# 7) Two-sided p-value
+p_value = 2.0 * (1.0 - t.cdf(abs(t_stat), df_approx))
+
+# 8) Print results
+print("Hand-Composed Two-Sample t-Test for freq")
+print("=========================================")
+print(f"Treatment Mean (freq): {Xbar_t:.3f}, n={n_t}")
+print(f"Control Mean (freq):   {Xbar_c:.3f}, n={n_c}")
+print(f"t-statistic:           {t_stat:.3f}")
+print(f"Degrees of freedom:    {df_approx:.2f}")
+print(f"p-value (two-sided):   {p_value:.4g}")
+```
+
+To validate the results from the t-test, I also performed a linear regression of freq on the treatment variable. Like the t-test, this regression assesses whether there is a statistically significant difference in the number of prior donations between treatment and control groups. The coefficient on treatment (-0.012) closely matches the difference in group means, and the p-value (0.912) confirms the same conclusion: no significant difference exists. This consistency between the regression and the hand-calculated t-test reinforces the finding that the treatment assignment did not systematically influence pre-treatment donation frequency.
+
+```{python}
+# | echo: false
+# Run a regression of freq on treatment using rsm.model.regress
+
+import pyrsm as rsm
+
+# Run the model (freq ~ treatment)
+reg_freq = rsm.regress(
+    data={"karlan_list_2007_pretty": karlan_list_2007_pretty},
+    rvar="freq",  # Response variable (target)
+    evar=["treatment"],  # Explanatory variable (binary group)
+)
+
+# Show the regression summary
+reg_freq.summary()
+```
+
+These results conclude the Balance Test section and provide strong support for the success of the randomization mechanism.
+
 ## Experimental Results
 
 ### Charitable Contribution Made
@@ -248,6 +327,31 @@ reg_mrm2.summary()
 First, I analyze whether matched donations lead to an increased response rate of making a donation. 
 
 _todo: make a barplot with two bars. Each bar is the proportion of people who donated. One bar for treatment and one bar for control._
+
+```{python}
+# | echo: false
+# Barplot showing proportion of people who donated (treatment vs control)
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Calculate donation rates by group
+donation_rates = (
+    karlan_list_2007_pretty.groupby("treatment")["gave"].mean().reset_index()
+)
+
+# Plot the barplot
+plt.figure(figsize=(6, 4))
+sns.barplot(x="treatment", y="gave", data=donation_rates)
+plt.title("Proportion Who Donated by Treatment Group")
+plt.xlabel("Group (0 = Control, 1 = Treatment)")
+plt.ylabel("Proportion Donated")
+plt.ylim(0, 0.03)
+plt.grid(axis="y")
+plt.tight_layout()
+plt.show()
+```
 
 _todo: run a t-test between the treatment and control groups on the binary outcome of whether any charitable donation was made (you can do this as a bivariate linear regression if you want). It may help to confirm your calculations match Table 2a Panel A. Report your statistical results and interpret them in the context of the experiment (e.g., if you found a difference with a small p-value or something that was statistically significant at some threshold, what have you learned about human behavior? Use mostly English words, not numbers or stats, to explain your finding.)_
 
