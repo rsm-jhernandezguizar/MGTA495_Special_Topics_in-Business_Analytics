@@ -505,27 +505,189 @@ print(f"Difference (3:1 vs. 2:1): {diff_coef_31_vs_21:.4f}")
 
 In this subsection, I analyze the effect of the size of matched donation on the size of the charitable contribution.
 
-_todo: Calculate a t-test or run a bivariate linear regression of the donation amount on the treatment status. What do we learn from doing this analysis?_
+From the results of the t-test comparing donation amounts between the treatment and control groups, we observe a mean donation of approximately $0.97 for the treatment group and $0.81 for the control group, indicating a moderate increase in donation amounts due to treatment. The calculated t-statistic is 1.9183, and the associated p-value is 0.05509, just above the conventional significance threshold of 0.05. This result suggests that while there is some evidence that the treatment leads to higher average donations, the difference is only marginally statistically significant. Thus, we learn that matching grants have the potential not only to increase participation but possibly also to increase donation amounts among all individuals (though evidence for this latter effect is weaker). Further investigation, potentially with larger sample sizes or more targeted treatments, would be beneficial to clarify this effect.
 
-_todo: now limit the data to just people who made a donation and repeat the previous analysis. This regression allows you to analyze how much respondents donate conditional on donating some positive amount. Interpret the regression coefficients -- what did we learn? Does the treatment coefficient have a causal interpretation?_ 
+```{python}
+# | echo: false
+import pandas as pd
+from scipy.stats import ttest_ind
+
+# Extract donation amounts (dropping missing values) for each treatment group
+treatment_amounts = karlan_list_2007_pretty.loc[
+    karlan_list_2007_pretty["treatment"] == 1, "amount"
+].dropna()
+control_amounts = karlan_list_2007_pretty.loc[
+    karlan_list_2007_pretty["treatment"] == 0, "amount"
+].dropna()
+
+# Run a two-sample t-test assuming unequal variances (Welch’s t-test)
+t_stat, p_val = ttest_ind(treatment_amounts, control_amounts, equal_var=False)
+
+# Print the t-test results and group means
+print("T-test comparing donation amounts between treatment and control groups")
+print(f"T-statistic: {t_stat:.4f}")
+print(f"p-value: {p_val:.4g}")
+print(f"Mean donation (Treatment): {treatment_amounts.mean():.4f}")
+print(f"Mean donation (Control): {control_amounts.mean():.4f}")
+```
+
+The regression results presented indicate that, among individuals who chose to donate (conditional donors), the estimated average donation for those in the control group is approximately $45.54 (intercept). The coefficient for the treatment variable is -1.668, suggesting that, on average, donors assigned to the treatment group donate about $1.67 less than those in the control group. However, this difference is not statistically significant, as indicated by the large p-value (0.561). Therefore, we cannot confidently conclude that the treatment had any substantial effect on the donation amount among people who donated.
+
+Importantly, the treatment coefficient here does have a causal interpretation because the original experimental design involves random assignment of individuals to treatment and control groups. Thus, the observed effect (or lack thereof) can reasonably be interpreted as causal. In this case, we learn that, conditional on donating, the matching treatment does not significantly influence the donation size—supporting the earlier observation that the main benefit of matching grants appears primarily in encouraging participation, rather than increasing amounts among existing donors.
+
+```{python}
+# | echo: false
+import pandas as pd
+import statsmodels.formula.api as smf
+
+# Filter the dataset to include only people who donated (gave == 1)
+donors_data = karlan_list_2007_pretty[karlan_list_2007_pretty["gave"] == 1]
+
+# Run an OLS regression of donation amount on treatment status.
+# Here "amount" is our dependent variable, and "treatment" is the binary indicator (1 = treatment, 0 = control).
+model_don = smf.ols("amount ~ treatment", data=donors_data).fit()
+
+# Print the summary of the regression results
+print(model_don.summary())
+```
 
 _todo: Make two plots: one for the treatment group and one for the control. Each plot should be a histogram of the donation amounts only among people who donated. Add a red vertical bar or some other annotation to indicate the sample average for each plot._
 
+```{python}
+# | echo: false
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-## Simulation Experiment
+# Assume karlan_list_2007_pretty is already loaded from the data file.
+# First, filter the data to include only those who donated (gave == 1)
+donors_data = karlan_list_2007_pretty[karlan_list_2007_pretty["gave"] == 1]
 
-As a reminder of how the t-statistic "works," in this section I use simulation to demonstrate the Law of Large Numbers and the Central Limit Theorem.
+# Separate the data into treatment and control groups based on the 'treatment' variable.
+donors_treatment = donors_data[donors_data["treatment"] == 1]
+donors_control = donors_data[donors_data["treatment"] == 0]
 
-Suppose the true distribution of respondents who do not get a charitable donation match is Bernoulli with probability p=0.018 that a donation is made. 
+# Calculate the sample averages for donation amounts in each group.
+avg_treatment = donors_treatment["amount"].mean()
+avg_control = donors_control["amount"].mean()
 
-Further suppose that the true distribution of respondents who do get a charitable donation match of any size is Bernoulli with probability p=0.022 that a donation is made.
+# Create a histogram for the treatment group.
+plt.figure(figsize=(8, 5))
+sns.histplot(donors_treatment["amount"], bins=30, kde=False)
+# Add a red vertical dashed line for the sample average.
+plt.axvline(
+    avg_treatment,
+    color="red",
+    linestyle="--",
+    linewidth=2,
+    label=f"Avg = {avg_treatment:.2f}",
+)
+plt.title("Histogram of Donation Amounts (Treatment Group)")
+plt.xlabel("Donation Amount")
+plt.ylabel("Frequency")
+plt.legend(title="Annotation")
+plt.show()
 
-### Law of Large Numbers
+# Create a histogram for the control group.
+plt.figure(figsize=(8, 5))
+sns.histplot(donors_control["amount"], bins=30, kde=False)
+# Add a red vertical dashed line for the sample average.
+plt.axvline(
+    avg_control,
+    color="red",
+    linestyle="--",
+    linewidth=2,
+    label=f"Avg = {avg_control:.2f}",
+)
+plt.title("Histogram of Donation Amounts (Control Group)")
+plt.xlabel("Donation Amount")
+plt.ylabel("Frequency")
+plt.legend(title="Annotation")
+plt.show()
+```
 
-_to do:  Simulate 10,000 draws from the control distribution and 10,000 draws from the treatment distribution. You'll then calculate a vector of 10,000 differences, and then you'll plot the cumulative average of that vector of differences. This average will likely be "noisey" when only averaging a few numbers, but should "settle down" and approximate the treatment effect (0.004 = 0.022 - 0.018) as the sample size gets large. Explain the chart to the reader._
+## Simulation Experiment (Law of Large Numbers + Central Limit Theorem)
 
+As a reminder of how the t-statistic “works,” in this section I use simulation to demonstrate the Law of Large Numbers and the Central Limit Theorem. Suppose the true distribution of respondents who do not get a charitable donation match is Bernoulli with probability p = 0.018 that a donation is made, and respondents who do get a charitable donation match of any size have a probability p = 0.022 of donating.
 
-### Central Limit Theorem
+The first plot illustrates the Law of Large Numbers by showing the cumulative average difference between simulated treatment and control groups across 10,000 draws. Initially, the differences fluctuate widely due to small sample sizes, but as the number of observations grows, the cumulative average difference gradually stabilizes and converges near the true difference of 0.004.
 
-_to do: Make 4 histograms at sample sizes 50, 200, 500, and 1000.  To do this for a sample size of e.g. 50, take 50 draws from each of the control and treatment distributions, and calculate the average difference between those draws. Then repeat that process 999 more times so that you have 1000 averages. Plot the histogram of those averages. The repeat for the other 3 histograms. Explain this sequence of histograms and its relationship to the central limit theorem to the reader._
+The next four histograms demonstrate the Central Limit Theorem. Each histogram displays the distribution of 1000 repeated samples of average differences between the two groups for varying sample sizes (50, 200, 500, and 1000). For smaller samples (n=50), the distribution is wide, irregular, and centered near the true difference (0.004) but with considerable variation. As sample size increases (n=200, 500, and 1000), the distributions become progressively narrower and more symmetrical, clearly approximating a normal distribution and tightly centering around the true mean difference of 0.004. These results illustrate how increasing sample size improves precision, reduces variability, and provides the basis for robust statistical inference, as embodied by the t-statistic.
 
+```{python}
+# | echo: false
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+# ==================================================
+# Part 1: Demonstrate the Law of Large Numbers
+# ==================================================
+
+# Assume the control group donation probability is 0.018
+# and the treatment group donation probability is 0.022.
+n_draws = 10000
+
+# Simulate 10,000 paired draws from the control and treatment Bernoulli distributions.
+# Each draw represents whether a donation was made (1) or not (0).
+control_draws = np.random.binomial(1, 0.018, size=n_draws)
+treatment_draws = np.random.binomial(1, 0.022, size=n_draws)
+
+# For each pair, compute the difference: treatment - control.
+# The true difference in probabilities is 0.022 - 0.018 = 0.004.
+differences = treatment_draws - control_draws
+
+# Compute the cumulative average of these differences.
+cumulative_avg = np.cumsum(differences) / np.arange(1, n_draws + 1)
+
+# Plot the cumulative average difference as sample size increases.
+plt.figure(figsize=(10, 6))
+plt.plot(
+    np.arange(1, n_draws + 1), cumulative_avg, label="Cumulative Average Difference"
+)
+plt.axhline(
+    0.004, color="red", linestyle="--", linewidth=2, label="True Difference (0.004)"
+)
+plt.xlabel("Number of Draws")
+plt.ylabel("Cumulative Average Difference")
+plt.title("Law of Large Numbers: Cumulative Average of Differences")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# ==================================================
+# Part 2: Demonstrate the Central Limit Theorem
+# ==================================================
+
+# Define the different sample sizes
+sample_sizes = [50, 200, 500, 1000]
+num_replications = 1000  # Number of repetitions to compute sample averages
+
+# Create a figure with 4 subplots
+fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+axs = axs.flatten()
+
+for i, n in enumerate(sample_sizes):
+    # For each replication, draw n samples from control and treatment distributions
+    sample_averages = np.zeros(num_replications)
+    for j in range(num_replications):
+        sample_control = np.random.binomial(1, 0.018, size=n)
+        sample_treatment = np.random.binomial(1, 0.022, size=n)
+        # Compute the average difference for this replication
+        sample_averages[j] = sample_treatment.mean() - sample_control.mean()
+
+    # Plot a histogram of the 1000 sample average differences
+    axs[i].hist(sample_averages, bins=20, edgecolor="black")
+    axs[i].axvline(
+        0.004, color="red", linestyle="--", linewidth=2, label="True Difference (0.004)"
+    )
+    axs[i].set_title(f"Histogram of Avg. Differences (n={n})")
+    axs[i].set_xlabel("Average Difference")
+    axs[i].set_ylabel("Frequency")
+    axs[i].legend()
+
+plt.tight_layout()
+plt.show()
+```
