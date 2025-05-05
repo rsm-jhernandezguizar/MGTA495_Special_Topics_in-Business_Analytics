@@ -43,7 +43,16 @@ However, Blueprinty has collected data on 1,500 mature (non-startup) engineering
 
 ### Data
 
-_todo: Read in data._
+To start we will review the data collected in a table format: 
+
+```{python}
+# | echo: false
+import pandas as pd
+
+blueprinty = pd.read_csv("Assignment_2_data/blueprinty.csv")
+# Preview
+blueprinty.head()
+```
 
 _todo: Compare histograms and means of number of patents by customer status. What do you observe?_
 

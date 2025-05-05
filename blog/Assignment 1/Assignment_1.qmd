@@ -89,7 +89,7 @@ Preview of results from study
 # | echo: false
 import pandas as pd
 
-# Correct path to file stored in the local _files folder
+# Path to file stored in the local _files folder
 file_path = "Assignment_1_data/karlan_list_2007.dta"
 
 # Load the .dta file using the correct relative path
