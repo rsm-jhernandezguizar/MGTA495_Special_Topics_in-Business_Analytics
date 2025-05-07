@@ -213,8 +213,8 @@ window.Quarto = {
 </section>
 <section id="data" class="level3">
 <h3 class="anchored" data-anchor-id="data">Data</h3>
-<p>To start we will review the data collected in a table format:</p>
-<div id="8442d48c" class="cell" data-execution_count="1">
+<p>To start we will review the first 5 data points collected in a table format:</p>
+<div id="1766cbe8" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -272,8 +272,51 @@ window.Quarto = {
 </div>
 </div>
 <p><em>todo: Compare histograms and means of number of patents by customer status. What do you observe?</em></p>
-<p>Blueprinty customers are not selected at random. It may be important to account for systematic differences in the age and regional location of customers vs non-customers.</p>
+<p>Below is the distribution of patents among Blueprinty customers vs non-customers. The histogram shows that Blueprinty customers (teal bars) tend to have more patents on average than non-customers (light blue bars).</p>
+<div id="670c882c" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_2_files/figure-html/cell-3-output-1.png" width="660" height="468" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="7c5c4ca1" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_2_files/figure-html/cell-4-output-1.png" width="661" height="469" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Firms using Blueprinty software are more frequently observed with around 4–6 patents in five years, whereas non-customer firms more often have only 0–2 patents. This indicates that the customer group’s patent count distribution is shifted to the right, with a higher mean (about 4.13 vs 3.47 for non-customers).</p>
+<p>On average, Blueprinty customers have approximately 4.13 patents over 5 years, compared to about 3.47 for non-customers. While this naive comparison suggests customers produce more patents, we must consider that Blueprinty’s customers may differ systematically in other ways (e.g.&nbsp;perhaps they are older firms or clustered in certain regions).</p>
+<p>Let’s examine the age and regional composition of customers vs non-customers.</p>
+<div id="9585834e" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_2_files/figure-html/cell-5-output-1.png" width="661" height="468" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Blueprinty customers have a slightly higher mean age since incorporation (about 26.9 years) than non-customers (26.1 years), but the age distributions largely overlap (both groups are typically 20–30 years old, with only minor differences). This suggests that firm age might not differ dramatically by customer status, though we will account for age in the analysis.</p>
+<p>Regionally, there are stark differences in who adopts Blueprinty’s software.</p>
 <p><em>todo: Compare regions and ages by customer status. What do you observe?</em></p>
+<div id="c5bcbc6c" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_2_files/figure-html/cell-6-output-1.png" width="661" height="468" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Counts of firms by region and Blueprinty customer status. In the Northeast region, the green bar (Blueprinty customers) is nearly as high as the blue bar (non-customers), indicating a large share of Blueprinty’s users are in the Northeast. In contrast, in all other regions (Midwest, South, Southwest, Northwest) the majority of firms are non-customers. This reveals that Blueprinty’s customer base is heavily concentrated in the Northeast, which suggests potential selection bias by region.</p>
+<p>Indeed, about 68% of Blueprinty’s customers are located in the Northeast, whereas only ~27% of non-customer firms are in the Northeast. Other regions (Midwest, South, Southwest, Northwest) are under-represented among customers relative to non-customers. This imbalance means any raw difference in patent counts could partly reflect regional effects. In summary, Blueprinty customers tend to have slightly older firms (though age differences are minor) and are much more likely to be in the Northeast region. We will need to control for these factors when analyzing the effect of Blueprinty’s software on patent output.</p>
 </section>
 <section id="estimation-of-simple-poisson-model" class="level3">
 <h3 class="anchored" data-anchor-id="estimation-of-simple-poisson-model">Estimation of Simple Poisson Model</h3>

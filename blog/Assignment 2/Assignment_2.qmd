@@ -18,7 +18,7 @@ However, Blueprinty has collected data on 1,500 mature (non-startup) engineering
 
 ### Data
 
-To start we will review the data collected in a table format: 
+To start we will review the first 5 data points collected in a table format: 
 
 ```{python}
 # | echo: false
@@ -31,10 +31,114 @@ blueprinty.head()
 
 _todo: Compare histograms and means of number of patents by customer status. What do you observe?_
 
-Blueprinty customers are not selected at random. It may be important to account for systematic differences in the age and regional location of customers vs non-customers.
+Below is the distribution of patents among Blueprinty customers vs non-customers. The histogram shows that Blueprinty customers (teal bars) tend to have more patents on average than non-customers (light blue bars). 
+
+```{python}
+# | echo: false
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+fig, ax = plt.subplots()
+sns.histplot(
+    data=blueprinty,
+    x="patents",
+    hue="iscustomer",
+    bins=range(0, blueprinty["patents"].max() + 2),
+    palette={0: "#ADD8E6", 1: "teal"},
+    alpha=0.8,
+    ax=ax,
+)
+ax.set_xlabel("Patents in last 5 years")
+ax.set_ylabel("Number of firms")
+ax.set_title("Patent distribution by Blueprinty customer status")
+ax.legend(title="Is Blueprinty customer", labels=["No (0)", "Yes (1)"])
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+# | echo: false
+mean_patents = (
+    blueprinty.groupby("iscustomer", as_index=False)["patents"]
+    .mean()
+    .assign(status=lambda d: d["iscustomer"].map({0: "Non-customer", 1: "Customer"}))
+)
+
+fig, ax = plt.subplots()
+sns.barplot(
+    data=mean_patents,
+    x="status",
+    y="patents",
+    hue="status",
+    ax=ax,
+    palette="Set2",
+    legend=False,
+)
+ax.set_ylabel("Mean patents (5 yrs)")
+ax.set_xlabel("")
+ax.set_title("Average patents by Blueprinty usage")
+plt.tight_layout()
+plt.show()
+```
+
+Firms using Blueprinty software are more frequently observed with around 4–6 patents in five years, whereas non-customer firms more often have only 0–2 patents. This indicates that the customer group’s patent count distribution is shifted to the right, with a higher mean (about 4.13 vs 3.47 for non-customers).
+
+On average, Blueprinty customers have approximately 4.13 patents over 5 years, compared to about 3.47 for non-customers. While this naive comparison suggests customers produce more patents, we must consider that Blueprinty’s customers may differ systematically in other ways (e.g. perhaps they are older firms or clustered in certain regions).
+
+Let’s examine the age and regional composition of customers vs non-customers. 
+
+```{python}
+# | echo: false
+fig, ax = plt.subplots()
+sns.histplot(
+    data=blueprinty,
+    x="age",
+    hue="iscustomer",
+    kde=True,
+    common_norm=False,
+    palette={0: "steelblue", 1: "seagreen"},
+    alpha=0.6,
+    ax=ax,
+)
+ax.set_xlabel("Firm age (years)")
+ax.set_ylabel("Number of firms")
+ax.set_title("Age distribution by Blueprinty customer status")
+ax.legend(title="Is customer", labels=["No", "Yes"])
+plt.tight_layout()
+plt.show()
+```
+
+Blueprinty customers have a slightly higher mean age since incorporation (about 26.9 years) than non-customers (26.1 years), but the age distributions largely overlap (both groups are typically 20–30 years old, with only minor differences). This suggests that firm age might not differ dramatically by customer status, though we will account for age in the analysis.
+
+Regionally, there are stark differences in who adopts Blueprinty’s software.
 
 _todo: Compare regions and ages by customer status. What do you observe?_
+```{python}
+# | echo: false
+region_counts = (
+    blueprinty.groupby(["region", "iscustomer"]).size().reset_index(name="count")
+)
 
+fig, ax = plt.subplots()
+sns.barplot(
+    data=region_counts,
+    x="region",
+    y="count",
+    hue="iscustomer",
+    palette={0: "steelblue", 1: "limegreen"},
+    ax=ax,
+)
+ax.set_ylabel("Number of firms")
+ax.set_xlabel("Region")
+ax.set_title("Firms by region and Blueprinty customer status")
+ax.legend(title="Is customer", labels=["No", "Yes"])
+plt.tight_layout()
+plt.show()
+```
+
+Counts of firms by region and Blueprinty customer status. In the Northeast region, the green bar (Blueprinty customers) is nearly as high as the blue bar (non-customers), indicating a large share of Blueprinty’s users are in the Northeast. In contrast, in all other regions (Midwest, South, Southwest, Northwest) the majority of firms are non-customers. This reveals that Blueprinty’s customer base is heavily concentrated in the Northeast, which suggests potential selection bias by region.
+
+Indeed, about 68% of Blueprinty’s customers are located in the Northeast, whereas only ~27% of non-customer firms are in the Northeast. Other regions (Midwest, South, Southwest, Northwest) are under-represented among customers relative to non-customers. This imbalance means any raw difference in patent counts could partly reflect regional effects. In summary, Blueprinty customers tend to have slightly older firms (though age differences are minor) and are much more likely to be in the Northeast region. We will need to control for these factors when analyzing the effect of Blueprinty’s software on patent output.
 
 ### Estimation of Simple Poisson Model
 
