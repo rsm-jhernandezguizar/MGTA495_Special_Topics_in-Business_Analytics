@@ -29,8 +29,6 @@ blueprinty = pd.read_csv("Assignment_2_data/blueprinty.csv")
 blueprinty.head()
 ```
 
-_todo: Compare histograms and means of number of patents by customer status. What do you observe?_
-
 Below is the distribution of patents among Blueprinty customers vs non-customers. The histogram shows that Blueprinty customers (teal bars) tend to have more patents on average than non-customers (light blue bars). 
 
 ```{python}
@@ -72,7 +70,7 @@ sns.barplot(
     hue="status",
     ax=ax,
     palette="Set2",
-    legend=False,
+    dodge=False,  # Ensure bars are not split by hue
 )
 ax.set_ylabel("Mean patents (5 yrs)")
 ax.set_xlabel("")
@@ -80,8 +78,6 @@ ax.set_title("Average patents by Blueprinty usage")
 plt.tight_layout()
 plt.show()
 ```
-
-Firms using Blueprinty software are more frequently observed with around 4–6 patents in five years, whereas non-customer firms more often have only 0–2 patents. This indicates that the customer group’s patent count distribution is shifted to the right, with a higher mean (about 4.13 vs 3.47 for non-customers).
 
 On average, Blueprinty customers have approximately 4.13 patents over 5 years, compared to about 3.47 for non-customers. While this naive comparison suggests customers produce more patents, we must consider that Blueprinty’s customers may differ systematically in other ways (e.g. perhaps they are older firms or clustered in certain regions).
 
@@ -103,7 +99,21 @@ sns.histplot(
 ax.set_xlabel("Firm age (years)")
 ax.set_ylabel("Number of firms")
 ax.set_title("Age distribution by Blueprinty customer status")
-ax.legend(title="Is customer", labels=["No", "Yes"])
+from matplotlib.patches import Patch
+
+handles = [
+    Patch(color="steelblue", label="Non-customer"),
+    Patch(color="seagreen", label="Customer"),
+]
+ax.legend(
+    handles=handles,
+    title="Is customer",
+    loc="best",
+    frameon=True,
+    facecolor="white",
+    edgecolor="black",
+    fancybox=True,
+)
 plt.tight_layout()
 plt.show()
 ```
@@ -131,7 +141,21 @@ sns.barplot(
 ax.set_ylabel("Number of firms")
 ax.set_xlabel("Region")
 ax.set_title("Firms by region and Blueprinty customer status")
-ax.legend(title="Is customer", labels=["No", "Yes"])
+from matplotlib.patches import Patch
+
+handles = [
+    Patch(color="steelblue", label="No"),
+    Patch(color="limegreen", label="Yes"),
+]
+ax.legend(
+    handles=handles,
+    title="Is customer",
+    loc="best",
+    frameon=True,
+    facecolor="white",
+    edgecolor="black",
+    fancybox=True,
+)
 plt.tight_layout()
 plt.show()
 ```
