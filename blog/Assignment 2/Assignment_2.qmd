@@ -122,7 +122,6 @@ Blueprinty customers have a slightly higher mean age since incorporation (about 
 
 Regionally, there are stark differences in who adopts Blueprinty’s software.
 
-_todo: Compare regions and ages by customer status. What do you observe?_
 ```{python}
 # | echo: false
 region_counts = (
@@ -168,22 +167,137 @@ Indeed, about 68% of Blueprinty’s customers are located in the Northeast, wher
 
 Since our outcome variable of interest can only be small integer values per a set unit of time, we can use a Poisson density to model the number of patents awarded to each engineering firm over the last 5 years. We start by estimating a simple Poisson model via Maximum Likelihood.
 
-_todo: Write down mathematically the likelihood for_ $Y \sim \text{Poisson}(\lambda)$. Note that $f(Y|\lambda) = e^{-\lambda}\lambda^Y/Y!$.
+Below, $Y_i$ is the patent count for firm $i$ and $\lambda$ is the
+average number of patents per firm in five years.
 
-_todo: Code the likelihood (or log-likelihood) function for the Poisson model. This is a function of lambda and Y. For example:_
+| Symbol | Meaning |
+|--------|---------|
+| $Y_i$ | Observed patent count for firm $i$ (integer $\ge 0$) |
+| $n$ | Total number of firms (length of $\mathbf y$) |
+| $\lambda$ | Poisson **rate parameter** — the mean (and variance) of the distribution |
+| $\mathbf y$ | Column vector of **all** counts: $\mathbf y = (\,y_{1},\,y_{2},\,\dots,\,y_{n})^{\!\top}$ |
+| $\mathcal L(\lambda;\mathbf y)$ | Likelihood of the entire dataset, given $\lambda$ |
+| $\ell(\lambda)$ | Log-likelihood, $\ell(\lambda)=\log \mathcal L(\lambda;\mathbf y)$ |
 
-```
-poisson_loglikelihood <- function(lambda, Y){
-   ...
+$$
+P\!\bigl(Y_i=y_i \mid \lambda\bigr)=
+  \frac{e^{-\lambda}\lambda^{y_i}}{y_i!},
+  \qquad y_i=0,1,2,\dots
+$$
+
+$$
+\boxed{
+  \mathcal L(\lambda;\mathbf y)=
+    e^{-n\lambda}\,
+    \lambda^{\sum_{i=1}^{n} y_i}\!
+    \Big/
+    \prod_{i=1}^{n} y_i!
 }
-```
+\qquad
+\boxed{
+  \ell(\lambda)=
+    \sum_{i=1}^{n}\!
+      \bigl(
+        y_i\log\lambda-\lambda-\log y_i!
+      \bigr)
+}
+$$
 
-_todo: Use your function to plot lambda on the horizontal axis and the likelihood (or log-likelihood) on the vertical axis for a range of lambdas (use the observed number of patents as the input for Y)._
+Putting all counts into one vector lets us write the likelihood compactly and pass the entire dataset to a single log-likelihood function.  In the code below that function is called loglik_poisson.  It follows the “parameter-vector” convention most optimisers expect: the one unknown, lambda, is stored as theta[0].  This style makes the function future-proof—if we later add more parameters we can just extend the theta vector without rewriting the optimiser call.
 
-_todo: If you're feeling mathematical, take the first derivative of your likelihood or log-likelihood, set it equal to zero and solve for lambda. You will find lambda_mle is Ybar, which "feels right" because the mean of a Poisson distribution is lambda._
+```{python}
+import numpy as np, math
 
-_todo: Find the MLE by optimizing your likelihood function with optim() in R or sp.optimize() in Python._
 
+def loglik_poisson(theta, y):
+    """
+    Poisson log-likelihood
+
+    Parameters
+    ----------
+    theta : 1-element array-like
+        theta[0] = λ  (must be > 0)
+    y     : 1-D numpy array of non-negative integers
+
+    Returns
+    -------
+    float
+        Scalar log-likelihood ℓ(λ)
+    """
+    lam = float(theta[0])  # ← parallels 'mu <- theta[1]'
+    if lam <= 0:
+        return -np.inf  # guard just like s2>0 in Normal case
+
+    n = y.size
+    # ll = Σ(y_i log λ) − n λ − Σ log(y_i!)
+    ll = np.sum(y * np.log(lam)) - n * lam - np.sum([math.lgamma(k + 1) for k in y])
+    return ll
+```    
+
+The curve below shows how the log-likelihood changes as we slide λ across plausible values.  It rises steeply, flattens, and then falls—peaking (unsurprisingly) right where λ equals the sample mean (~3.7 patents).  That single highest point is the Maximum-Likelihood Estimate: the value of λ that makes the observed patent counts most probable under a Poisson model.
+
+```{python}
+# | echo: false
+import matplotlib.pyplot as plt
+
+y = blueprinty["patents"].values
+lam_grid = np.linspace(0.1, 8, 250)
+ll_vals = [loglik_poisson([l], y) for l in lam_grid]
+
+fig, ax = plt.subplots()
+ax.plot(lam_grid, ll_vals, color="purple")
+ax.set_xlabel("λ")
+ax.set_ylabel("log-likelihood  ℓ(λ)")
+ax.set_title("Poisson log-likelihood – Blueprinty data")
+plt.tight_layout()
+plt.show()
+``` 
+
+$$
+P\!\bigl(Y_i = y_i \mid \lambda\bigr)=
+  \frac{e^{-\lambda}\lambda^{y_i}}{y_i!},
+  \qquad y_i = 0,1,2,\dots
+$$
+
+Differentiating the log-likelihood  
+
+$$
+\ell(\lambda)=\sum_{i=1}^{n}
+  \bigl(
+    y_i\log\lambda-\lambda-\log y_i!
+  \bigr)
+$$
+
+with respect to \(\lambda\) and setting the derivative to zero gives  
+
+$$
+\frac{\partial \ell}{\partial \lambda}
+  \;=\;
+  \frac{\sum_{i=1}^{n}y_i}{\lambda}-n
+  \;=\;0
+  \;\Longrightarrow\;
+  \boxed{\hat\lambda=\bar y}
+$$
+
+so the maximum-likelihood estimate is nothing more than the sample mean of the counts. The first code cell reflects that algebra exactly: `y.mean()` is computed and printed as the **Analytic MLE**, which for our data equals 3.6847 patents per firm.  
+```{python}
+# | echo: false
+lambda_mle_formula = y.mean()
+print(f"Analytic MLE   λ̂ = {lambda_mle_formula:.4f}")
+``` 
+
+```{python}
+# | echo: false
+from scipy.optimize import minimize_scalar
+
+opt = minimize_scalar(
+    lambda l: -loglik_poisson([l], y),   # minimise −ℓ
+    bounds=(1e-4, 10), method="bounded"
+)
+print(f"Optimiser MLE  λ̂ = {opt.x:.4f}")
+``` 
+
+The second cell tackles the same task numerically. `scipy.optimize.minimize_scalar` is instructed to minimise the negative log-likelihood (equivalently maximise \(\ell\)), searching over the interval \([10^{-4},10]\). Because the optimiser treats \(\lambda\) as a scalar, we wrap it in a one-element list when passing it to `loglik_poisson`. After a quick line search it returns an **Optimiser MLE** of 3.6847, matching the analytic result to four decimal places—strong confirmation that the calculus and the numerical optimisation tell the same story.
 
 ### Estimation of Poisson Regression Model
 
@@ -196,6 +310,81 @@ poisson_regression_likelihood <- function(beta, Y, X){
    ...
 }
 ```
+
+A covariate (sometimes called a feature or explanatory variable) is simply an observed attribute we believe helps explain the outcome.  Here our covariates are age, age ² (to capture curvature), a set of region dummies, and a binary flag for Blueprinty customer status.  By stacking these in a matrix $X$ and multiplying by a coefficient vector $\boldsymbol\beta$, we let each firm have its own mean rate
+$\lambda_i=\exp(X_i^{!\top}\boldsymbol\beta)$—the exponential ensures every $\lambda_i$ stays positive.
+
+| Symbol | Meaning |
+|--------|---------|
+| $Y_i$ | Observed patent count for firm $i$ (integer $\ge 0$) |
+| $X_i$ | Row vector of covariates for firm $i$ (intercept, age, age$^{2}$, region dummies, Blueprinty flag) |
+| $\boldsymbol\beta$ | Column vector of coefficients (one per covariate) |
+| $\lambda_i$ | Mean patents for firm $i$: $\lambda_i = \exp\!\bigl(X_i^{\!\top}\boldsymbol\beta\bigr)$ |
+| $n$ | Total number of firms (rows of $X$) |
+| $\mathbf y$ | Column vector of **all** counts: $\mathbf y = (\,y_{1},\,y_{2},\,\dots,\,y_{n})^{\!\top}$ |
+| $X$ | Design matrix that stacks all $X_i$ rows |
+| $\mathcal L(\boldsymbol\beta;\mathbf y,X)$ | Likelihood of the entire dataset, given $\boldsymbol\beta$ |
+| $\ell(\boldsymbol\beta)$ | Log-likelihood, $\ell(\boldsymbol\beta)=\log \mathcal L(\boldsymbol\beta;\mathbf y,X)$ |
+
+Expanding from a constant‐rate model to **Poisson regression** swaps the single parameter $\lambda$ for a whole vector of coefficients $\boldsymbol\beta$.  
+Each firm now gets its own mean rate through the inverse-link function  
+$\lambda_i=\exp(X_i^{\!\top}\boldsymbol\beta)$, guaranteeing positivity while letting the linear predictor $X_i^{\!\top}\boldsymbol\beta$ wander over the real line.  
+The covariate matrix $X$ holds an intercept, age, age², a set of region dummies, and a Blueprinty-customer flag, so any of those characteristics can nudge the expected patent count up or down.
+
+$$
+Y_i \,\bigl|\, X_i \;\sim\; \operatorname{Poisson}\!\bigl(\lambda_i\bigr),
+\qquad
+\lambda_i \;=\; \exp\!\bigl(X_i^{\!\top}\boldsymbol\beta\bigr),
+\qquad i = 1,\dots,n.
+$$
+
+$$
+\mathcal L(\boldsymbol\beta;\mathbf y,X)
+  \;=\;
+  \prod_{i=1}^{n}
+    \frac{e^{-\lambda_i}\,\lambda_i^{\,Y_i}}{Y_i!},
+\qquad
+\ell(\boldsymbol\beta)
+  \;=\;
+  \sum_{i=1}^{n}
+    \Bigl(
+      Y_i\,X_i^{\!\top}\boldsymbol\beta
+      \;-\;
+      \exp\!\bigl(X_i^{\!\top}\boldsymbol\beta\bigr)
+      \;-\;
+      \log Y_i!
+    \Bigr).
+$$
+
+The code block that follows translates this math into Python.  
+`loglik_poisson_reg(beta, y, X)` now takes **both** the response vector *and* the covariate matrix, computes the linear predictor $X\boldsymbol\beta$, exponentiates to obtain $\boldsymbol\lambda$, and returns the scalar log-likelihood.  Passing that function to an optimiser (e.g.\ `scipy.optimize.minimize`) yields the maximum-likelihood estimates for the full coefficient vector $\boldsymbol\beta$.
+
+```{python}
+# | echo: true
+import numpy as np, math
+
+
+def loglik_poisson_reg(beta, y, X):
+    """
+    Poisson regression log-likelihood.
+
+    beta : 1-D array, length p           (coefficients)
+    y    : 1-D array, length n           (counts)
+    X    : 2-D array, shape (n, p)       (covariate matrix)
+
+    Returns
+    -------
+    float : scalar log-likelihood ℓ(β)
+    """
+    eta = X @ beta  # linear predictor  η = Xβ  (shape n)
+    lam = np.exp(eta)  # inverse link  λ = exp(η)
+    if np.any(lam <= 0):
+        return -np.inf  # numerical safety
+    ll = np.sum(y * eta - lam - [math.lgamma(k + 1) for k in y])
+    return ll
+``` 
+
+With this function we can now hand the entire β vector to an optimiser (e.g. scipy.optimize.minimize) to obtain maximum-likelihood estimates, just as we did for the single-parameter case—only now the model flexes with age, geography, and Blueprinty adoption.
 
 _todo: Use your function along with R's optim() or Python's sp.optimize() to find the MLE vector and the Hessian of the Poisson model with covariates. Specifically, the first column of X should be all 1's to enable a constant term in the model, and the subsequent columns should be age, age squared, binary variables for all but one of the regions, and the binary customer variable. Use the Hessian to find standard errors of the beta parameter estimates and present a table of coefficients and standard errors._
 

@@ -23,6 +23,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -214,7 +248,7 @@ window.Quarto = {
 <section id="data" class="level3">
 <h3 class="anchored" data-anchor-id="data">Data</h3>
 <p>To start we will review the first 5 data points collected in a table format:</p>
-<div id="69838182" class="cell" data-execution_count="1">
+<div id="c3009b92" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -272,7 +306,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Below is the distribution of patents among Blueprinty customers vs non-customers. The histogram shows that Blueprinty customers (teal bars) tend to have more patents on average than non-customers (light blue bars).</p>
-<div id="2acab7bc" class="cell" data-execution_count="2">
+<div id="68023111" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -281,7 +315,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="b8dc2569" class="cell" data-execution_count="3">
+<div id="07b11089" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -292,7 +326,7 @@ window.Quarto = {
 </div>
 <p>On average, Blueprinty customers have approximately 4.13 patents over 5 years, compared to about 3.47 for non-customers. While this naive comparison suggests customers produce more patents, we must consider that Blueprinty’s customers may differ systematically in other ways (e.g.&nbsp;perhaps they are older firms or clustered in certain regions).</p>
 <p>Let’s examine the age and regional composition of customers vs non-customers.</p>
-<div id="ce13b225" class="cell" data-execution_count="4">
+<div id="1cdf8159" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -303,8 +337,7 @@ window.Quarto = {
 </div>
 <p>Blueprinty customers have a slightly higher mean age since incorporation (about 26.9 years) than non-customers (26.1 years), but the age distributions largely overlap (both groups are typically 20–30 years old, with only minor differences). This suggests that firm age might not differ dramatically by customer status, though we will account for age in the analysis.</p>
 <p>Regionally, there are stark differences in who adopts Blueprinty’s software.</p>
-<p><em>todo: Compare regions and ages by customer status. What do you observe?</em></p>
-<div id="6da9b1e7" class="cell" data-execution_count="5">
+<div id="3419ee18" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -319,14 +352,139 @@ window.Quarto = {
 <section id="estimation-of-simple-poisson-model" class="level3">
 <h3 class="anchored" data-anchor-id="estimation-of-simple-poisson-model">Estimation of Simple Poisson Model</h3>
 <p>Since our outcome variable of interest can only be small integer values per a set unit of time, we can use a Poisson density to model the number of patents awarded to each engineering firm over the last 5 years. We start by estimating a simple Poisson model via Maximum Likelihood.</p>
-<p><em>todo: Write down mathematically the likelihood for</em> <span class="math inline">\(Y \sim \text{Poisson}(\lambda)\)</span>. Note that <span class="math inline">\(f(Y|\lambda) = e^{-\lambda}\lambda^Y/Y!\)</span>.</p>
-<p><em>todo: Code the likelihood (or log-likelihood) function for the Poisson model. This is a function of lambda and Y. For example:</em></p>
-<pre><code>poisson_loglikelihood &lt;- function(lambda, Y){
-   ...
-}</code></pre>
-<p><em>todo: Use your function to plot lambda on the horizontal axis and the likelihood (or log-likelihood) on the vertical axis for a range of lambdas (use the observed number of patents as the input for Y).</em></p>
-<p><em>todo: If you’re feeling mathematical, take the first derivative of your likelihood or log-likelihood, set it equal to zero and solve for lambda. You will find lambda_mle is Ybar, which “feels right” because the mean of a Poisson distribution is lambda.</em></p>
-<p><em>todo: Find the MLE by optimizing your likelihood function with optim() in R or sp.optimize() in Python.</em></p>
+<p>Below, <span class="math inline">\(Y_i\)</span> is the patent count for firm <span class="math inline">\(i\)</span> and <span class="math inline">\(\lambda\)</span> is the average number of patents per firm in five years.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 47%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(Y_i\)</span></td>
+<td>Observed patent count for firm <span class="math inline">\(i\)</span> (integer <span class="math inline">\(\ge 0\)</span>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(n\)</span></td>
+<td>Total number of firms (length of <span class="math inline">\(\mathbf y\)</span>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\lambda\)</span></td>
+<td>Poisson <strong>rate parameter</strong> — the mean (and variance) of the distribution</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathbf y\)</span></td>
+<td>Column vector of <strong>all</strong> counts: <span class="math inline">\(\mathbf y = (\,y_{1},\,y_{2},\,\dots,\,y_{n})^{\!\top}\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\mathcal L(\lambda;\mathbf y)\)</span></td>
+<td>Likelihood of the entire dataset, given <span class="math inline">\(\lambda\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\ell(\lambda)\)</span></td>
+<td>Log-likelihood, <span class="math inline">\(\ell(\lambda)=\log \mathcal L(\lambda;\mathbf y)\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[
+P\!\bigl(Y_i=y_i \mid \lambda\bigr)=
+  \frac{e^{-\lambda}\lambda^{y_i}}{y_i!},
+  \qquad y_i=0,1,2,\dots
+\]</span></p>
+<p><span class="math display">\[
+\boxed{
+  \mathcal L(\lambda;\mathbf y)=
+    e^{-n\lambda}\,
+    \lambda^{\sum_{i=1}^{n} y_i}\!
+    \Big/
+    \prod_{i=1}^{n} y_i!
+}
+\qquad
+\boxed{
+  \ell(\lambda)=
+    \sum_{i=1}^{n}\!
+      \bigl(
+        y_i\log\lambda-\lambda-\log y_i!
+      \bigr)
+}
+\]</span></p>
+<p>Putting all counts into one vector lets us write the likelihood compactly and pass the entire dataset to a single log-likelihood function. In the code below that function is called loglik_poisson. It follows the “parameter-vector” convention most optimisers expect: the one unknown, lambda, is stored as theta[0]. This style makes the function future-proof—if we later add more parameters we can just extend the theta vector without rewriting the optimiser call.</p>
+<div id="c2736c82" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, math</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> loglik_poisson(theta, y):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Poisson log-likelihood</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    ----------</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    theta : 1-element array-like</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">        theta[0] = λ  (must be &gt; 0)</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    y     : 1-D numpy array of non-negative integers</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    -------</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    float</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">        Scalar log-likelihood ℓ(λ)</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    lam <span class="op">=</span> <span class="bu">float</span>(theta[<span class="dv">0</span>])  <span class="co"># ← parallels 'mu &lt;- theta[1]'</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> lam <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>np.inf  <span class="co"># guard just like s2&gt;0 in Normal case</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> y.size</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ll = Σ(y_i log λ) − n λ − Σ log(y_i!)</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    ll <span class="op">=</span> np.<span class="bu">sum</span>(y <span class="op">*</span> np.log(lam)) <span class="op">-</span> n <span class="op">*</span> lam <span class="op">-</span> np.<span class="bu">sum</span>([math.lgamma(k <span class="op">+</span> <span class="dv">1</span>) <span class="cf">for</span> k <span class="kw">in</span> y])</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ll</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The curve below shows how the log-likelihood changes as we slide λ across plausible values. It rises steeply, flattens, and then falls—peaking (unsurprisingly) right where λ equals the sample mean (~3.7 patents). That single highest point is the Maximum-Likelihood Estimate: the value of λ that makes the observed patent counts most probable under a Poisson model.</p>
+<div id="78c8b455" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_2_files/figure-html/cell-8-output-1.png" width="661" height="468" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+P\!\bigl(Y_i = y_i \mid \lambda\bigr)=
+  \frac{e^{-\lambda}\lambda^{y_i}}{y_i!},
+  \qquad y_i = 0,1,2,\dots
+\]</span></p>
+<p>Differentiating the log-likelihood</p>
+<p><span class="math display">\[
+\ell(\lambda)=\sum_{i=1}^{n}
+  \bigl(
+    y_i\log\lambda-\lambda-\log y_i!
+  \bigr)
+\]</span></p>
+<p>with respect to () and setting the derivative to zero gives</p>
+<p><span class="math display">\[
+\frac{\partial \ell}{\partial \lambda}
+  \;=\;
+  \frac{\sum_{i=1}^{n}y_i}{\lambda}-n
+  \;=\;0
+  \;\Longrightarrow\;
+  \boxed{\hat\lambda=\bar y}
+\]</span></p>
+<p>so the maximum-likelihood estimate is nothing more than the sample mean of the counts. The first code cell reflects that algebra exactly: <code>y.mean()</code> is computed and printed as the <strong>Analytic MLE</strong>, which for our data equals 3.6847 patents per firm.</p>
+<div id="92719b53" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-stdout">
+<pre><code>Analytic MLE   λ̂ = 3.6847</code></pre>
+</div>
+</div>
+<div id="2984a7b9" class="cell" data-execution_count="9">
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimiser MLE  λ̂ = 3.6847</code></pre>
+</div>
+</div>
+<p>The second cell tackles the same task numerically. <code>scipy.optimize.minimize_scalar</code> is instructed to minimise the negative log-likelihood (equivalently maximise ()), searching over the interval ([10^{-4},10]). Because the optimiser treats () as a scalar, we wrap it in a one-element list when passing it to <code>loglik_poisson</code>. After a quick line search it returns an <strong>Optimiser MLE</strong> of 3.6847, matching the analytic result to four decimal places—strong confirmation that the calculus and the numerical optimisation tell the same story.</p>
 </section>
 <section id="estimation-of-poisson-regression-model" class="level3">
 <h3 class="anchored" data-anchor-id="estimation-of-poisson-regression-model">Estimation of Poisson Regression Model</h3>
@@ -335,6 +493,110 @@ window.Quarto = {
 <pre><code>poisson_regression_likelihood &lt;- function(beta, Y, X){
    ...
 }</code></pre>
+<p>A covariate (sometimes called a feature or explanatory variable) is simply an observed attribute we believe helps explain the outcome. Here our covariates are age, age ² (to capture curvature), a set of region dummies, and a binary flag for Blueprinty customer status. By stacking these in a matrix <span class="math inline">\(X\)</span> and multiplying by a coefficient vector <span class="math inline">\(\boldsymbol\beta\)</span>, we let each firm have its own mean rate <span class="math inline">\(\lambda_i=\exp(X_i^{!\top}\boldsymbol\beta)\)</span>—the exponential ensures every <span class="math inline">\(\lambda_i\)</span> stays positive.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 47%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(Y_i\)</span></td>
+<td>Observed patent count for firm <span class="math inline">\(i\)</span> (integer <span class="math inline">\(\ge 0\)</span>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(X_i\)</span></td>
+<td>Row vector of covariates for firm <span class="math inline">\(i\)</span> (intercept, age, age<span class="math inline">\(^{2}\)</span>, region dummies, Blueprinty flag)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\boldsymbol\beta\)</span></td>
+<td>Column vector of coefficients (one per covariate)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\lambda_i\)</span></td>
+<td>Mean patents for firm <span class="math inline">\(i\)</span>: <span class="math inline">\(\lambda_i = \exp\!\bigl(X_i^{\!\top}\boldsymbol\beta\bigr)\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(n\)</span></td>
+<td>Total number of firms (rows of <span class="math inline">\(X\)</span>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathbf y\)</span></td>
+<td>Column vector of <strong>all</strong> counts: <span class="math inline">\(\mathbf y = (\,y_{1},\,y_{2},\,\dots,\,y_{n})^{\!\top}\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(X\)</span></td>
+<td>Design matrix that stacks all <span class="math inline">\(X_i\)</span> rows</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathcal L(\boldsymbol\beta;\mathbf y,X)\)</span></td>
+<td>Likelihood of the entire dataset, given <span class="math inline">\(\boldsymbol\beta\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\ell(\boldsymbol\beta)\)</span></td>
+<td>Log-likelihood, <span class="math inline">\(\ell(\boldsymbol\beta)=\log \mathcal L(\boldsymbol\beta;\mathbf y,X)\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Expanding from a constant‐rate model to <strong>Poisson regression</strong> swaps the single parameter <span class="math inline">\(\lambda\)</span> for a whole vector of coefficients <span class="math inline">\(\boldsymbol\beta\)</span>.<br>
+Each firm now gets its own mean rate through the inverse-link function<br>
+<span class="math inline">\(\lambda_i=\exp(X_i^{\!\top}\boldsymbol\beta)\)</span>, guaranteeing positivity while letting the linear predictor <span class="math inline">\(X_i^{\!\top}\boldsymbol\beta\)</span> wander over the real line.<br>
+The covariate matrix <span class="math inline">\(X\)</span> holds an intercept, age, age², a set of region dummies, and a Blueprinty-customer flag, so any of those characteristics can nudge the expected patent count up or down.</p>
+<p><span class="math display">\[
+Y_i \,\bigl|\, X_i \;\sim\; \operatorname{Poisson}\!\bigl(\lambda_i\bigr),
+\qquad
+\lambda_i \;=\; \exp\!\bigl(X_i^{\!\top}\boldsymbol\beta\bigr),
+\qquad i = 1,\dots,n.
+\]</span></p>
+<p><span class="math display">\[
+\mathcal L(\boldsymbol\beta;\mathbf y,X)
+  \;=\;
+  \prod_{i=1}^{n}
+    \frac{e^{-\lambda_i}\,\lambda_i^{\,Y_i}}{Y_i!},
+\qquad
+\ell(\boldsymbol\beta)
+  \;=\;
+  \sum_{i=1}^{n}
+    \Bigl(
+      Y_i\,X_i^{\!\top}\boldsymbol\beta
+      \;-\;
+      \exp\!\bigl(X_i^{\!\top}\boldsymbol\beta\bigr)
+      \;-\;
+      \log Y_i!
+    \Bigr).
+\]</span></p>
+<p>The code block that follows translates this math into Python.<br>
+<code>loglik_poisson_reg(beta, y, X)</code> now takes <strong>both</strong> the response vector <em>and</em> the covariate matrix, computes the linear predictor <span class="math inline">\(X\boldsymbol\beta\)</span>, exponentiates to obtain <span class="math inline">\(\boldsymbol\lambda\)</span>, and returns the scalar log-likelihood. Passing that function to an optimiser (e.g.&nbsp;<code>scipy.optimize.minimize</code>) yields the maximum-likelihood estimates for the full coefficient vector <span class="math inline">\(\boldsymbol\beta\)</span>.</p>
+<div id="7ce327b8" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, math</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> loglik_poisson_reg(beta, y, X):</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Poisson regression log-likelihood.</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">    beta : 1-D array, length p           (coefficients)</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">    y    : 1-D array, length n           (counts)</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">    X    : 2-D array, shape (n, p)       (covariate matrix)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">    -------</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">    float : scalar log-likelihood ℓ(β)</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    eta <span class="op">=</span> X <span class="op">@</span> beta  <span class="co"># linear predictor  η = Xβ  (shape n)</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    lam <span class="op">=</span> np.exp(eta)  <span class="co"># inverse link  λ = exp(η)</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.<span class="bu">any</span>(lam <span class="op">&lt;=</span> <span class="dv">0</span>):</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>np.inf  <span class="co"># numerical safety</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    ll <span class="op">=</span> np.<span class="bu">sum</span>(y <span class="op">*</span> eta <span class="op">-</span> lam <span class="op">-</span> [math.lgamma(k <span class="op">+</span> <span class="dv">1</span>) <span class="cf">for</span> k <span class="kw">in</span> y])</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ll</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With this function we can now hand the entire β vector to an optimiser (e.g.&nbsp;scipy.optimize.minimize) to obtain maximum-likelihood estimates, just as we did for the single-parameter case—only now the model flexes with age, geography, and Blueprinty adoption.</p>
 <p><em>todo: Use your function along with R’s optim() or Python’s sp.optimize() to find the MLE vector and the Hessian of the Poisson model with covariates. Specifically, the first column of X should be all 1’s to enable a constant term in the model, and the subsequent columns should be age, age squared, binary variables for all but one of the regions, and the binary customer variable. Use the Hessian to find standard errors of the beta parameter estimates and present a table of coefficients and standard errors.</em></p>
 <p><em>todo: Check your results using R’s glm() function or Python sm.GLM() function.</em></p>
 <p><em>todo: Interpret the results.</em></p>
