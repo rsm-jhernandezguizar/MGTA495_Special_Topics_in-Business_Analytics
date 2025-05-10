@@ -649,13 +649,7 @@ irr = np.exp(pois.params)
 print("\nIncidence-rate ratios (IRR)\n", irr.round(2))
 ``` 
 
-**Story in one breath — key Poisson IRRs**
-
-- **Instant Book** → × 1.42 reviews (**+42 %**)  
-- **Cleanliness** → +11 % per rating point  
-- **Listing age** → +1.9 % per year  
-- **Property size & price** → more bedrooms ↑ extra bathrooms ↓ log-price ↑ (modestly)  
-- **Room type** → Private > Entire > Shared (~ 10 % edges)
+After fitting the Poisson model we learn, in plain English, that **switching on Instant Book is the single biggest lever: it lifts the expected review count by roughly 42 percent**. A one-point bump in the cleanliness score nudges bookings up by about 11 percent, while each additional year on the platform adds a modest 1 to 2 percent of extra reviews. Bigger homes help at the margin—more bedrooms bring slightly more traffic—whereas adding bathrooms on top of the existing bedroom count appears to signal a pricier, slower-turnover property and nudges counts down. Price itself shows a small positive elasticity once value is controlled, and the classic room-type hierarchy (private > entire place > shared) persists but only at the ten-percent edge. In short, the Poisson coefficients translate into a story where convenience (Instant Book), visible quality (cleanliness), and sensible capacity win the day, while sheer luxury features do not automatically drive higher volume.
 
 Linear regression on log reviews
 
@@ -691,12 +685,4 @@ print("Average lift =", lift.mean().round(2), "reviews over the period")
 
 Most hosts could expect ~6–7 extra reviews (about +40 %) by flipping Instant Book on—substantial given the median listing only has 8.
 
-✍️ Conclusion
-
-* **Flip Instant Book** → bookings jump ≈ 40 %.  
-* **Clean like a germaphobe** → +11 % per rating tick.  
-* **Price for value:** once value perception is held constant, high-price doesn’t hurt.  
-* **Extra bedrooms** help a tad; extra baths alone don’t.  
-* Room-type differences are small; shared rooms lag slightly but sample is tiny.  
-* Dropping zero-review listings simplified the model; a full funnel study would treat the “will I ever get a review?” hurdle separately.
-* Models disagree on tiny details but **agree on the big knobs**. 
+Putting everything together, **hosts who activate Instant Book, keep their place immaculately clean, and offer a sensibly-sized listing at a price guests deem fair can expect materially more bookings**—on the order of six to seven extra reviews (≈ 40 %) over the period analysed. Room-type differences are secondary, and charging a premium does not hurt as long as guests still feel the value is there. Because we removed zero-review rows, these insights apply to listings that have at least begun to attract guests; a full funnel analysis would model the “first-review” hurdle separately. Nonetheless, both the Poisson and log-linear models agree on the headline levers, giving us confidence that cleanliness and instant-booking convenience matter far more than whether the sofa faces north or the bath towels are monogrammed.
