@@ -483,52 +483,43 @@ counter-factual:
 
 ```{python}
 # | echo: false
-import numpy as np, pandas as pd, matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np, pandas as pd, matplotlib.pyplot as plt, seaborn as sns
 
-# assume beta_hat from earlier section
-# X_mat is rescaled design matrix; column order matches beta_hat
-
-# 1) build X0 and X1
-X0 = X_mat.copy()
-X1 = X_mat.copy()
+# --- counter-factual predictions (beta_hat, X_mat, X defined earlier) --------
+X0, X1 = X_mat.copy(), X_mat.copy()
 iscust_idx = X.columns.get_loc("iscustomer")
 X0[:, iscust_idx] = 0
 X1[:, iscust_idx] = 1
 
-# 2) predict means
-y_pred0 = np.exp(X0 @ beta_hat)
-y_pred1 = np.exp(X1 @ beta_hat)
-lift = y_pred1 - y_pred0
+y0 = np.exp(X0 @ beta_hat)
+y1 = np.exp(X1 @ beta_hat)
+lift = y1 - y0
+m0, m1 = y0.mean(), y1.mean()
 
-# 3) density plot of lift
-sns.kdeplot(lift, fill=True, color="seagreen")
-plt.xlabel("Predicted extra patents (Blueprinty – Non-customer)")
-plt.title("Distribution of per-firm lift from Blueprinty")
+# --- single figure with two panels -----------------------------------------
+fig, ax = plt.subplots(1, 2, figsize=(9, 3))
+
+# density of per-firm lift
+sns.kdeplot(lift, fill=True, color="seagreen", ax=ax[0])
+ax[0].set_xlabel("Extra patents (Blueprinty − Non-cust.)")
+ax[0].set_title("Lift distribution")
+
+# bar chart of group means
+ax[1].bar(["Non-cust.", "Blueprinty"], [m0, m1], color=["steelblue", "seagreen"])
+ax[1].set_ylabel("Predicted patents / 5 yrs")
+ax[1].set_title("Average predicted patents")
+
 plt.tight_layout()
-plt.savefig("pred_lift_density.png", dpi=120)
-plt.show()
+plt.show()  # <-- no savefig, so no extra PNG, no duplicate figure
 
-# 4) summary table
-mean0 = y_pred0.mean()
-mean1 = y_pred1.mean()
-pd.DataFrame(
-    {"Non-customer": [mean0], "Blueprinty": [mean1], "Lift": [mean1 - mean0]}
-).round(2)
+# summary table
+pd.DataFrame({"Non-customer": [m0], "Blueprinty": [m1], "Lift": [m1 - m0]}).round(2)
 ``` 
 
 The result: **+0.82 patents** per firm over five years, about a **22 % lift**
 relative to the baseline mean.  The density plot below shows most firms gain
 between 0.5 and 1.1 extra patents, with a long but light right tail for the
 largest firms.
-
-![Density of predicted lift](pred_lift_density.png)
-
-A side-by-side bar chart of group means tells the same story at a glance:
-
-|   | Non-customer | Blueprinty | Lift |
-|---|--------------|------------|------|
-| Mean predicted patents | 3.71 | 4.53 | **+0.82** |
 
 **Take-away:** After accounting for firm age and regional differences, using Blueprinty still delivers about one additional granted patent every five years. For most engineering shops that’s a solid, tangible boost—enough to nudge a “nice idea” into a fully protected asset on the balance sheet.
 
@@ -626,7 +617,7 @@ Right plot: Distribution of nightly price, in USD (left), and distribution of lo
 
 With the data cleaned and initial insights gathered, we proceed to model the number of reviews (as a proxy for bookings) using two approaches: Poisson regression for count data, and linear regression. The response variable will be the count of reviews. In the linear model, we will use a log transformation of reviews to account for skewness, whereas the Poisson model will use the count directly with a log link function.
 
-Poisson Model
+### Poisson Model
 
 A log link makes each coefficient a multiplicative bump.
 
@@ -648,7 +639,7 @@ print("\nIncidence-rate ratios (IRR)\n", irr.round(2))
 
 After fitting the Poisson model we learn, in plain English, that **switching on Instant Book is the single biggest lever: it lifts the expected review count by roughly 42 percent**. A one-point bump in the cleanliness score nudges bookings up by about 11 percent, while each additional year on the platform adds a modest 1 to 2 percent of extra reviews. Bigger homes help at the margin—more bedrooms bring slightly more traffic—whereas adding bathrooms on top of the existing bedroom count appears to signal a pricier, slower-turnover property and nudges counts down. Price itself shows a small positive elasticity once value is controlled, and the classic room-type hierarchy (private > entire place > shared) persists but only at the ten-percent edge. In short, the Poisson coefficients translate into a story where convenience (Instant Book), visible quality (cleanliness), and sensible capacity win the day, while sheer luxury features do not automatically drive higher volume.
 
-Linear regression on log reviews
+### Linear regression on log reviews
 
 We now fit a linear regression model using the same set of predictors, to compare results and illustrate trade-offs. A direct linear model on the count of reviews would violate linearity and normality assumptions (since the outcome is non-negative and very skewed). Therefore, we use $\log(\text{number\_of\_reviews})$ as the response. This means we are modeling the (natural) log of review count, which should yield coefficients that can be interpreted somewhat like elasticities (percent changes). Note that since we dropped zero-review listings, $\log(\text{reviews})$ is defined (for 1 review, log = 0). Had we included zeros, we would need to add a small constant (e.g. log(review+1)) or use Tobit models, but we avoided that issue by excluding zeros earlier.
 
@@ -681,5 +672,7 @@ print("Average lift =", lift.mean().round(2), "reviews over the period")
 ``` 
 
 Most hosts could expect ~6–7 extra reviews (about +40 %) by flipping Instant Book on—substantial given the median listing only has 8.
+
+### Conclusion
 
 Putting everything together, **hosts who activate Instant Book, keep their place immaculately clean, and offer a sensibly-sized listing at a price guests deem fair can expect materially more bookings**—on the order of six to seven extra reviews (≈ 40 %) over the period analysed. Room-type differences are secondary, and charging a premium does not hurt as long as guests still feel the value is there. Because we removed zero-review rows, these insights apply to listings that have at least begun to attract guests; a full funnel analysis would model the “first-review” hurdle separately. Nonetheless, both the Poisson and log-linear models agree on the headline levers, giving us confidence that cleanliness and instant-booking convenience matter far more than whether the sofa faces north or the bath towels are monogrammed.
