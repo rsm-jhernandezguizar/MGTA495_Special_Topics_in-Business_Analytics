@@ -521,7 +521,9 @@ relative to the baseline mean.  The density plot below shows most firms gain
 between 0.5 and 1.1 extra patents, with a long but light right tail for the
 largest firms.
 
-**Take-away:** After accounting for firm age and regional differences, using Blueprinty still delivers about one additional granted patent every five years. For most engineering shops that’s a solid, tangible boost—enough to nudge a “nice idea” into a fully protected asset on the balance sheet.
+### Take-away
+
+After accounting for firm age and regional differences, using Blueprinty still delivers about one additional granted patent every five years. For most engineering shops that’s a solid, tangible boost—enough to nudge a “nice idea” into a fully protected asset on the balance sheet.
 
 ## AirBnB Case Study
 
