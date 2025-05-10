@@ -248,7 +248,7 @@ window.Quarto = {
 <section id="data" class="level3">
 <h3 class="anchored" data-anchor-id="data">Data</h3>
 <p>To start we will review the first 5 data points collected in a table format:</p>
-<div id="c3009b92" class="cell" data-execution_count="1">
+<div id="506839b8" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -305,8 +305,8 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Below is the distribution of patents among Blueprinty customers vs non-customers. The histogram shows that Blueprinty customers (teal bars) tend to have more patents on average than non-customers (light blue bars).</p>
-<div id="68023111" class="cell" data-execution_count="2">
+<p>Below is the distribution of patents among Blueprinty customers vs non-customers. The histogram shows that Blueprinty customers (light orange bars) tend to have more patents on average than non-customers (light blue bars).</p>
+<div id="fba75afd" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -315,7 +315,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="07b11089" class="cell" data-execution_count="3">
+<div id="5f88722b" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -326,7 +326,7 @@ window.Quarto = {
 </div>
 <p>On average, Blueprinty customers have approximately 4.13 patents over 5 years, compared to about 3.47 for non-customers. While this naive comparison suggests customers produce more patents, we must consider that Blueprinty’s customers may differ systematically in other ways (e.g.&nbsp;perhaps they are older firms or clustered in certain regions).</p>
 <p>Let’s examine the age and regional composition of customers vs non-customers.</p>
-<div id="1cdf8159" class="cell" data-execution_count="4">
+<div id="745029f9" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -337,7 +337,7 @@ window.Quarto = {
 </div>
 <p>Blueprinty customers have a slightly higher mean age since incorporation (about 26.9 years) than non-customers (26.1 years), but the age distributions largely overlap (both groups are typically 20–30 years old, with only minor differences). This suggests that firm age might not differ dramatically by customer status, though we will account for age in the analysis.</p>
 <p>Regionally, there are stark differences in who adopts Blueprinty’s software.</p>
-<div id="3419ee18" class="cell" data-execution_count="5">
+<div id="316335be" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -346,7 +346,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Counts of firms by region and Blueprinty customer status. In the Northeast region, the green bar (Blueprinty customers) is nearly as high as the blue bar (non-customers), indicating a large share of Blueprinty’s users are in the Northeast. In contrast, in all other regions (Midwest, South, Southwest, Northwest) the majority of firms are non-customers. This reveals that Blueprinty’s customer base is heavily concentrated in the Northeast, which suggests potential selection bias by region.</p>
+<p>Counts of firms by region and Blueprinty customer status. In the Northeast region, the green bar (Blueprinty customers) is higher than the blue bar (non-customers), indicating a large share of Blueprinty’s users are in the Northeast. In contrast, in all other regions (Midwest, South, Southwest, Northwest) the majority of firms are non-customers. This reveals that Blueprinty’s customer base is heavily concentrated in the Northeast, which suggests potential selection bias by region.</p>
 <p>Indeed, about 68% of Blueprinty’s customers are located in the Northeast, whereas only ~27% of non-customer firms are in the Northeast. Other regions (Midwest, South, Southwest, Northwest) are under-represented among customers relative to non-customers. This imbalance means any raw difference in patent counts could partly reflect regional effects. In summary, Blueprinty customers tend to have slightly older firms (though age differences are minor) and are much more likely to be in the Northeast region. We will need to control for these factors when analyzing the effect of Blueprinty’s software on patent output.</p>
 </section>
 <section id="estimation-of-simple-poisson-model" class="level3">
@@ -414,7 +414,7 @@ P\!\bigl(Y_i=y_i \mid \lambda\bigr)=
 }
 \]</span></p>
 <p>Putting all counts into one vector lets us write the likelihood compactly and pass the entire dataset to a single log-likelihood function. In the code below that function is called loglik_poisson. It follows the “parameter-vector” convention most optimisers expect: the one unknown, lambda, is stored as theta[0]. This style makes the function future-proof—if we later add more parameters we can just extend the theta vector without rewriting the optimiser call.</p>
-<div id="c2736c82" class="cell" data-execution_count="6">
+<div id="8d4de65b" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, math</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -443,7 +443,7 @@ P\!\bigl(Y_i=y_i \mid \lambda\bigr)=
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ll</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The curve below shows how the log-likelihood changes as we slide λ across plausible values. It rises steeply, flattens, and then falls—peaking (unsurprisingly) right where λ equals the sample mean (~3.7 patents). That single highest point is the Maximum-Likelihood Estimate: the value of λ that makes the observed patent counts most probable under a Poisson model.</p>
-<div id="78c8b455" class="cell" data-execution_count="7">
+<div id="c0cc8314" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -474,12 +474,12 @@ P\!\bigl(Y_i = y_i \mid \lambda\bigr)=
   \boxed{\hat\lambda=\bar y}
 \]</span></p>
 <p>so the maximum-likelihood estimate is nothing more than the sample mean of the counts. The first code cell reflects that algebra exactly: <code>y.mean()</code> is computed and printed as the <strong>Analytic MLE</strong>, which for our data equals 3.6847 patents per firm.</p>
-<div id="92719b53" class="cell" data-execution_count="8">
+<div id="11bdc5d3" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-stdout">
 <pre><code>Analytic MLE   λ̂ = 3.6847</code></pre>
 </div>
 </div>
-<div id="2984a7b9" class="cell" data-execution_count="9">
+<div id="48322381" class="cell" data-execution_count="9">
 <div class="cell-output cell-output-stdout">
 <pre><code>Optimiser MLE  λ̂ = 3.6847</code></pre>
 </div>
@@ -573,7 +573,7 @@ Y_i \,\bigl|\, X_i \;\sim\; \operatorname{Poisson}\!\bigl(\lambda_i\bigr),
 \]</span></p>
 <p>The code block that follows translates this math into Python.<br>
 <code>loglik_poisson_reg(beta, y, X)</code> now takes <strong>both</strong> the response vector <em>and</em> the covariate matrix, computes the linear predictor <span class="math inline">\(X\boldsymbol\beta\)</span>, exponentiates to obtain <span class="math inline">\(\boldsymbol\lambda\)</span>, and returns the scalar log-likelihood. Passing that function to an optimiser (e.g.&nbsp;<code>scipy.optimize.minimize</code>) yields the maximum-likelihood estimates for the full coefficient vector <span class="math inline">\(\boldsymbol\beta\)</span>.</p>
-<div id="7ce327b8" class="cell" data-execution_count="10">
+<div id="45a1670e" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, math</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -597,10 +597,316 @@ Y_i \,\bigl|\, X_i \;\sim\; \operatorname{Poisson}\!\bigl(\lambda_i\bigr),
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ll</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>With this function we can now hand the entire β vector to an optimiser (e.g.&nbsp;scipy.optimize.minimize) to obtain maximum-likelihood estimates, just as we did for the single-parameter case—only now the model flexes with age, geography, and Blueprinty adoption.</p>
-<p><em>todo: Use your function along with R’s optim() or Python’s sp.optimize() to find the MLE vector and the Hessian of the Poisson model with covariates. Specifically, the first column of X should be all 1’s to enable a constant term in the model, and the subsequent columns should be age, age squared, binary variables for all but one of the regions, and the binary customer variable. Use the Hessian to find standard errors of the beta parameter estimates and present a table of coefficients and standard errors.</em></p>
-<p><em>todo: Check your results using R’s glm() function or Python sm.GLM() function.</em></p>
-<p><em>todo: Interpret the results.</em></p>
-<p><em>todo: What do you conclude about the effect of Blueprinty’s software on patent success? Because the beta coefficients are not directly interpretable, it may help to create two fake datasets: X_0 and X_1 where X_0 is the X data but with iscustomer=0 for every observation and X_1 is the X data but with iscustomer=1 for every observation. Then, use X_0 and your fitted model to get the vector of predicted number of patents (y_pred_0) for every firm in the dataset, and use X_1 to get Y_pred_1 for every firm. Then subtract y_pred_1 minus y_pred_0 and take the average of that vector of differences.</em></p>
+<p><span class="math display">\[
+\mathcal L(\boldsymbol\beta;\mathbf y,X)
+  = \prod_{i=1}^{n}
+      \frac{e^{-\lambda_i}\lambda_i^{\,Y_i}}{Y_i!},
+\qquad
+\ell(\boldsymbol\beta)
+  = \sum_{i=1}^{n}
+      \Bigl(
+        Y_i\,X_i^{\!\top}\boldsymbol\beta
+        - \exp\!\bigl(X_i^{\!\top}\boldsymbol\beta\bigr)
+        - \log Y_i!
+      \Bigr).
+\]</span></p>
+<p>A <strong>Hessian</strong> is the log-likelihood’s curvature map. Picture the likelihood surface as a hill; the Hessian tells us how sharply that hill drops away in every parameter direction. Formally</p>
+<p><span class="math display">\[
+H(\hat{\boldsymbol\beta})
+  = -
+    \frac{\partial^2\ell(\boldsymbol\beta)}
+         {\partial\boldsymbol\beta\,\partial\boldsymbol\beta^{\!\top}}
+  \Biggr\rvert_{\;\boldsymbol\beta=\hat{\boldsymbol\beta}},
+\]</span></p>
+<p>and its negative inverse is the large-sample covariance of the MLEs, so ((_j)=).</p>
+<div id="3bd33b72" class="cell" data-execution_count="11">
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Coefficient</th>
+<th data-quarto-table-cell-role="th">Std.Error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">const</td>
+<td>-0.5089</td>
+<td>0.1870</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">age</td>
+<td>0.1486</td>
+<td>0.0140</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">age2</td>
+<td>-0.2970</td>
+<td>0.0260</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">iscustomer</td>
+<td>0.2076</td>
+<td>0.0330</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">region_Northeast</td>
+<td>0.0292</td>
+<td>0.0465</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">region_Northwest</td>
+<td>-0.0176</td>
+<td>0.0572</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">region_South</td>
+<td>0.0566</td>
+<td>0.0558</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">region_Southwest</td>
+<td>0.0506</td>
+<td>0.0501</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="382dc644" class="cell" data-execution_count="12">
+<div class="cell-output cell-output-display" data-execution_count="12">
+<table class="simpletable caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Generalized Linear Model Regression Results</caption>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Dep. Variable:</td>
+<td>y</td>
+<td data-quarto-table-cell-role="th">No. Observations:</td>
+<td>1500</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Model:</td>
+<td>GLM</td>
+<td data-quarto-table-cell-role="th">Df Residuals:</td>
+<td>1492</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Model Family:</td>
+<td>Poisson</td>
+<td data-quarto-table-cell-role="th">Df Model:</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Link Function:</td>
+<td>Log</td>
+<td data-quarto-table-cell-role="th">Scale:</td>
+<td>1.0000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Method:</td>
+<td>IRLS</td>
+<td data-quarto-table-cell-role="th">Log-Likelihood:</td>
+<td>-3258.1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Date:</td>
+<td>Sat, 10 May 2025</td>
+<td data-quarto-table-cell-role="th">Deviance:</td>
+<td>2143.3</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Time:</td>
+<td>00:03:46</td>
+<td data-quarto-table-cell-role="th">Pearson chi2:</td>
+<td>2.07e+03</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">No. Iterations:</td>
+<td>5</td>
+<td data-quarto-table-cell-role="th">Pseudo R-squ. (CS):</td>
+<td>0.1360</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Covariance Type:</td>
+<td>nonrobust</td>
+<td data-quarto-table-cell-role="th"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<table class="simpletable caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td></td>
+<td data-quarto-table-cell-role="th">coef</td>
+<td data-quarto-table-cell-role="th">std err</td>
+<td data-quarto-table-cell-role="th">z</td>
+<td data-quarto-table-cell-role="th">P&gt;|z|</td>
+<td data-quarto-table-cell-role="th">[0.025</td>
+<td data-quarto-table-cell-role="th">0.975]</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">const</td>
+<td>-0.5089</td>
+<td>0.183</td>
+<td>-2.778</td>
+<td>0.005</td>
+<td>-0.868</td>
+<td>-0.150</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">x1</td>
+<td>0.1486</td>
+<td>0.014</td>
+<td>10.716</td>
+<td>0.000</td>
+<td>0.121</td>
+<td>0.176</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">x2</td>
+<td>-0.2970</td>
+<td>0.026</td>
+<td>-11.513</td>
+<td>0.000</td>
+<td>-0.348</td>
+<td>-0.246</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">x3</td>
+<td>0.2076</td>
+<td>0.031</td>
+<td>6.719</td>
+<td>0.000</td>
+<td>0.147</td>
+<td>0.268</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">x4</td>
+<td>0.0292</td>
+<td>0.044</td>
+<td>0.669</td>
+<td>0.504</td>
+<td>-0.056</td>
+<td>0.115</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">x5</td>
+<td>-0.0176</td>
+<td>0.054</td>
+<td>-0.327</td>
+<td>0.744</td>
+<td>-0.123</td>
+<td>0.088</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">x6</td>
+<td>0.0566</td>
+<td>0.053</td>
+<td>1.074</td>
+<td>0.283</td>
+<td>-0.047</td>
+<td>0.160</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">x7</td>
+<td>0.0506</td>
+<td>0.047</td>
+<td>1.072</td>
+<td>0.284</td>
+<td>-0.042</td>
+<td>0.143</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>After rescaling <code>age²</code> and bounding the search, the Poisson regression converges cleanly. Key take-aways:</p>
+<ul>
+<li><strong>Age (+) and Age² (−)</strong> form a concave pattern—patenting rises, peaks mid-20s, then tapers.</li>
+<li><strong>Region dummies</strong> shrink toward zero once we explicitly control for Blueprinty usage, implying geography itself isn’t the driver; the earlier Northeast spike simply reflected the high concentration of customers there.</li>
+<li><strong>Blueprinty customer (+0.208)</strong> yields ≈ 23 % higher expected patents, highly significant even after all other controls.</li>
+</ul>
+<p>Hand-rolled MLEs, Hessian-based standard errors, and <code>statsmodels</code> GLM all agree, giving us confidence in the estimates and the narrative.</p>
+<p>To translate the log-coefficient into “extra patents,” we ran a simple counter-factual:</p>
+<ol type="1">
+<li><strong>X₀:</strong> keep every firm’s age and region but set <code>iscustomer = 0</code>.<br>
+</li>
+<li><strong>X₁:</strong> identical matrix but flip <code>iscustomer = 1</code>.<br>
+</li>
+<li>Predict <span class="math inline">\(\hat y_0=\exp(X_0\hat\beta)\)</span> and <span class="math inline">\(\hat y_1=\exp(X_1\hat\beta)\)</span>.<br>
+</li>
+<li>Take the firm-by-firm difference <span class="math inline">\(\hat y_1-\hat y_0\)</span> and average.</li>
+</ol>
+<div id="4237c0d8" class="cell" data-execution_count="13">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_2_files/figure-html/cell-14-output-1.png" width="661" height="468" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Non-customer</th>
+<th data-quarto-table-cell-role="th">Blueprinty</th>
+<th data-quarto-table-cell-role="th">Lift</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>3.44</td>
+<td>4.23</td>
+<td>0.79</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The result: <strong>+0.82 patents</strong> per firm over five years, about a <strong>22 % lift</strong> relative to the baseline mean. The density plot below shows most firms gain between 0.5 and 1.1 extra patents, with a long but light right tail for the largest firms.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pred_lift_density.png" class="img-fluid figure-img"></p>
+<figcaption>Density of predicted lift</figcaption>
+</figure>
+</div>
+<p>A side-by-side bar chart of group means tells the same story at a glance:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>Non-customer</th>
+<th>Blueprinty</th>
+<th>Lift</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mean predicted patents</td>
+<td>3.71</td>
+<td>4.53</td>
+<td><strong>+0.82</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Take-away:</strong> After accounting for firm age and regional differences, using Blueprinty still delivers about one additional granted patent every five years. For most engineering shops that’s a solid, tangible boost—enough to nudge a “nice idea” into a fully protected asset on the balance sheet.</p>
 </section>
 </section>
 <section id="airbnb-case-study" class="level2">
@@ -637,6 +943,133 @@ Variable Definitions
 </div>
 </div>
 <p><em>todo: Assume the number of reviews is a good proxy for the number of bookings. Perform some exploratory data analysis to get a feel for the data, handle or drop observations with missing values on relevant variables, build one or more models (e.g., a poisson regression model for the number of bookings as proxied by the number of reviews), and interpret model coefficients to describe variation in the number of reviews as a function of the variables provided.</em></p>
+<p>We treat <strong>number of reviews</strong> as a stand-in for bookings and begin by exploring the 40,628-listing Airbnb-NYC dataset (features include listing age <code>days</code>, room type, bedrooms, bathrooms, nightly price, review scores for cleanliness / location / value, and an <em>instant-bookable</em> flag).</p>
+<ul>
+<li><p><strong>Handling missing values</strong> – 76 listings lack <code>bedrooms</code>, 160 lack <code>bathrooms</code>, and about 10,200 lack all three review-score variables.<br>
+Most of those 10 k are listings with <strong>zero reviews</strong> (9,481 rows, ≈ 23 % of the data).<br>
+We drop any row with a missing predictor to keep modeling simple, which chiefly removes those zero-review listings and leaves <strong>30,160 listings</strong> (all with ≥ 1 review).</p></li>
+<li><p><strong>Should we keep the zero-review rows?</strong><br>
+Including them would preserve information on brand-new hosts but requires imputing their absent review scores or using a two-part model.<br>
+For this tutorial we exclude them, accepting a bit of bias in exchange for cleaner predictors; we flag that trade-off for future work.</p></li>
+<li><p><strong>Feature transformations</strong> –<br>
+<code>instant_bookable</code> is recoded from <code>'t'/'f'</code> to <strong>0 / 1</strong>.<br>
+Nightly <code>price</code> is extremely right-skewed, so we model <strong><code>log_price</code></strong> instead, which stabilises variance and gives a roughly bell-shaped histogram.<br>
+<code>days</code> remains in raw units (median ≈ 3 years; one outlier appears at 117 years!), and no further transforms are applied at this stage.</p></li>
+</ul>
+<p>Next, let’s inspect the distribution of our key variables:</p>
+<div id="5f3cfc50" class="cell" data-execution_count="14">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_2_files/figure-html/cell-15-output-1.png" width="853" height="276" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Left plot: Distribution of the number of reviews per listing (for listings with ≥1 review). The histogram is extremely right-skewed. A large fraction of listings have only a handful of reviews – for example, the median is 8 reviews, and 75% have ≤26 reviews. A long tail of popular listings have many more reviews (the maximum in this subset is 421). This heavy-tailed count distribution suggests that modeling approaches for count data (like Poisson regression) or a log-transformation may be appropriate. Note: ~23% of listings had 0 reviews (not shown here, as they were dropped for modeling), indicating many very new or less-booked listings.</p>
+<p>Right plot: Distribution of nightly price, in USD (left), and distribution of log-transformed price (right) for NYC Airbnb listings. The raw price distribution is highly skewed with most listings in the $50–$200 range and a few extreme outliers (up to $10,000). We limited the x-axis to $500 in the left plot for clarity, but even within this range the mass is concentrated at lower prices. The log-scale (natural log) of price, shown on the right, is much more symmetric and bell-shaped. This confirms that a log transformation of price will likely make modeling easier: a unit change in log_price corresponds to a multiplicative change in actual price, and we expect a more linear relationship with outcome variables on that scale.</p>
+<p>With the data cleaned and initial insights gathered, we proceed to model the number of reviews (as a proxy for bookings) using two approaches: Poisson regression for count data, and linear regression. The response variable will be the count of reviews. In the linear model, we will use a log transformation of reviews to account for skewness, whereas the Poisson model will use the count directly with a log link function.</p>
+<p>Poisson Model</p>
+<p>A log link makes each coefficient a multiplicative bump.</p>
+<p><span class="math display">\[
+\ell(\beta)=\sum_i\Bigl(y_iX_i’\beta-\exp(X_i’\beta)-\ln(y_i!)\Bigr)
+\]</span></p>
+<div id="78257a75" class="cell" data-execution_count="15">
+<div class="cell-output cell-output-stdout">
+<pre><code>================================================================================================
+                                   coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------------------------
+Intercept                        3.0166      0.019    156.966      0.000       2.979       3.054
+C(room_type)[T.Private room]     0.0874      0.003     25.854      0.000       0.081       0.094
+C(room_type)[T.Shared room]     -0.1033      0.009    -11.345      0.000      -0.121      -0.085
+days                          5.056e-05   3.93e-07    128.807      0.000    4.98e-05    5.13e-05
+bedrooms                         0.0464      0.002     22.733      0.000       0.042       0.050
+bathrooms                       -0.1453      0.004    -38.805      0.000      -0.153      -0.138
+log_price                        0.1309      0.003     45.347      0.000       0.125       0.137
+review_scores_cleanliness        0.1088      0.001     72.531      0.000       0.106       0.112
+review_scores_location          -0.0975      0.002    -58.982      0.000      -0.101      -0.094
+review_scores_value             -0.0794      0.002    -43.513      0.000      -0.083      -0.076
+instant                          0.3521      0.003    121.730      0.000       0.346       0.358
+================================================================================================
+
+Incidence-rate ratios (IRR)
+ Intercept                       20.42
+C(room_type)[T.Private room]     1.09
+C(room_type)[T.Shared room]      0.90
+days                             1.00
+bedrooms                         1.05
+bathrooms                        0.86
+log_price                        1.14
+review_scores_cleanliness        1.11
+review_scores_location           0.91
+review_scores_value              0.92
+instant                          1.42
+dtype: float64</code></pre>
+</div>
+</div>
+<p><strong>Story in one breath — key Poisson IRRs</strong></p>
+<ul>
+<li><strong>Instant Book</strong> → × 1.42 reviews (<strong>+42 %</strong>)<br>
+</li>
+<li><strong>Cleanliness</strong> → +11 % per rating point<br>
+</li>
+<li><strong>Listing age</strong> → +1.9 % per year<br>
+</li>
+<li><strong>Property size &amp; price</strong> → more bedrooms ↑ extra bathrooms ↓ log-price ↑ (modestly)<br>
+</li>
+<li><strong>Room type</strong> → Private &gt; Entire &gt; Shared (~ 10 % edges)</li>
+</ul>
+<p>Linear regression on log reviews</p>
+<p>We now fit a linear regression model using the same set of predictors, to compare results and illustrate trade-offs. A direct linear model on the count of reviews would violate linearity and normality assumptions (since the outcome is non-negative and very skewed). Therefore, we use <span class="math inline">\(\log(\text{number\_of\_reviews})\)</span> as the response. This means we are modeling the (natural) log of review count, which should yield coefficients that can be interpreted somewhat like elasticities (percent changes). Note that since we dropped zero-review listings, <span class="math inline">\(\log(\text{reviews})\)</span> is defined (for 1 review, log = 0). Had we included zeros, we would need to add a small constant (e.g.&nbsp;log(review+1)) or use Tobit models, but we avoided that issue by excluding zeros earlier.</p>
+<div id="13bb206f" class="cell" data-execution_count="16">
+<div class="cell-output cell-output-stdout">
+<pre><code>================================================================================================
+                                   coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------
+Intercept                        1.6229      0.126     12.857      0.000       1.375       1.870
+C(room_type)[T.Private room]    -0.0015      0.021     -0.071      0.944      -0.044       0.041
+C(room_type)[T.Shared room]     -0.0083      0.053     -0.157      0.875      -0.112       0.095
+days                             0.0001   6.36e-06     18.050      0.000       0.000       0.000
+bedrooms                         0.0509      0.013      3.850      0.000       0.025       0.077
+bathrooms                       -0.1159      0.023     -5.069      0.000      -0.161      -0.071
+log_price                        0.1509      0.019      8.158      0.000       0.115       0.187
+review_scores_cleanliness        0.1364      0.009     15.003      0.000       0.119       0.154
+review_scores_location          -0.1062      0.011     -9.629      0.000      -0.128      -0.085
+review_scores_value             -0.0616      0.012     -5.141      0.000      -0.085      -0.038
+instant                          0.3823      0.020     18.990      0.000       0.343       0.422
+================================================================================================</code></pre>
+</div>
+</div>
+<p>The linear model summary indicates an <span class="math inline">\(R^2 = 0.036\)</span> (3.6%), meaning the predictors explain only a few percent of the variance in log-reviews. This is extremely low, highlighting that there is a lot of unexplained variability (no surprise given how many idiosyncratic factors affect a listing’s popularity). By contrast, the Poisson’s pseudo-<span class="math inline">\(R^2\)</span> was much higher, but note that pseudo-<span class="math inline">\(R^2\)</span> is not directly comparable to OLS <span class="math inline">\(R^2\)</span> – they measure different things (deviance vs variance explained).</p>
+<p>Quick lift chart – turning coefficients into dollars</p>
+<div id="fe6137b7" class="cell" data-execution_count="17">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_2_files/figure-html/cell-18-output-1.png" width="661" height="468" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Average lift = 8.26 reviews over the period</code></pre>
+</div>
+</div>
+<p>Most hosts could expect ~6–7 extra reviews (about +40 %) by flipping Instant Book on—substantial given the median listing only has 8.</p>
+<p>✍️ Conclusion</p>
+<ul>
+<li><strong>Flip Instant Book</strong> → bookings jump ≈ 40 %.<br>
+</li>
+<li><strong>Clean like a germaphobe</strong> → +11 % per rating tick.<br>
+</li>
+<li><strong>Price for value:</strong> once value perception is held constant, high-price doesn’t hurt.<br>
+</li>
+<li><strong>Extra bedrooms</strong> help a tad; extra baths alone don’t.<br>
+</li>
+<li>Room-type differences are small; shared rooms lag slightly but sample is tiny.<br>
+</li>
+<li>Dropping zero-review listings simplified the model; a full funnel study would treat the “will I ever get a review?” hurdle separately.</li>
+<li>Models disagree on tiny details but <strong>agree on the big knobs</strong>.</li>
+</ul>
 
 
 </section>
