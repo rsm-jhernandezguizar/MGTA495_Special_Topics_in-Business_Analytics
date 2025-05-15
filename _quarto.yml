@@ -12,6 +12,12 @@ website:
         text: '<i class="bi bi-newspaper"></i> Resume'
       - href: blog.qmd
         text: '<i class="bi bi-pencil"></i> Blog'
+      - text: "YouTube Channel"   # NUEVO botón "YouTube Channel"
+        icon: youtube            # Ícono de YouTube (Bootstrap Icons)
+        href: https://www.youtube.com/@CreaCircuitos   # Enlace a tu canal de YouTube
+      - text: "Spotify Group Project"   # NUEVO botón "Spotify Project"
+        icon: spotify            # Ícono de Spotify (Bootstrap Icons)
+        href: https://rsm-aburda.github.io/MGTA-452-Final-Project/index.html   # Enlace al proyecto de Spotify
 
 format:
   html:
