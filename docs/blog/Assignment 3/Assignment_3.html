@@ -365,8 +365,50 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 </section>
 <section id="preparing-the-data-for-estimation" class="level2">
 <h2 class="anchored" data-anchor-id="preparing-the-data-for-estimation">3. Preparing the Data for Estimation</h2>
-<p>The “hard part” of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer <span class="math inline">\(i\)</span>, covariate <span class="math inline">\(k\)</span>, and product <span class="math inline">\(j\)</span>) instead of the typical 2 dimensions for cross-sectional regression models (consumer <span class="math inline">\(i\)</span> and covariate <span class="math inline">\(k\)</span>). The fact that each task for each respondent has the same number of alternatives (3) helps. In addition, we need to convert the categorical variables for brand and ads into binary variables.</p>
-<p><em>todo: reshape and prep the data</em></p>
+<p>The “hard part” of computing the MNL likelihood is organizing the data, since we have to keep track of three dimensions – consumer <span class="math inline">\(i\)</span>, product <span class="math inline">\(j\)</span>, and covariate/feature <span class="math inline">\(k\)</span> – instead of the typical two dimensions for a cross-sectional regression model (consumer <span class="math inline">\(i\)</span> and covariate <span class="math inline">\(k\)</span>). In our case, each task for each respondent has the same number of alternatives (3), which simplifies things. We also need to convert the categorical variables (brand and ads) into numeric binary indicator variables for modeling.</p>
+<p>Below, we load the conjoint dataset and reshape it for estimation. We create dummy variables for the brand and ad features (using Hulu and “No Ads” as the base levels), and we construct a task identifier to group alternatives belonging to the same choice set. We then display the first few rows to verify the structure:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># | echo: false</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the simulated conjoint dataset</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"Assignment_3_data/conjoint_data.csv"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dummy indicators for brand (baseline: Hulu) and ad (baseline: No-ad)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"brand_N"</span>] <span class="op">=</span> (df[<span class="st">"brand"</span>] <span class="op">==</span> <span class="st">"N"</span>).astype(<span class="bu">int</span>)  <span class="co"># Netflix dummy</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"brand_P"</span>] <span class="op">=</span> (df[<span class="st">"brand"</span>] <span class="op">==</span> <span class="st">"P"</span>).astype(<span class="bu">int</span>)  <span class="co"># Prime dummy</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># (If brand is Hulu, both brand_N and brand_P will be 0)</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"ad_yes"</span>] <span class="op">=</span> (df[<span class="st">"ad"</span>] <span class="op">==</span> <span class="st">"Yes"</span>).astype(<span class="bu">int</span>)  <span class="co"># Ads-included dummy (1=Yes, 0=No)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a unique task identifier for each choice task (for grouping alternatives)</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"task_id"</span>] <span class="op">=</span> (df[<span class="st">"resp"</span>] <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> <span class="dv">10</span> <span class="op">+</span> (df[<span class="st">"task"</span>] <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect the first few rows of the prepared DataFrame</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   resp  task  choice brand   ad  price  brand_N  brand_P  ad_yes  task_id
+0     1     1       1     N  Yes     28        1        0       1        0
+1     1     1       0     H  Yes     16        0        0       1        0
+2     1     1       0     P  Yes     16        0        1       1        0
+3     1     2       0     N  Yes     32        1        0       1        1
+4     1     2       1     P  Yes     16        0        1       1        1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Shape of the DataFrame (rows, columns):"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Shape of the DataFrame (rows, columns):</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(3000, 10)</code></pre>
+</div>
+</div>
+<p>We can see that each choice task (task_id) contains three rows (one per alternative). For example, resp=1, task=1 (first three rows) had alternatives from brands N, H, P all with ads (“Yes”) and different prices, and the first row (brand=N, price=28) was marked choice=1 as the selected option (it had the highest simulated utility). The dataset is now ready for model estimation.</p>
+<!-- ```{python}
+# | echo: false
+# legacy alias so later code that still expects `df` keeps working
+df = conjoint_df
+``` -->
 </section>
 <section id="estimation-via-maximum-likelihood" class="level2">
 <h2 class="anchored" data-anchor-id="estimation-via-maximum-likelihood">4. Estimation via Maximum Likelihood</h2>

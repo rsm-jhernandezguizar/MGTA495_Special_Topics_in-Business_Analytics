@@ -262,7 +262,7 @@ window.Quarto = {
 <section id="data" class="level3">
 <h3 class="anchored" data-anchor-id="data">Data</h3>
 <p>To start we will review the first 5 data points collected in a table format:</p>
-<div id="0eddcd15" class="cell" data-execution_count="1">
+<div id="e3ce7530" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -320,7 +320,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Below is the distribution of patents among Blueprinty customers vs non-customers. The histogram shows that Blueprinty customers (light orange bars) tend to have more patents on average than non-customers (light blue bars).</p>
-<div id="6413ec66" class="cell" data-execution_count="2">
+<div id="03f774d8" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -329,7 +329,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="996a0a8c" class="cell" data-execution_count="3">
+<div id="4f0c65da" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -340,7 +340,7 @@ window.Quarto = {
 </div>
 <p>On average, Blueprinty customers have approximately 4.13 patents over 5 years, compared to about 3.47 for non-customers. While this naive comparison suggests customers produce more patents, we must consider that Blueprinty’s customers may differ systematically in other ways (e.g.&nbsp;perhaps they are older firms or clustered in certain regions).</p>
 <p>Let’s examine the age and regional composition of customers vs non-customers.</p>
-<div id="71e52a9a" class="cell" data-execution_count="4">
+<div id="2e79082b" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -351,7 +351,7 @@ window.Quarto = {
 </div>
 <p>Blueprinty customers have a slightly higher mean age since incorporation (about 26.9 years) than non-customers (26.1 years), but the age distributions largely overlap (both groups are typically 20–30 years old, with only minor differences). This suggests that firm age might not differ dramatically by customer status, though we will account for age in the analysis.</p>
 <p>Regionally, there are stark differences in who adopts Blueprinty’s software.</p>
-<div id="27870da7" class="cell" data-execution_count="5">
+<div id="44dd7a66" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -428,7 +428,7 @@ P\!\bigl(Y_i=y_i \mid \lambda\bigr)=
 }
 \]</span></p>
 <p>Putting all counts into one vector lets us write the likelihood compactly and pass the entire dataset to a single log-likelihood function. In the code below that function is called loglik_poisson. It follows the “parameter-vector” convention most optimisers expect: the one unknown, lambda, is stored as theta[0]. This style makes the function future-proof—if we later add more parameters we can just extend the theta vector without rewriting the optimiser call.</p>
-<div id="dd58b631" class="cell" data-execution_count="6">
+<div id="c345e0d3" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, math</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -457,7 +457,7 @@ P\!\bigl(Y_i=y_i \mid \lambda\bigr)=
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ll</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The curve below shows how the log-likelihood changes as we slide λ across plausible values. It rises steeply, flattens, and then falls—peaking (unsurprisingly) right where λ equals the sample mean (~3.7 patents). That single highest point is the Maximum-Likelihood Estimate: the value of λ that makes the observed patent counts most probable under a Poisson model.</p>
-<div id="4a8e7a4f" class="cell" data-execution_count="7">
+<div id="c829242b" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -488,12 +488,12 @@ P\!\bigl(Y_i = y_i \mid \lambda\bigr)=
   \boxed{\hat\lambda=\bar y}
 \]</span></p>
 <p>so the maximum-likelihood estimate is nothing more than the sample mean of the counts. The first code cell reflects that algebra exactly: <code>y.mean()</code> is computed and printed as the <strong>Analytic MLE</strong>, which for our data equals 3.6847 patents per firm.</p>
-<div id="fa1e0844" class="cell" data-execution_count="8">
+<div id="91672410" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-stdout">
 <pre><code>Analytic MLE   λ̂ = 3.6847</code></pre>
 </div>
 </div>
-<div id="aba56d74" class="cell" data-execution_count="9">
+<div id="09933ca3" class="cell" data-execution_count="9">
 <div class="cell-output cell-output-stdout">
 <pre><code>Optimiser MLE  λ̂ = 3.6847</code></pre>
 </div>
@@ -587,7 +587,7 @@ Y_i \,\bigl|\, X_i \;\sim\; \operatorname{Poisson}\!\bigl(\lambda_i\bigr),
 \]</span></p>
 <p>The code block that follows translates this math into Python.<br>
 <code>loglik_poisson_reg(beta, y, X)</code> now takes <strong>both</strong> the response vector <em>and</em> the covariate matrix, computes the linear predictor <span class="math inline">\(X\boldsymbol\beta\)</span>, exponentiates to obtain <span class="math inline">\(\boldsymbol\lambda\)</span>, and returns the scalar log-likelihood. Passing that function to an optimiser (e.g.&nbsp;<code>scipy.optimize.minimize</code>) yields the maximum-likelihood estimates for the full coefficient vector <span class="math inline">\(\boldsymbol\beta\)</span>.</p>
-<div id="07c7f890" class="cell" data-execution_count="10">
+<div id="504f71ca" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, math</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -633,7 +633,7 @@ H(\hat{\boldsymbol\beta})
   \Biggr\rvert_{\;\boldsymbol\beta=\hat{\boldsymbol\beta}},
 \]</span></p>
 <p>and its negative inverse is the large-sample covariance of the MLEs, so ((_j)=).</p>
-<div id="12de3d46" class="cell" data-execution_count="11">
+<div id="fc92d0b6" class="cell" data-execution_count="11">
 <div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
@@ -693,7 +693,7 @@ H(\hat{\boldsymbol\beta})
 </div>
 </div>
 </div>
-<div id="f2d394de" class="cell" data-execution_count="12">
+<div id="46076ab6" class="cell" data-execution_count="12">
 <div class="cell-output cell-output-display" data-execution_count="12">
 <table class="simpletable caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <caption>Generalized Linear Model Regression Results</caption>
@@ -736,7 +736,7 @@ H(\hat{\boldsymbol\beta})
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Time:</td>
-<td>22:35:06</td>
+<td>23:04:38</td>
 <td data-quarto-table-cell-role="th">Pearson chi2:</td>
 <td>2.07e+03</td>
 </tr>
@@ -860,7 +860,7 @@ H(\hat{\boldsymbol\beta})
 </li>
 <li>Take the firm-by-firm difference <span class="math inline">\(\hat y_1-\hat y_0\)</span> and average.</li>
 </ol>
-<div id="cc15fd08" class="cell" data-execution_count="13">
+<div id="c250564f" class="cell" data-execution_count="13">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -948,7 +948,7 @@ Nightly <code>price</code> is extremely right-skewed, so we model <strong><code>
 <code>days</code> remains in raw units (median ≈ 3 years; one outlier appears at 117 years!), and no further transforms are applied at this stage.</p></li>
 </ul>
 <p>Next, let’s inspect the distribution of our key variables:</p>
-<div id="654f7edd" class="cell" data-execution_count="14">
+<div id="3f840b42" class="cell" data-execution_count="14">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -967,7 +967,7 @@ Nightly <code>price</code> is extremely right-skewed, so we model <strong><code>
 <p><span class="math display">\[
 \ell(\beta)=\sum_i\Bigl(y_iX_i’\beta-\exp(X_i’\beta)-\ln(y_i!)\Bigr)
 \]</span></p>
-<div id="b2c26191" class="cell" data-execution_count="15">
+<div id="654e3de3" class="cell" data-execution_count="15">
 <div class="cell-output cell-output-stdout">
 <pre><code>================================================================================================
                                    coef    std err          z      P&gt;|z|      [0.025      0.975]
@@ -1005,7 +1005,7 @@ dtype: float64</code></pre>
 <section id="linear-regression-on-log-reviews" class="level3">
 <h3 class="anchored" data-anchor-id="linear-regression-on-log-reviews">Linear regression on log reviews</h3>
 <p>We now fit a linear regression model using the same set of predictors, to compare results and illustrate trade-offs. A direct linear model on the count of reviews would violate linearity and normality assumptions (since the outcome is non-negative and very skewed). Therefore, we use <span class="math inline">\(\log(\text{number\_of\_reviews})\)</span> as the response. This means we are modeling the (natural) log of review count, which should yield coefficients that can be interpreted somewhat like elasticities (percent changes). Note that since we dropped zero-review listings, <span class="math inline">\(\log(\text{reviews})\)</span> is defined (for 1 review, log = 0). Had we included zeros, we would need to add a small constant (e.g.&nbsp;log(review+1)) or use Tobit models, but we avoided that issue by excluding zeros earlier.</p>
-<div id="ce529298" class="cell" data-execution_count="16">
+<div id="89d6632d" class="cell" data-execution_count="16">
 <div class="cell-output cell-output-stdout">
 <pre><code>================================================================================================
                                    coef    std err          t      P&gt;|t|      [0.025      0.975]
@@ -1026,7 +1026,7 @@ instant                          0.3823      0.020     18.990      0.000       0
 </div>
 <p>The linear model summary indicates an <span class="math inline">\(R^2 = 0.036\)</span> (3.6%), meaning the predictors explain only a few percent of the variance in log-reviews. This is extremely low, highlighting that there is a lot of unexplained variability (no surprise given how many idiosyncratic factors affect a listing’s popularity). By contrast, the Poisson’s pseudo-<span class="math inline">\(R^2\)</span> was much higher, but note that pseudo-<span class="math inline">\(R^2\)</span> is not directly comparable to OLS <span class="math inline">\(R^2\)</span> – they measure different things (deviance vs variance explained).</p>
 <p>Quick lift chart – turning coefficients into dollars</p>
-<div id="7b6822a1" class="cell" data-execution_count="17">
+<div id="f81b7fad" class="cell" data-execution_count="17">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">

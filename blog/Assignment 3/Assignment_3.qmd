@@ -144,15 +144,42 @@ conjoint_data %>%
 The simulated dataset contains **`r format(nrow(conjoint_data), big.mark = ",")` rows** and **`r ncol(conjoint_data)` columns** (exactly 100 respondents × 10 tasks × 3 alternatives).
 ::::
 
-
-
 ## 3. Preparing the Data for Estimation
 
-The "hard part" of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer $i$, covariate $k$, and product $j$) instead of the typical 2 dimensions for cross-sectional regression models (consumer $i$ and covariate $k$). The fact that each task for each respondent has the same number of alternatives (3) helps.  In addition, we need to convert the categorical variables for brand and ads into binary variables.
+The “hard part” of computing the MNL likelihood is organizing the data, since we have to keep track of three dimensions – consumer $i$, product $j$, and covariate/feature $k$ – instead of the typical two dimensions for a cross-sectional regression model (consumer $i$ and covariate $k$). In our case, each task for each respondent has the same number of alternatives (3), which simplifies things. We also need to convert the categorical variables (brand and ads) into numeric binary indicator variables for modeling.
 
-_todo: reshape and prep the data_
+Below, we load the conjoint dataset and reshape it for estimation. We create dummy variables for the brand and ad features (using Hulu and “No Ads” as the base levels), and we construct a task identifier to group alternatives belonging to the same choice set. We then display the first few rows to verify the structure:
 
+```{python}
+# | echo: false
+import pandas as pd
 
+# Load the simulated conjoint dataset
+df = pd.read_csv("Assignment_3_data/conjoint_data.csv")
+
+# Create dummy indicators for brand (baseline: Hulu) and ad (baseline: No-ad)
+df["brand_N"] = (df["brand"] == "N").astype(int)  # Netflix dummy
+df["brand_P"] = (df["brand"] == "P").astype(int)  # Prime dummy
+# (If brand is Hulu, both brand_N and brand_P will be 0)
+df["ad_yes"] = (df["ad"] == "Yes").astype(int)  # Ads-included dummy (1=Yes, 0=No)
+
+# Create a unique task identifier for each choice task (for grouping alternatives)
+df["task_id"] = (df["resp"] - 1) * 10 + (df["task"] - 1)
+
+# Inspect the first few rows of the prepared DataFrame
+print(df.head())
+
+print("\nShape of the DataFrame (rows, columns):")
+print(df.shape)
+```
+
+We can see that each choice task (task_id) contains three rows (one per alternative). For example, resp=1, task=1 (first three rows) had alternatives from brands N, H, P all with ads (“Yes”) and different prices, and the first row (brand=N, price=28) was marked choice=1 as the selected option (it had the highest simulated utility). The dataset is now ready for model estimation.
+
+<!-- ```{python}
+# | echo: false
+# legacy alias so later code that still expects `df` keeps working
+df = conjoint_df
+``` -->
 
 ## 4. Estimation via Maximum Likelihood
 
