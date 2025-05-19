@@ -70,7 +70,7 @@ set.seed(123)
 # define attributes
 brand <- c("N", "P", "H") # Netflix, Prime, Hulu
 ad <- c("Yes", "No")
-price <- seq(8, 32, by=4)
+price <- seq(8, 32, by = 4)
 
 # generate all possible profiles
 profiles <- expand.grid(
@@ -92,29 +92,27 @@ n_alts <- 3
 
 # function to simulate one respondent’s data
 sim_one <- function(id) {
-  
     datlist <- list()
-    
+
     # loop over choice tasks
     for (t in 1:n_tasks) {
-        
         # randomly sample 3 alts (better practice would be to use a design)
-        dat <- cbind(resp=id, task=t, profiles[sample(m, size=n_alts), ])
-        
+        dat <- cbind(resp = id, task = t, profiles[sample(m, size = n_alts), ])
+
         # compute deterministic portion of utility
         dat$v <- b_util[dat$brand] + a_util[dat$ad] + p_util(dat$price) |> round(10)
-        
+
         # add Gumbel noise (Type I extreme value)
         dat$e <- -log(-log(runif(n_alts)))
         dat$u <- dat$v + dat$e
-        
+
         # identify chosen alternative
         dat$choice <- as.integer(dat$u == max(dat$u))
-        
+
         # store task
         datlist[[t]] <- dat
     }
-    
+
     # combine all tasks for one respondent
     do.call(rbind, datlist)
 }
@@ -123,10 +121,19 @@ sim_one <- function(id) {
 conjoint_data <- do.call(rbind, lapply(1:n_peeps, sim_one))
 
 # remove values unobservable to the researcher
-conjoint_data <- conjoint_data[ , c("resp", "task", "brand", "ad", "price", "choice")]
+conjoint_data <- conjoint_data[, c("resp", "task", "brand", "ad", "price", "choice")]
 
 # clean up
-rm(list=setdiff(ls(), "conjoint_data"))
+rm(list = setdiff(ls(), "conjoint_data"))
+```
+
+```{r}
+# | echo: false
+library(dplyr)
+
+# 1️⃣  Peek at the first 10 rows
+conjoint_data %>%
+    slice_head(n = 10)
 ```
 ::::
 
