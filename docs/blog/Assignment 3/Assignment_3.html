@@ -339,40 +339,26 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 <span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="co"># clean up</span></span>
 <span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">setdiff</span>(<span class="fu">ls</span>(), <span class="st">"conjoint_data"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Output from the simulation of the conjoint data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># | echo: false</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'dplyr'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stats':
-
-    filter, lag</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    intersect, setdiff, setequal, union</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1️⃣  Peek at the first 10 rows</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>conjoint_data <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>    resp task brand  ad price choice
-31     1    1     N Yes    28      1
-15     1    1     H Yes    16      0
-14     1    1     P Yes    16      0
-37     1    2     N Yes    32      0
-141    1    2     P Yes    16      1
-25     1    2     N Yes    24      0
-5      1    3     P  No     8      0
-27     1    3     H Yes    24      1
-28     1    3     N  No    24      0
-35     1    4     P  No    28      0</code></pre>
+<pre><code>Dataset dimensions (rows x cols): 3000 x 6 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> resp task brand  ad price choice
+    1    1     N Yes    28      1
+    1    1     H Yes    16      0
+    1    1     P Yes    16      0
+    1    2     N Yes    32      0
+    1    2     P Yes    16      1
+    1    2     N Yes    24      0
+    1    3     P  No     8      0
+    1    3     H Yes    24      1
+    1    3     N  No    24      0
+    1    4     P  No    28      0</code></pre>
 </div>
 </div>
+<p>The simulated dataset contains <strong>3,000 rows</strong> and <strong>6 columns</strong> (exactly 100 respondents&nbsp;×&nbsp;10 tasks&nbsp;×&nbsp;3 alternatives).</p>
 </div>
 </div>
 </div>

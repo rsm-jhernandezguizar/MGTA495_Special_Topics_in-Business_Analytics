@@ -127,14 +127,21 @@ conjoint_data <- conjoint_data[, c("resp", "task", "brand", "ad", "price", "choi
 rm(list = setdiff(ls(), "conjoint_data"))
 ```
 
-```{r}
-# | echo: false
-library(dplyr)
+Output from the simulation of the conjoint data:
 
-# 1️⃣  Peek at the first 10 rows
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
+cat("Dataset dimensions (rows x cols):", paste(dim(conjoint_data), collapse = " x "), "\n\n")
+
 conjoint_data %>%
-    slice_head(n = 10)
+    slice_head(n = 10) %>%
+    print(row.names = FALSE)
 ```
+
+The simulated dataset contains **`r format(nrow(conjoint_data), big.mark = ",")` rows** and **`r ncol(conjoint_data)` columns** (exactly 100 respondents × 10 tasks × 3 alternatives).
 ::::
 
 
