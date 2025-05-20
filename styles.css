@@ -65,3 +65,11 @@ main {
 .quarto-listing-container-default .thumbnail {
     flex-shrink: 0;
 }
+
+/* Forzar que se partan las líneas en <pre><code> */
+pre code {
+    white-space: pre-wrap !important;
+    /* envuelve líneas largas */
+    word-break: break-word;
+    /* rompe palabras larguísimas si hace falta */
+}

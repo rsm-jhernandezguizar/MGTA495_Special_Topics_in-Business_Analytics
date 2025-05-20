@@ -28,7 +28,8 @@ format:
     toc: true
     includes:
       in-header: bootstrap-icons.html
-    code-overflow: wrap   # fuerza el ‹wrap› en TODO el HTML
+    # code-overflow: wrap   # fuerza el ‹wrap› en TODO el HTML
+    code-width: 80  # 80 caracteres antes de envolver
 
 format-options:
   editor:

@@ -65,10 +65,11 @@ The following code provides the simulation of the conjoint data.
 
 :::: {.callout-note collapse="true"}
 ```{python}
-#| label: setup
-#| echo: true
-#| message: false
-#| warning: false
+# | label: setup
+# | echo: true
+# | message: false
+# | warning: false
+# | code-overflow: wrap
 
 # Standard scientific stack
 import numpy as np
@@ -78,7 +79,7 @@ from itertools import product
 # Reproducibility
 np.random.seed(123)  # same seed as the original R script
 
-#| label: attrs
+# | label: attrs
 
 # Streaming brand (Netflix=N, Prime=P, Hulu=H)
 brand_levels = ["N", "P", "H"]
@@ -89,18 +90,18 @@ ad_levels = ["Yes", "No"]
 # Monthly price in USD (8, 12, …, 32)
 price_levels = np.arange(8, 33, 4)
 
-#| label: profiles
+# | label: profiles
 
 # Cartesian product → every possible combination of levels
 profiles = pd.DataFrame(
     list(product(brand_levels, ad_levels, price_levels)),
-    columns=["brand", "ad", "price"]
+    columns=["brand", "ad", "price"],
 )
 
 m = len(profiles)  # total number of profiles
 profiles.head()
 
-#| label: utils
+# | label: utils
 
 # Brand utilities
 b_util = {"N": 1.0, "P": 0.5, "H": 0.0}
@@ -111,13 +112,14 @@ a_util = {"Yes": -0.8, "No": 0.0}
 # Price utility function (each extra $1 costs 0.1 util)
 price_util = lambda p: -0.1 * p
 
-#| label: design
+# | label: design
 
 n_peeps = 100  # respondents
-n_tasks = 10   # choice tasks per respondent
-n_alts = 3     # alternatives shown per task
+n_tasks = 10  # choice tasks per respondent
+n_alts = 3  # alternatives shown per task
 
-#| label: simulate_one
+# | label: simulate_one
+
 
 def simulate_one(respondent_id: int) -> pd.DataFrame:
     """Generate all choice tasks for a single respondent.
@@ -144,9 +146,7 @@ def simulate_one(respondent_id: int) -> pd.DataFrame:
 
         # Deterministic utility (v)
         dat["v"] = (
-            dat["brand"].map(b_util)
-            + dat["ad"].map(a_util)
-            + price_util(dat["price"])
+            dat["brand"].map(b_util) + dat["ad"].map(a_util) + price_util(dat["price"])
         )
 
         # Stochastic (Gumbel Type‑I EV) noise (e)
@@ -161,12 +161,12 @@ def simulate_one(respondent_id: int) -> pd.DataFrame:
     # Stack all tasks vertically
     return pd.concat(tasks, ignore_index=True)
 
-#| label: simulate_all
+
+# | label: simulate_all
 
 # Concatenate each respondent’s dataframes
 conjoint_data = pd.concat(
-    [simulate_one(i) for i in range(1, n_peeps + 1)],
-    ignore_index=True
+    [simulate_one(i) for i in range(1, n_peeps + 1)], ignore_index=True
 )
 
 # Keep only columns observable by the researcher (drop v, u, etc.)
@@ -195,7 +195,7 @@ print(
 
 The "hard part" of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer $i$, covariate $k$, and product $j$) instead of the typical 2 dimensions for cross-sectional regression models (consumer $i$ and covariate $k$). The fact that each task for each respondent has the same number of alternatives (3) helps.  In addition, we need to convert the categorical variables for brand and ads into binary variables.
 
-_todo: reshape and prep the data_
+Below, we load the conjoint dataset and reshape it for estimation. We create dummy variables for the brand and ad features (using Hulu and “No Ads” as the base levels), and we construct a task identifier to group alternatives belonging to the same choice set. We then display the first few rows to verify the structure:
 
 ```{python}
 # | echo: false
@@ -216,8 +216,8 @@ df["task_id"] = (df["resp"] - 1) * 10 + (df["task"] - 1)
 # Inspect the first few rows of the prepared DataFrame
 print(df.head())
 
-print("\nShape of the DataFrame (rows, columns):")
-print(df.shape)
+# print("\nShape of the DataFrame (rows, columns):")
+# print(df.shape)
 ```
 
 We can see that each choice task (task_id) contains three rows (one per alternative). For example, resp=1, task=1 (first three rows) had alternatives from brands N, H, P all with ads (“Yes”) and different prices, and the first row (brand=N, price=28) was marked choice=1 as the selected option (it had the highest simulated utility). The dataset is now ready for model estimation.
