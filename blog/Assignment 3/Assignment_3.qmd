@@ -176,25 +176,20 @@ conjoint_data = conjoint_data[["resp", "task", "brand", "ad", "price", "choice"]
 conjoint_data.head()
 ```
 
-Output from the simulation of the conjoint data:
-
 ```{python}
 # | label: inspect
-# | echo: true
+# | echo: false
 
 # Report dimensions (rows x cols) just like the R `cat()` statement
 rows, cols = conjoint_data.shape
-print(f"Dataset dimensions (rows x cols): {rows} x {cols}")
 
-# Show first 10 rows without the implicit Pandas index (mirrors `row.names = FALSE`)
-print(conjoint_data.head(10).to_string(index=False))
+print(
+    f"The simulated dataset contains {rows} rows and "
+    f"{cols} columns (exactly 100 respondents × 10 tasks × 3 alternatives). Just as expected!"
+)
 ```
 
-The simulated dataset contains **`r format(nrow(conjoint_data), big.mark = ",")` rows** and **`r ncol(conjoint_data)` columns** (exactly 100 respondents × 10 tasks × 3 alternatives).
-
 ::::
-
-
 
 ## 3. Preparing the Data for Estimation
 
@@ -202,7 +197,30 @@ The "hard part" of the MNL likelihood function is organizing the data, as we nee
 
 _todo: reshape and prep the data_
 
+```{python}
+# | echo: false
+import pandas as pd
 
+# Load the simulated conjoint dataset
+df = pd.read_csv("Assignment_3_data/conjoint_data.csv")
+
+# Create dummy indicators for brand (baseline: Hulu) and ad (baseline: No-ad)
+df["brand_N"] = (df["brand"] == "N").astype(int)  # Netflix dummy
+df["brand_P"] = (df["brand"] == "P").astype(int)  # Prime dummy
+# (If brand is Hulu, both brand_N and brand_P will be 0)
+df["ad_yes"] = (df["ad"] == "Yes").astype(int)  # Ads-included dummy (1=Yes, 0=No)
+
+# Create a unique task identifier for each choice task (for grouping alternatives)
+df["task_id"] = (df["resp"] - 1) * 10 + (df["task"] - 1)
+
+# Inspect the first few rows of the prepared DataFrame
+print(df.head())
+
+print("\nShape of the DataFrame (rows, columns):")
+print(df.shape)
+```
+
+We can see that each choice task (task_id) contains three rows (one per alternative). For example, resp=1, task=1 (first three rows) had alternatives from brands N, H, P all with ads (“Yes”) and different prices, and the first row (brand=N, price=28) was marked choice=1 as the selected option (it had the highest simulated utility). The dataset is now ready for model estimation.
 
 ## 4. Estimation via Maximum Likelihood
 

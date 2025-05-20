@@ -28,3 +28,8 @@ format:
     toc: true
     includes:
       in-header: bootstrap-icons.html
+    code-overflow: wrap   # fuerza el ‹wrap› en TODO el HTML
+
+format-options:
+  editor:
+    format-on-save: false

@@ -75,7 +75,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ff4371ef257df69894857e99c6ad0d06.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-f735cf07a6910d811a1cbb5bbbcb55bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-89b54d75ba9fa5ee66f030a66d6a0f9d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -452,30 +452,11 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 </div>
 </div>
 </div>
-<p>Output from the simulation of the conjoint data:</p>
 <div id="inspect" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Report dimensions (rows x cols) just like the R `cat()` statement</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>rows, cols <span class="op">=</span> conjoint_data.shape</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dataset dimensions (rows x cols): </span><span class="sc">{</span>rows<span class="sc">}</span><span class="ss"> x </span><span class="sc">{</span>cols<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Show first 10 rows without the implicit Pandas index (mirrors `row.names = FALSE`)</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(conjoint_data.head(<span class="dv">10</span>).to_string(index<span class="op">=</span><span class="va">False</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Dataset dimensions (rows x cols): 3000 x 6
- resp  task brand  ad  price  choice
-    1     1     P  No     32       0
-    1     1     N  No     28       0
-    1     1     N  No     24       1
-    1     2     H  No     28       0
-    1     2     H  No      8       1
-    1     2     H  No     32       0
-    1     3     N  No      8       1
-    1     3     H Yes     24       0
-    1     3     N Yes     16       0
-    1     4     N Yes      8       0</code></pre>
+<pre><code>The simulated dataset contains 3000 rows and 6 columns (exactly 100 respondents × 10 tasks × 3 alternatives). Just as expected!</code></pre>
 </div>
 </div>
-<p>The simulated dataset contains <strong><code>r format(nrow(conjoint_data), big.mark = ",")</code> rows</strong> and <strong><code>r ncol(conjoint_data)</code> columns</strong> (exactly 100 respondents&nbsp;×&nbsp;10 tasks&nbsp;×&nbsp;3 alternatives).</p>
 </div>
 </div>
 </div>
@@ -484,6 +465,20 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 <h2 class="anchored" data-anchor-id="preparing-the-data-for-estimation">3. Preparing the Data for Estimation</h2>
 <p>The “hard part” of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer <span class="math inline">\(i\)</span>, covariate <span class="math inline">\(k\)</span>, and product <span class="math inline">\(j\)</span>) instead of the typical 2 dimensions for cross-sectional regression models (consumer <span class="math inline">\(i\)</span> and covariate <span class="math inline">\(k\)</span>). The fact that each task for each respondent has the same number of alternatives (3) helps. In addition, we need to convert the categorical variables for brand and ads into binary variables.</p>
 <p><em>todo: reshape and prep the data</em></p>
+<div id="f421ebbb" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-stdout">
+<pre><code>   resp  task  choice brand   ad  price  brand_N  brand_P  ad_yes  task_id
+0     1     1       1     N  Yes     28        1        0       1        0
+1     1     1       0     H  Yes     16        0        0       1        0
+2     1     1       0     P  Yes     16        0        1       1        0
+3     1     2       0     N  Yes     32        1        0       1        1
+4     1     2       1     P  Yes     16        0        1       1        1
+
+Shape of the DataFrame (rows, columns):
+(3000, 10)</code></pre>
+</div>
+</div>
+<p>We can see that each choice task (task_id) contains three rows (one per alternative). For example, resp=1, task=1 (first three rows) had alternatives from brands N, H, P all with ads (“Yes”) and different prices, and the first row (brand=N, price=28) was marked choice=1 as the selected option (it had the highest simulated utility). The dataset is now ready for model estimation.</p>
 </section>
 <section id="estimation-via-maximum-likelihood" class="level2">
 <h2 class="anchored" data-anchor-id="estimation-via-maximum-likelihood">4. Estimation via Maximum Likelihood</h2>
