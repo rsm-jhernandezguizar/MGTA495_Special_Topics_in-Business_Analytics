@@ -172,7 +172,7 @@ conjoint_data = pd.concat(
 # Keep only columns observable by the researcher (drop v, u, etc.)
 conjoint_data = conjoint_data[["resp", "task", "brand", "ad", "price", "choice"]]
 
-# Quick peek 👀
+# Quick peek at the results
 conjoint_data.head()
 ```
 
@@ -224,11 +224,94 @@ We can see that each choice task (task_id) contains three rows (one per alternat
 
 ## 4. Estimation via Maximum Likelihood
 
-_todo: Code up the log-likelihood function._
+With the data prepared, we now turn to estimating the MNL model parameters by Maximum Likelihood. We have four parameters to estimate: $\beta_{\text{Netflix}}$ and $\beta_{\text{Prime}}$ for the two non-baseline brands (Hulu is the baseline, so its effect is 0 by construction), $\beta_{\text{Ads}}$ for the effect of having ads (versus no ads), and $\beta_{\text{Price}}$ for the price coefficient.
 
-_todo: Use `optim()` in R or `scipy.optimize()` in Python to find the MLEs for the 4 parameters ($\beta_\text{netflix}$, $\beta_\text{prime}$, $\beta_\text{ads}$, $\beta_\text{price}$), as well as their standard errors (from the Hessian). For each parameter construct a 95% confidence interval._
+Log-Likelihood Function: First, we need to code up the log-likelihood function for the MNL. Using the data, the log-likelihood $\ell_n(\beta)$ can be computed by summing, over all choice tasks, the log of the probability of the chosen alternative. Given our data structure, a convenient method is: for each choice task, find the linear utility $v_{ij} = x_j’ \beta$ for each alternative, compute the choice probabilities $\mathbb{P}_i(j)$ via the softmax formula, then accumulate $\log \mathbb{P}_i(j^)$ for the chosen alternative $j^{*}$. We implement this below. To speed up computation, we vectorize the operations using NumPy:
+
+```{python}
+# | echo: true
+import numpy as np
+
+# Extract numpy arrays for faster computation
+X = df[["brand_N", "brand_P", "ad_yes", "price"]].values  # Feature matrix (3000 x 4)
+group_ids = df["task_id"].values  # Task identifiers (length 3000)
+choice = df["choice"].values  # Chosen indicator (0/1 for each row)
 
 
+# Define the log-likelihood function for parameters beta (as a NumPy array)
+def loglik(beta):
+    beta = np.array(beta)
+    # Compute linear utility v = X * beta for all alternatives
+    v = X.dot(beta)  # shape (3000,)
+    # Compute exp(v) and sum exp(v) by task (denominator of softmax)
+    exp_v = np.exp(v)
+    # Sum of exp(v) for each task (using group_ids to aggregate)
+    sum_exp_v_by_task = np.bincount(
+        group_ids, weights=exp_v, minlength=df["task_id"].nunique()
+    )
+    # Sum of v for the chosen alternative in each task (only one chosen per task)
+    chosen_v_by_task = np.bincount(
+        group_ids, weights=v * choice, minlength=df["task_id"].nunique()
+    )
+    # Log-likelihood is sum over tasks of (v_chosen - log(sum_exp_v))
+    log_lik_value = np.sum(chosen_v_by_task - np.log(sum_exp_v_by_task))
+    return log_lik_value
+
+
+# Quick sanity check: compute log-likelihood at the true beta values used in simulation
+beta_true = np.array([1.0, 0.5, -0.8, -0.1])
+print(f"Log-likelihood at true beta: {loglik(beta_true):.3f}")
+```
+
+We included a quick check: plugging in the true part-worths [1.0, 0.5, -0.8, -0.1] gives a log-likelihood of roughly -880.3. Now, we will let the computer search for the $\beta$ that maximizes the log-likelihood. In practice, we maximize the likelihood by minimizing the negative log-likelihood. We can use a numerical optimizer (from SciPy in Python) to find the Maximum Likelihood Estimates (MLEs) of $\beta$. We also compute the Hessian-based standard errors and 95% confidence intervals for these estimates. The table below summarizes the results:
+
+```{python}
+# | echo: false
+# ----------------------------------------------------
+# 1. Máxima verosimilitud + tabla con IC al 95 %
+# ----------------------------------------------------
+import numpy as np
+import pandas as pd
+from scipy.optimize import minimize
+from scipy.stats import norm
+
+# --- Función objetivo (ya definida antes) -------------
+# neg_loglik = lambda beta: -loglik(beta)
+
+# --- Estimación ---------------------------------------
+opt_res = minimize(fun=lambda b: -loglik(b), x0=np.zeros(4), method="BFGS")
+
+beta_hat = opt_res.x  # β̂
+var_beta = opt_res.hess_inv  # ≈ Var(β̂)
+se_beta = np.sqrt(np.diag(var_beta))  # σ(β̂)
+
+# --- Intervalos de confianza --------------------------
+z_crit = norm.ppf(0.975)  # 1.96 para 95 %
+ci_low = beta_hat - z_crit * se_beta
+ci_high = beta_hat + z_crit * se_beta
+ci_str = [f"[{l:.3f}, {h:.3f}]" for l, h in zip(ci_low, ci_high)]
+
+# --- Etiquetas bonitas -------------------------------
+param_lbl = ["β_Netflix",
+             "β_Prime",
+             "β_Ads",
+             "β_Price"]
+
+# --- DataFrame de resumen -----------------------------
+summary_df = pd.DataFrame(
+    {
+        "Parameter": param_lbl,
+        "Estimate": np.round(beta_hat, 3),
+        "Std. Error": np.round(se_beta, 3),
+        "95% Confidence Interval": ci_str,
+    }
+)
+
+# Texto plano muy parecido a la captura:
+print(summary_df.to_string(index=False))
+```
+
+All four estimates are very close to the true values used in the simulation, which is reassuring. The estimate for β_Netflix is about 0.94 (true was 1.0) and for β_Prime about 0.50 (true 0.5), with Hulu as the baseline (so Hulu’s implicit β is 0). This means that, holding ads and price constant, a Netflix offering has about 0.94 higher utility units than an otherwise identical Hulu offering, and Prime has 0.50 higher utility than Hulu. The Ads coefficient is -0.732, indicating a strong negative effect of having advertisements: an offering with ads is less attractive by ~0.73 utility units compared to an ad-free equivalent. The Price coefficient is -0.099, meaning each additional $1 per month reduces utility by ~0.099. All parameters are significantly different from zero at the 95% confidence level (zero lies outside all the confidence intervals), aligning with our expectations (e.g., higher price and ads included both significantly reduce the likelihood of choice).
 
 ## 5. Estimation via Bayesian Methods
 

@@ -381,7 +381,7 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 <span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only columns observable by the researcher (drop v, u, etc.)</span></span>
 <span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>conjoint_data <span class="op">=</span> conjoint_data[[<span class="st">"resp"</span>, <span class="st">"task"</span>, <span class="st">"brand"</span>, <span class="st">"ad"</span>, <span class="st">"price"</span>, <span class="st">"choice"</span>]]</span>
 <span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick peek 👀</span></span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick peek at the results</span></span>
 <span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>conjoint_data.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="setup" class="cell-output cell-output-display" data-execution_count="1">
 <div>
@@ -464,7 +464,7 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 <h2 class="anchored" data-anchor-id="preparing-the-data-for-estimation">3. Preparing the Data for Estimation</h2>
 <p>The “hard part” of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer <span class="math inline">\(i\)</span>, covariate <span class="math inline">\(k\)</span>, and product <span class="math inline">\(j\)</span>) instead of the typical 2 dimensions for cross-sectional regression models (consumer <span class="math inline">\(i\)</span> and covariate <span class="math inline">\(k\)</span>). The fact that each task for each respondent has the same number of alternatives (3) helps. In addition, we need to convert the categorical variables for brand and ads into binary variables.</p>
 <p>Below, we load the conjoint dataset and reshape it for estimation. We create dummy variables for the brand and ad features (using Hulu and “No Ads” as the base levels), and we construct a task identifier to group alternatives belonging to the same choice set. We then display the first few rows to verify the structure:</p>
-<div id="c0c43bb0" class="cell" data-execution_count="3">
+<div id="c909712d" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-stdout">
 <pre><code>   resp  task  choice brand   ad  price  brand_N  brand_P  ad_yes  task_id
 0     1     1       1     N  Yes     28        1        0       1        0
@@ -478,8 +478,55 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 </section>
 <section id="estimation-via-maximum-likelihood" class="level2">
 <h2 class="anchored" data-anchor-id="estimation-via-maximum-likelihood">4. Estimation via Maximum Likelihood</h2>
-<p><em>todo: Code up the log-likelihood function.</em></p>
-<p><em>todo: Use <code>optim()</code> in R or <code>scipy.optimize()</code> in Python to find the MLEs for the 4 parameters (<span class="math inline">\(\beta_\text{netflix}\)</span>, <span class="math inline">\(\beta_\text{prime}\)</span>, <span class="math inline">\(\beta_\text{ads}\)</span>, <span class="math inline">\(\beta_\text{price}\)</span>), as well as their standard errors (from the Hessian). For each parameter construct a 95% confidence interval.</em></p>
+<p>With the data prepared, we now turn to estimating the MNL model parameters by Maximum Likelihood. We have four parameters to estimate: <span class="math inline">\(\beta_{\text{Netflix}}\)</span> and <span class="math inline">\(\beta_{\text{Prime}}\)</span> for the two non-baseline brands (Hulu is the baseline, so its effect is 0 by construction), <span class="math inline">\(\beta_{\text{Ads}}\)</span> for the effect of having ads (versus no ads), and <span class="math inline">\(\beta_{\text{Price}}\)</span> for the price coefficient.</p>
+<p>Log-Likelihood Function: First, we need to code up the log-likelihood function for the MNL. Using the data, the log-likelihood <span class="math inline">\(\ell_n(\beta)\)</span> can be computed by summing, over all choice tasks, the log of the probability of the chosen alternative. Given our data structure, a convenient method is: for each choice task, find the linear utility <span class="math inline">\(v_{ij} = x_j’ \beta\)</span> for each alternative, compute the choice probabilities <span class="math inline">\(\mathbb{P}_i(j)\)</span> via the softmax formula, then accumulate <span class="math inline">\(\log \mathbb{P}_i(j^)\)</span> for the chosen alternative <span class="math inline">\(j^{*}\)</span>. We implement this below. To speed up computation, we vectorize the operations using NumPy:</p>
+<div id="91095eb1" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract numpy arrays for faster computation</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df[[<span class="st">"brand_N"</span>, <span class="st">"brand_P"</span>, <span class="st">"ad_yes"</span>, <span class="st">"price"</span>]].values  <span class="co"># Feature matrix (3000 x 4)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>group_ids <span class="op">=</span> df[<span class="st">"task_id"</span>].values  <span class="co"># Task identifiers (length 3000)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>choice <span class="op">=</span> df[<span class="st">"choice"</span>].values  <span class="co"># Chosen indicator (0/1 for each row)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the log-likelihood function for parameters beta (as a NumPy array)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> loglik(beta):</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.array(beta)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute linear utility v = X * beta for all alternatives</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    v <span class="op">=</span> X.dot(beta)  <span class="co"># shape (3000,)</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute exp(v) and sum exp(v) by task (denominator of softmax)</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    exp_v <span class="op">=</span> np.exp(v)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sum of exp(v) for each task (using group_ids to aggregate)</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    sum_exp_v_by_task <span class="op">=</span> np.bincount(</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        group_ids, weights<span class="op">=</span>exp_v, minlength<span class="op">=</span>df[<span class="st">"task_id"</span>].nunique()</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sum of v for the chosen alternative in each task (only one chosen per task)</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    chosen_v_by_task <span class="op">=</span> np.bincount(</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        group_ids, weights<span class="op">=</span>v <span class="op">*</span> choice, minlength<span class="op">=</span>df[<span class="st">"task_id"</span>].nunique()</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log-likelihood is sum over tasks of (v_chosen - log(sum_exp_v))</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    log_lik_value <span class="op">=</span> np.<span class="bu">sum</span>(chosen_v_by_task <span class="op">-</span> np.log(sum_exp_v_by_task))</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_lik_value</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick sanity check: compute log-likelihood at the true beta values used in simulation</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>beta_true <span class="op">=</span> np.array([<span class="fl">1.0</span>, <span class="fl">0.5</span>, <span class="op">-</span><span class="fl">0.8</span>, <span class="op">-</span><span class="fl">0.1</span>])</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Log-likelihood at true beta: </span><span class="sc">{</span>loglik(beta_true)<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Log-likelihood at true beta: -880.344</code></pre>
+</div>
+</div>
+<p>We included a quick check: plugging in the true part-worths [1.0, 0.5, -0.8, -0.1] gives a log-likelihood of roughly -880.3. Now, we will let the computer search for the <span class="math inline">\(\beta\)</span> that maximizes the log-likelihood. In practice, we maximize the likelihood by minimizing the negative log-likelihood. We can use a numerical optimizer (from SciPy in Python) to find the Maximum Likelihood Estimates (MLEs) of <span class="math inline">\(\beta\)</span>. We also compute the Hessian-based standard errors and 95% confidence intervals for these estimates. The table below summarizes the results:</p>
+<div id="5a3a54c8" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-stdout">
+<pre><code>Parameter  Estimate  Std. Error 95% Confidence Interval
+β_Netflix     0.941       0.114          [0.717, 1.165]
+  β_Prime     0.502       0.121          [0.265, 0.738]
+    β_Ads    -0.732       0.089        [-0.906, -0.558]
+  β_Price    -0.099       0.006        [-0.112, -0.087]</code></pre>
+</div>
+</div>
+<p>All four estimates are very close to the true values used in the simulation, which is reassuring. The estimate for β_Netflix is about 0.94 (true was 1.0) and for β_Prime about 0.50 (true 0.5), with Hulu as the baseline (so Hulu’s implicit β is 0). This means that, holding ads and price constant, a Netflix offering has about 0.94 higher utility units than an otherwise identical Hulu offering, and Prime has 0.50 higher utility than Hulu. The Ads coefficient is -0.732, indicating a strong negative effect of having advertisements: an offering with ads is less attractive by ~0.73 utility units compared to an ad-free equivalent. The Price coefficient is -0.099, meaning each additional $1 per month reduces utility by ~0.099. All parameters are significantly different from zero at the 95% confidence level (zero lies outside all the confidence intervals), aligning with our expectations (e.g., higher price and ads included both significantly reduce the likelihood of choice).</p>
 </section>
 <section id="estimation-via-bayesian-methods" class="level2">
 <h2 class="anchored" data-anchor-id="estimation-via-bayesian-methods">5. Estimation via Bayesian Methods</h2>
