@@ -464,7 +464,7 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 <h2 class="anchored" data-anchor-id="preparing-the-data-for-estimation">3. Preparing the Data for Estimation</h2>
 <p>The “hard part” of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer <span class="math inline">\(i\)</span>, covariate <span class="math inline">\(k\)</span>, and product <span class="math inline">\(j\)</span>) instead of the typical 2 dimensions for cross-sectional regression models (consumer <span class="math inline">\(i\)</span> and covariate <span class="math inline">\(k\)</span>). The fact that each task for each respondent has the same number of alternatives (3) helps. In addition, we need to convert the categorical variables for brand and ads into binary variables.</p>
 <p>Below, we load the conjoint dataset and reshape it for estimation. We create dummy variables for the brand and ad features (using Hulu and “No Ads” as the base levels), and we construct a task identifier to group alternatives belonging to the same choice set. We then display the first few rows to verify the structure:</p>
-<div id="c909712d" class="cell" data-execution_count="3">
+<div id="b2dbab21" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-stdout">
 <pre><code>   resp  task  choice brand   ad  price  brand_N  brand_P  ad_yes  task_id
 0     1     1       1     N  Yes     28        1        0       1        0
@@ -480,7 +480,7 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 <h2 class="anchored" data-anchor-id="estimation-via-maximum-likelihood">4. Estimation via Maximum Likelihood</h2>
 <p>With the data prepared, we now turn to estimating the MNL model parameters by Maximum Likelihood. We have four parameters to estimate: <span class="math inline">\(\beta_{\text{Netflix}}\)</span> and <span class="math inline">\(\beta_{\text{Prime}}\)</span> for the two non-baseline brands (Hulu is the baseline, so its effect is 0 by construction), <span class="math inline">\(\beta_{\text{Ads}}\)</span> for the effect of having ads (versus no ads), and <span class="math inline">\(\beta_{\text{Price}}\)</span> for the price coefficient.</p>
 <p>Log-Likelihood Function: First, we need to code up the log-likelihood function for the MNL. Using the data, the log-likelihood <span class="math inline">\(\ell_n(\beta)\)</span> can be computed by summing, over all choice tasks, the log of the probability of the chosen alternative. Given our data structure, a convenient method is: for each choice task, find the linear utility <span class="math inline">\(v_{ij} = x_j’ \beta\)</span> for each alternative, compute the choice probabilities <span class="math inline">\(\mathbb{P}_i(j)\)</span> via the softmax formula, then accumulate <span class="math inline">\(\log \mathbb{P}_i(j^)\)</span> for the chosen alternative <span class="math inline">\(j^{*}\)</span>. We implement this below. To speed up computation, we vectorize the operations using NumPy:</p>
-<div id="91095eb1" class="cell" data-execution_count="4">
+<div id="c9499d1f" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract numpy arrays for faster computation</span></span>
@@ -517,7 +517,7 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 </div>
 </div>
 <p>We included a quick check: plugging in the true part-worths [1.0, 0.5, -0.8, -0.1] gives a log-likelihood of roughly -880.3. Now, we will let the computer search for the <span class="math inline">\(\beta\)</span> that maximizes the log-likelihood. In practice, we maximize the likelihood by minimizing the negative log-likelihood. We can use a numerical optimizer (from SciPy in Python) to find the Maximum Likelihood Estimates (MLEs) of <span class="math inline">\(\beta\)</span>. We also compute the Hessian-based standard errors and 95% confidence intervals for these estimates. The table below summarizes the results:</p>
-<div id="5a3a54c8" class="cell" data-execution_count="5">
+<div id="5d013330" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-stdout">
 <pre><code>Parameter  Estimate  Std. Error 95% Confidence Interval
 β_Netflix     0.941       0.114          [0.717, 1.165]
@@ -530,6 +530,95 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 </section>
 <section id="estimation-via-bayesian-methods" class="level2">
 <h2 class="anchored" data-anchor-id="estimation-via-bayesian-methods">5. Estimation via Bayesian Methods</h2>
+<p>Next, we estimate the MNL model via a Bayesian approach. Rather than finding a single best estimate as in MLE, Bayesian inference will produce a posterior distribution for the parameters. We use a Metropolis-Hastings (M-H) algorithm (a type of Markov Chain Monte Carlo) to sample from the posterior distribution of <span class="math inline">\(\beta\)</span>.</p>
+<p>Priors: We choose relatively non-informative (weak) priors for the parameters. For the binary feature coefficients (<span class="math inline">\(\beta_{\text{Netflix}}, \beta_{\text{Prime}}, \beta_{\text{Ads}}\)</span>) we use independent priors <span class="math inline">\(\mathcal{N}(0,;5)\)</span> – a normal distribution with mean 0 and variance 5 (standard deviation <span class="math inline">\(\approx 2.236\)</span>). For the price coefficient <span class="math inline">\(\beta_{\text{Price}}\)</span>, we use a slightly more informative prior <span class="math inline">\(\mathcal{N}(0,;1)\)</span> (mean 0, variance 1) since price effects are often tighter in range. These priors still cover a wide range of plausible values relative to our expected magnitudes, essentially adding only a gentle regularization around 0.</p>
+<p>MCMC Setup: We will run the M-H sampler for 11,000 iterations and discard the first 1,000 draws as “burn-in” to allow the chain to converge. This will leave us with 10,000 posterior draws for inference. We construct a symmetric proposal distribution as a multivariate normal with no covariance between parameters (diagonal covariance matrix). In particular, we use independent normal proposal steps with standard deviations: 0.05 for each of <span class="math inline">\(\beta_{\text{Netflix}}, \beta_{\text{Prime}}, \beta_{\text{Ads}}\)</span>, and 0.005 for <span class="math inline">\(\beta_{\text{Price}}\)</span>. These step sizes (chosen based on the scale of the data and priors) should yield a reasonable acceptance rate for the M-H algorithm.</p>
+<p>Below is the Python implementation of the Metropolis-Hastings sampler for the posterior of <span class="math inline">\(\beta\)</span>:</p>
+<div id="b2a5f145" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define log-posterior function (log-likelihood + log-prior)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_posterior(beta):</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># log-likelihood from data:</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    log_lik_val <span class="op">=</span> loglik(beta)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># log-prior for each parameter:</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Prior variances: 5 for Netflix/Prime/Ads, 1 for Price</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.array(beta)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log-prior for three binary attribute betas ~ N(0,5)</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    var_bin <span class="op">=</span> <span class="fl">5.0</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    log_prior_bin <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> (</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="dv">3</span> <span class="op">*</span> math.log(<span class="dv">2</span> <span class="op">*</span> math.pi <span class="op">*</span> var_bin) <span class="op">+</span> np.<span class="bu">sum</span>(beta[:<span class="dv">3</span>] <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> var_bin</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log-prior for price beta ~ N(0,1)</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    var_price <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    log_prior_price <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> (</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        math.log(<span class="dv">2</span> <span class="op">*</span> math.pi <span class="op">*</span> var_price) <span class="op">+</span> (beta[<span class="dv">3</span>] <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> var_price</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_lik_val <span class="op">+</span> log_prior_bin <span class="op">+</span> log_prior_price</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co"># M-H sampling parameters</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>iterations <span class="op">=</span> <span class="dv">11000</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>burn_in <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Proposal distribution standard deviations for [Netflix, Prime, Ads, Price]</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>proposal_sd <span class="op">=</span> np.array([<span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="fl">0.005</span>])</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize chain and starting value (use MLE as starting point for efficiency)</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> np.zeros((iterations, <span class="dv">4</span>))</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>chain[<span class="dv">0</span>] <span class="op">=</span> beta_hat  <span class="co"># start at MLE estimate (could also start at [0,0,0,0])</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>current_beta <span class="op">=</span> chain[<span class="dv">0</span>].copy()</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>current_logpost <span class="op">=</span> log_posterior(current_beta)</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>accept_count <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, iterations):</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Propose a new beta by adding random normal noise to each dimension</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    proposal <span class="op">=</span> current_beta <span class="op">+</span> np.random.normal(<span class="dv">0</span>, proposal_sd, size<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    prop_logpost <span class="op">=</span> log_posterior(proposal)</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Metropolis-Hastings acceptance probability</span></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    log_accept_ratio <span class="op">=</span> prop_logpost <span class="op">-</span> current_logpost</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> math.log(np.random.rand()) <span class="op">&lt;</span> log_accept_ratio:</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Accept proposal</span></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>        current_beta <span class="op">=</span> proposal</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>        current_logpost <span class="op">=</span> prop_logpost</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>        chain[t] <span class="op">=</span> proposal</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>        accept_count <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Reject proposal (retain current beta)</span></span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>        chain[t] <span class="op">=</span> current_beta</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>accept_rate <span class="op">=</span> accept_count <span class="op">/</span> (iterations <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Acceptance rate: </span><span class="sc">{</span>accept_rate<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Acceptance rate: 0.566</code></pre>
+</div>
+</div>
+<p>We print the acceptance rate to ensure the sampler is moving adequately. In this run, the acceptance rate is around 50-60%, indicating the proposal step sizes are reasonable for efficient mixing (neither too high nor too low).</p>
+<p>After discarding the first 1,000 draws as burn-in, we use the remaining 10,000 posterior draws to analyze the posterior distribution of each parameter. To illustrate convergence and the posterior distribution, the following figures show the trace and the histogram of the posterior sample for one of the parameters (here we choose <span class="math inline">\(\beta_{\text{Netflix}}\)</span> as an example):</p>
+<div id="c94b4de6" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_3_files/figure-html/cell-8-output-1.png" width="518" height="377" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Trace plot of the MCMC chain for <span class="math inline">\(\beta_{\text{Netflix}}\)</span> after burn-in. The chain fluctuates around its mean (red dashed line), indicating good mixing.</p>
+<div id="c2de71a2" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_3_files/figure-html/cell-9-output-1.png" width="527" height="379" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Histogram of the posterior draws for <span class="math inline">\(\beta_{\text{Netflix}}\)</span>. The distribution is approximately normal. The red line marks the posterior mean, and the black dotted lines mark the 95% credible interval bounds.</p>
+<p>Using the posterior sample, we can summarize the Bayesian estimates for all four parameters. Below we report the posterior mean, standard deviation, and 95% credible interval for each <span class="math inline">\(\beta\)</span>, and compare them to the earlier MLE results: • <strong><span class="math inline">\(\beta_{\text{Netflix}}\)</span>: Posterior mean = 0.941, SD = 0.112, 95% credible interval [0.721, 1.157]. • </strong><span class="math inline">\(\beta_{\text{Prime}}\)</span>: Posterior mean = 0.502, SD = 0.113, 95% credible interval [0.277, 0.723]. • <strong><span class="math inline">\(\beta_{\text{Ads}}\)</span>: Posterior mean = -0.734, SD = 0.088, 95% credible interval [-0.907, -0.566]. • </strong><span class="math inline">\(\beta_{\text{Price}}\)</span>: Posterior mean = -0.100, SD = 0.006, 95% credible interval [-0.112, -0.088].</p>
+<p>These posterior estimates are virtually identical to the MLE results we obtained earlier. The weak priors did not substantially pull the estimates toward zero, so the posterior means (0.941, 0.502, -0.734, -0.100) are almost the same as the MLE point estimates (0.941, 0.502, -0.732, -0.099). Likewise, the posterior standard deviations are in line with the MLE standard errors, and the 95% credible intervals correspond closely to the 95% confidence intervals from the likelihood approach. This consistency provides a nice validation: given our large sample (1000 choice tasks) and relatively uninformative priors, the Bayesian and frequentist approaches yield the same substantive conclusions.</p>
 <p><em>todo: code up a metropolis-hasting MCMC sampler of the posterior distribution. Take 11,000 steps and throw away the first 1,000, retaining the subsequent 10,000.</em></p>
 <p><em>hint: Use N(0,5) priors for the betas on the binary variables, and a N(0,1) prior for the price beta.</em></p>
 <p>_hint: instead of calculating post=lik*prior, you can work in the log-space and calculate log-post = log-lik + log-prior (this should enable you to re-use your log-likelihood function from the MLE section just above)_</p>
@@ -541,6 +630,10 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 <h2 class="anchored" data-anchor-id="discussion">6. Discussion</h2>
 <p><em>todo: Suppose you did not simulate the data. What do you observe about the parameter estimates? What does <span class="math inline">\(\beta_\text{Netflix} &gt; \beta_\text{Prime}\)</span> mean? Does it make sense that <span class="math inline">\(\beta_\text{price}\)</span> is negative?</em></p>
 <p><em>todo: At a high level, discuss what change you would need to make in order to simulate data from — and estimate the parameters of — a multi-level (aka random-parameter or hierarchical) model. This is the model we use to analyze “real world” conjoint data.</em></p>
+<p>If we consider these results as if they came from a real conjoint study (i.e.&nbsp;not knowing the “true” simulation values), we can interpret the parameter estimates in practical terms. We observe that <span class="math inline">\(\beta_{\text{Netflix}}\)</span> (approximately 0.94) is larger than <span class="math inline">\(\beta_{\text{Prime}}\)</span> (about 0.50). This indicates that, on average, consumers in the study derive more utility from the Netflix brand than from Amazon Prime, with Hulu as the baseline (zero effect). In other words, Netflix is the most preferred streaming brand among the three, and Amazon Prime is also preferred to Hulu but less so than Netflix. The negative <span class="math inline">\(\beta_{\text{Ads}} \approx -0.73\)</span> confirms that including advertisements substantially lowers consumer utility compared to an ad-free experience. Similarly, <span class="math inline">\(\beta_{\text{Price}}\)</span> is about -0.10, meaning higher price has a negative effect on choice probability (which makes intuitive sense – consumers prefer cheaper options, all else equal).</p>
+<p>It is important to note that <span class="math inline">\(\beta_{\text{Price}}\)</span> being negative is not only sensible, but we can also quantify its meaning: a one-unit increase in utility is equivalent to about $10 in price (since <span class="math inline">\(1 / 0.10 = 10\)</span>). Therefore, the brand coefficient for Netflix (0.94) can be interpreted as Netflix providing roughly $9–$10 worth of added value to consumers relative to Hulu, and Prime’s brand value is about <span class="math inline">\(5 relative to Hulu. Likewise, having ads (\)</span>_{} $) imposes a disutility roughly equivalent to $7–$8 per month in price. These insights are very useful for business decisions – for instance, they indicate how much more a company could potentially charge for a Netflix-branded service (or how much discount would be required to compensate for including ads).</p>
+<p>Finally, how would we extend this to a multi-level (random-parameter) model? In a multi-level or hierarchical Bayesian conjoint model, we acknowledge that different consumers may have different preference parameters. Instead of one <span class="math inline">\(\beta\)</span> vector for the whole population, we assume each individual <span class="math inline">\(i\)</span> has their own <span class="math inline">\(\beta_i\)</span>, drawn from a population distribution (for example, <span class="math inline">\(\beta_i \sim \mathcal{N}(\mu, \Sigma)\)</span>). To simulate data from such a model, we would first draw each respondent’s true part-worths from a specified distribution (with some mean and variance to represent preference heterogeneity), and then use those individual-level <span class="math inline">\(\beta_i\)</span> to simulate each person’s choices. To estimate a hierarchical model, we would need to introduce additional layers in our estimation procedure – essentially estimating both the individual-level <span class="math inline">\(\beta_i\)</span> for each respondent and the hyperparameters (like the mean vector <span class="math inline">\(\mu\)</span> and covariance <span class="math inline">\(\Sigma\)</span> of the population distribution). This could be done via hierarchical Bayesian methods (where we would add Gibbs sampling or more complex MCMC steps to sample each <span class="math inline">\(\beta_i\)</span> and the hyperparameters) or via simulated maximum likelihood (also known as a mixed logit approach). In essence, the key change is moving from a fixed-effects MNL (one common <span class="math inline">\(\beta\)</span> for all) to a random-effects MNL where each consumer has their own <span class="math inline">\(\beta\)</span> drawn from a higher-level distribution. This addition would capture the real-world preference heterogeneity we expect in conjoint analysis, at the cost of a more complex simulation and estimation process.</p>
+<p>Conclusion: In this assignment, we successfully implemented and compared maximum likelihood and Bayesian estimation for a multinomial logit conjoint model. Both approaches recovered the true part-worth parameters closely, reinforcing our understanding of MNL. From a business perspective, the results highlight clear patterns: brand matters (Netflix holds a strong advantage over competitors), ads are detrimental to user utility, and price sensitivity is significant. These findings imply that a streaming service can command a premium for a stronger brand or no-ad experience, whereas introducing ads or raising prices must be balanced against the substantial utility loss. By quantifying these trade-offs, conjoint analysis provides valuable guidance for product design and pricing strategy in the streaming industry.</p>
 
 
 </section>
