@@ -66,3 +66,96 @@ _todo: run your function for k=1,...,k=30, each time noting the percentage of co
 _todo: replicate the table on slide 75 of the session 5 slides. Specifically, using the dataset provided in the file data_for_drivers_analysis.csv, calculate: pearson correlations, standardized regression coefficients, "usefulness", Shapley values for a linear regression, Johnson's relative weights, and the mean decrease in the gini coefficient from a random forest. You may use packages built into R or Python; you do not need to perform these calculations "by hand."_
 
 _If you want a challenge, add additional measures to the table such as the importance scores from XGBoost, from a Neural Network, or from any additional method that measures the importance of variables._
+
+---
+
+## K-Means Clustering
+
+K-Means is an unsupervised learning algorithm that groups unlabeled data into k clusters based on similarity. The goal is to partition the data so that points in the same cluster are more similar to each other than to those in other clusters ￼. In essence, K-Means tries to find cluster centers (called centroids) that minimize the distance of each point to its nearest centroid ￼.
+
+How does K-Means work? At a high level, the algorithm follows an iterative refinement procedure ￼:
+	•	Initialize – Choose k initial centroids (often random picks from the data).
+	•	Assign – For each point, find the nearest centroid (by Euclidean distance) and assign the point to that cluster.
+	•	Update – Recompute each centroid as the average (mean) of all points assigned to it.
+	•	Repeat – Iterate the assign-update steps until centroids stop changing (convergence).
+
+This process will partition the dataset into k clusters such that each point belongs to the cluster with the closest centroid. The algorithm stops when successive iterations no longer change the centroids (or change them negligibly), meaning the clustering has stabilized. The result is a set of clusters and their centroid locations.
+
+To demonstrate K-Means, we’ll use the Palmer Penguins dataset, a popular alternative to the iris dataset. It contains measurements for three penguin species (Adelie, Chinstrap, Gentoo) from islands in Antarctica. We will use just two features for clustering: bill length and flipper length (both in mm). This gives us a 2D dataset that we can easily visualize. We will ignore the species labels during clustering (since K-Means is unsupervised), but it’s worth noting there are 3 true species in the data (which might correspond to 3 clusters).
+
+First, let’s load the dataset and take a peek at the data structure:
+
+```{python}
+# | echo: false
+import pandas as pd
+
+# Load the Palmer Penguins dataset (CSV file provided)
+df = pd.read_csv("Assignment_4_data/palmer_penguins.csv")
+print(df[["species", "bill_length_mm", "flipper_length_mm"]].head())
+
+# Drop any rows with missing values in the features of interest
+penguins = df[["bill_length_mm", "flipper_length_mm"]].dropna()
+print("Dataset shape:", penguins.shape)
+```
+
+We have 342 penguin observations with bill length and flipper length. Now, let’s implement the K-Means algorithm from scratch for a chosen number of clusters, K=3. (Choosing 3 is a reasonable guess here given the three species, but we will later analyze different k values.)
+
+We’ll write a simple implementation of K-Means. The plan:
+	1.	Randomly initialize 3 centroids by selecting 3 random points from the dataset.
+	2.	Loop until convergence:
+	•	Compute the distance from each data point to each centroid.
+	•	Assign each point to the nearest centroid (forming 3 clusters).
+	•	Recompute each centroid as the mean of the points in its cluster.
+	•	If centroids don’t change (or change very little), break out.
+
+We’ll also keep track of the cluster assignments at each iteration so we can visualize the progression.
+
+```{python}
+# | echo: false
+import numpy as np
+
+# Prepare data as a numpy array for convenience
+X = penguins.to_numpy()
+
+# K-Means parameters
+K = 3
+np.random.seed(42)
+# Randomly choose K unique indices for initial centroids
+initial_idx = np.random.choice(len(X), K, replace=False)
+centroids = X[initial_idx]
+print("Initial centroids (randomly chosen):\n", centroids)
+
+# K-Means iterative process
+max_iters = 100
+centroid_history = [centroids.copy()]  # store centroids at each iteration
+cluster_history = []  # store cluster assignments at each iteration
+
+for itr in range(max_iters):
+    # Step 1: Assign points to the nearest centroid
+    distances = np.linalg.norm(
+        X[:, None] - centroids[None, :], axis=2
+    )  # distance to each centroid
+    clusters = np.argmin(distances, axis=1)  # index of nearest centroid for each point
+    cluster_history.append(clusters)
+
+    # Step 2: Update centroids to the mean of assigned points
+    new_centroids = np.array(
+        [
+            X[clusters == k].mean(axis=0) if np.any(clusters == k) else centroids[k]
+            for k in range(K)
+        ]
+    )
+    # Check for convergence (if centroids are unchanged)
+    if np.allclose(new_centroids, centroids):
+        centroids = new_centroids
+        centroid_history.append(centroids.copy())
+        print(f"Converged after {itr} iterations.")
+        break
+    centroids = new_centroids
+    centroid_history.append(centroids.copy())
+
+# Final centroids and cluster assignment
+final_centroids = centroids
+final_clusters = cluster_history[-1]
+print("Final centroids:\n", final_centroids)
+```

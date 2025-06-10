@@ -434,7 +434,7 @@ Variable Definitions
 </div>
 </div>
 <p>Preview of results from study</p>
-<div id="1ce6229a" class="cell" data-execution_count="1">
+<div id="8850da87" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -595,7 +595,7 @@ Variable Definitions
 </div>
 </div>
 <p>Bar plot – Proportion Who Donated by Treatment Group</p>
-<div id="a49cd4e6" class="cell" data-execution_count="2">
+<div id="515d1df6" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -606,7 +606,7 @@ Variable Definitions
 </div>
 <p>In this bar plot, each bar shows the proportion of people in the treatment or control group who made a donation, illustrating the immediate difference in participation rates.</p>
 <p>Histogram – Donation Amounts (Among Donors Only)</p>
-<div id="1275258c" class="cell" data-execution_count="3">
+<div id="4e648749" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -621,7 +621,7 @@ Variable Definitions
 <h3 class="anchored" data-anchor-id="balance-test">Balance Test</h3>
 <p>As an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.</p>
 <p>As part of the balance test, I conducted a hand-computed two-sample t-test to determine whether the treatment and control groups differed significantly on the variable mrm2 (months since last donation). The results showed that the treatment group had a mean of 13.012 months, while the control group had a mean of 12.998 months. The calculated t-statistic was 0.120 with an associated p-value of 0.9049. Since the p-value is well above the 0.05 threshold, we fail to reject the null hypothesis and conclude that there is no statistically significant difference between the groups. This result supports the validity of the randomization mechanism, as it suggests that both groups were balanced on this pre-treatment variable.</p>
-<div id="3dadcb62" class="cell" data-execution_count="4">
+<div id="46765186" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-stdout">
 <pre><code>Hand-Composed Two-Sample t-Test for mrm2
 =========================================
@@ -633,7 +633,7 @@ p-value (two-sided):   0.9049</code></pre>
 </div>
 </div>
 <p>To validate these results using a different method, I also ran a simple linear regression where mrm2 was regressed on the treatment variable. This approach tests the same hypothesis as the t-test—that the average months since last donation is equal across groups. The estimated treatment effect (0.014) is nearly identical to the difference in group means, and the associated p-value (0.905) confirms the same conclusion: there is no statistically significant difference between the groups. This reinforces the finding that the randomization successfully created balanced groups.</p>
-<div id="2ffecf4d" class="cell" data-execution_count="5">
+<div id="a719ec06" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear regression (OLS)
 Data                 : karlan_list_2007_pretty
@@ -654,7 +654,7 @@ Nr obs: 50,082</code></pre>
 </div>
 </div>
 <p>As part of the balance test, I conducted a hand-computed two-sample t-test to determine whether the treatment and control groups differed significantly on the variable freq (number of prior donations). This represents the second variable tested for robustness, following the initial test on mrm2 (months since last donation). The results showed that the treatment group had a mean of 8.035 donations, while the control group had a mean of 8.047 donations. The calculated t-statistic was -0.111 with an associated p-value of 0.9117. Since the p-value is well above the 0.05 threshold, we fail to reject the null hypothesis and conclude that there is no statistically significant difference between the groups. The fact that both mrm2 and freq are balanced across treatment and control groups further validates the randomization mechanism, confirming that the two groups are comparable on key pre-treatment characteristics.</p>
-<div id="534e7a78" class="cell" data-execution_count="6">
+<div id="6f613e82" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-stdout">
 <pre><code>Hand-Composed Two-Sample t-Test for freq
 =========================================
@@ -666,7 +666,7 @@ p-value (two-sided):   0.9117</code></pre>
 </div>
 </div>
 <p>To validate the results from the t-test, I also performed a linear regression of freq on the treatment variable. Like the t-test, this regression assesses whether there is a statistically significant difference in the number of prior donations between treatment and control groups. The coefficient on treatment (-0.012) closely matches the difference in group means, and the p-value (0.912) confirms the same conclusion: no significant difference exists. This consistency between the regression and the hand-calculated t-test reinforces the finding that the treatment assignment did not systematically influence pre-treatment donation frequency.</p>
-<div id="0c1af553" class="cell" data-execution_count="7">
+<div id="2934f978" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear regression (OLS)
 Data                 : karlan_list_2007_pretty
@@ -710,7 +710,7 @@ Nr obs: 50,083</code></pre>
 <p>First, I analyze whether matched donations lead to an increased response rate of making a donation.</p>
 <p>Here’s a short paragraph you can use to replace the todo sentence in the screenshot:</p>
 <p>The bar plot below shows the proportion of individuals who made a donation in the treatment and control groups. This visualization offers an early look at the potential impact of being assigned to the treatment group, with a slightly higher donation rate observed. While this plot conveys similar information to the one presented in the Data section, it is revisited here in the context of hypothesis testing to begin assessing whether the observed difference is statistically significant.</p>
-<div id="9ad58c4e" class="cell" data-execution_count="8">
+<div id="d74f73c5" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -722,7 +722,7 @@ Nr obs: 50,083</code></pre>
 <p>Based on the code used in our earlier balance checks, I ran a t‐test comparing the proportion who donated (gave == 1) across the treatment and control groups. The results show that the treatment group’s average donation rate is modestly but meaningfully higher than the control group’s rate, closely mirroring the figures in Karlan and List’s Table&nbsp;2a Panel&nbsp;A. The p‐value from this test is well below the usual 5 percent threshold, indicating that the difference is unlikely to be by chance. In real terms, such a small bump in donation rates can significantly boost total contributions, demonstrating that even a simple intervention like a matching grant can alter donor behavior. This supports the broader conclusion that small “price” or matching signals can nudge people to act, thereby increasing charitable giving.</p>
 <p>Here’s a clear paragraph you can use to summarize the probit regression results in context with Table 3, Column 1 from the Karlan and List (2007) paper:</p>
 <p>I ran a probit regression to estimate whether being assigned to the treatment group significantly increased the likelihood of making a charitable donation. The model used gave as the binary outcome and treatment as the explanatory variable. The results show a positive and statistically significant coefficient of 0.0868 (p = 0.002), indicating that assignment to the treatment group is associated with a higher probability of donating. However, this estimate does not match the coefficient reported in Table 3, Column 1 of the original paper, which shows a much smaller effect size of 0.004 with a standard error of 0.001. Despite the model setup appearing consistent, the difference in results suggests there may be differences in the underlying implementation or sample filtering. Still, the significance of the treatment variable aligns with the paper’s broader conclusion: matching grants, even modest ones, can meaningfully shift donation behavior.</p>
-<div id="eb1b31a8" class="cell" data-execution_count="9">
+<div id="ae6f0db1" class="cell" data-execution_count="9">
 <div class="cell-output cell-output-stdout">
 <pre><code>Optimization terminated successfully.
          Current function value: 0.100443
@@ -752,13 +752,13 @@ Nr obs: 50,083</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">Date:</td>
-<td>Sun, 08 Jun 2025</td>
+<td>Mon, 09 Jun 2025</td>
 <td data-quarto-table-cell-role="th">Pseudo R-squ.:</td>
 <td>0.0009783</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Time:</td>
-<td>21:00:04</td>
+<td>20:46:06</td>
 <td data-quarto-table-cell-role="th">Log-Likelihood:</td>
 <td>-5030.5</td>
 </tr>
@@ -817,7 +817,7 @@ Nr obs: 50,083</code></pre>
 <p>Next, I assess the effectiveness of different sizes of matched donations on the response rate.</p>
 <p>To evaluate the impact of different match ratios on donation behavior, I conducted both t-tests and a linear regression using dummy variables for the 1:1 (ratio1), 2:1 (ratio2), and 3:1 (ratio3) match groups. The t-tests showed that while donation rates were slightly higher in the 2:1 and 3:1 groups compared to 1:1, none of these differences were statistically significant. Donation probabilities ranged narrowly between 2.07% and 2.27%, suggesting that although the presence of a match increased giving, raising the match ratio did not lead to meaningful increases in participation.</p>
 <p>The regression analysis confirmed these findings. Relative to the omitted baseline group, all three match treatments were associated with higher donation probabilities: +0.3 percentage points for 1:1 (p = 0.097), and +0.5 percentage points for both 2:1 and 3:1 (p-values = 0.006 and 0.005, respectively). However, the similarity in effect sizes between the 2:1 and 3:1 groups reinforces the idea of diminishing returns from more generous matches. Together, these results support the conclusion of Karlan and List (2007): while matching grants are effective overall, increasing the match ratio beyond 1:1 does not significantly boost donor participation.</p>
-<div id="81740784" class="cell" data-execution_count="10">
+<div id="63d5b629" class="cell" data-execution_count="10">
 <div class="cell-output cell-output-stdout">
 <pre><code>
 === Checking ratio 2:1 vs. ratio 1:1 ===
@@ -843,7 +843,7 @@ T-statistic: -0.0501  |  P-value: 0.96</code></pre>
 </div>
 </div>
 <p>To assess the effect of different match ratios on donation likelihood, I ran an OLS regression of the binary outcome gave on dummy variables ratio1, ratio2, and ratio3, representing 1:1, 2:1, and 3:1 match offers, respectively. The regression results show that all three match ratios are associated with higher donation rates compared to the omitted group, with estimated effects of 0.003 (p = 0.097) for 1:1, 0.005 (p = 0.006) for 2:1, and 0.005 (p = 0.005) for 3:1. The 2:1 and 3:1 coefficients are statistically significant at the 1% level, while 1:1 is only marginally significant at the 10% level. Despite these coefficients being small in magnitude (increasing likelihood of donation by 0.3 to 0.5 percentage points), they are meaningful in the context of mass fundraising. However, the similarity in effect size between 2:1 and 3:1 suggests diminishing returns to more generous matching—larger match ratios do not yield proportionally greater increases in donation rates. This conclusion is reinforced by direct calculation: the response rate difference between 1:1 and 2:1 is approximately 0.002, and between 2:1 and 3:1 is nearly zero (–0.0001), which mirrors the difference in regression coefficients. These findings align with the original study’s conclusion that while the presence of a match increases donations, increasing the match ratio beyond 1:1 offers no additional boost in donor participation.</p>
-<div id="31616ce7" class="cell" data-execution_count="11">
+<div id="83a487a6" class="cell" data-execution_count="11">
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear regression (OLS)
 Data                 : karlan_list_2007_pretty
@@ -881,15 +881,15 @@ Nr obs: 50,083</code></pre>
 </div>
 <p>To assess the effectiveness of different matched donation sizes, I calculated the response rate differences directly from the data and compared those with differences from the regression coefficients. Direct computation from the data shows that moving from a 1:1 to a 2:1 match ratio increases the donation response rate by approximately 0.0019 (0.19 percentage points), while moving from 2:1 to 3:1 provides virtually no additional benefit (around 0.0001, or 0.01 percentage points).</p>
 <p>The coefficients indicate that shifting from a 1:1 to a 2:1 match leads to an increase in donation likelihood by about 0.0019 (0.19 percentage points), which is statistically significant (p = 0.006). However, increasing the match ratio further, from 2:1 to 3:1, offers almost no additional improvement (just 0.0001), indicating diminishing returns for more generous match ratios. These results align closely with Karlan and List’s original conclusions, demonstrating that while the presence of a match is effective at boosting donation rates, making the match more generous beyond a certain point does not significantly increase donor participation.</p>
-<div id="cb0f7cbe" class="cell" data-execution_count="12">
+<div id="7748a37d" class="cell" data-execution_count="12">
 <div class="cell-output cell-output-stdout">
 <pre><code>                            OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                   gave   R-squared:                       0.000
 Model:                            OLS   Adj. R-squared:                  0.000
 Method:                 Least Squares   F-statistic:                     3.665
-Date:                Sun, 08 Jun 2025   Prob (F-statistic):             0.0118
-Time:                        21:00:04   Log-Likelihood:                 26630.
+Date:                Mon, 09 Jun 2025   Prob (F-statistic):             0.0118
+Time:                        20:46:07   Log-Likelihood:                 26630.
 No. Observations:               50083   AIC:                        -5.325e+04
 Df Residuals:                   50079   BIC:                        -5.322e+04
 Df Model:                           3                                         
@@ -921,7 +921,7 @@ Difference (3:1 vs. 2:1): 0.0001</code></pre>
 <h3 class="anchored" data-anchor-id="size-of-charitable-contribution">Size of Charitable Contribution</h3>
 <p>In this subsection, I analyze the effect of the size of matched donation on the size of the charitable contribution.</p>
 <p>From the results of the t-test comparing donation amounts between the treatment and control groups, we observe a mean donation of approximately $0.97 for the treatment group and $0.81 for the control group, indicating a moderate increase in donation amounts due to treatment. The calculated t-statistic is 1.9183, and the associated p-value is 0.05509, just above the conventional significance threshold of 0.05. This result suggests that while there is some evidence that the treatment leads to higher average donations, the difference is only marginally statistically significant. Thus, we learn that matching grants have the potential not only to increase participation but possibly also to increase donation amounts among all individuals (though evidence for this latter effect is weaker). Further investigation, potentially with larger sample sizes or more targeted treatments, would be beneficial to clarify this effect.</p>
-<div id="d69688c5" class="cell" data-execution_count="13">
+<div id="a1fb2d3b" class="cell" data-execution_count="13">
 <div class="cell-output cell-output-stdout">
 <pre><code>T-test comparing donation amounts between treatment and control groups
 T-statistic: 1.9183
@@ -932,15 +932,15 @@ Mean donation (Control): 0.8133</code></pre>
 </div>
 <p>The regression results presented indicate that, among individuals who chose to donate (conditional donors), the estimated average donation for those in the control group is approximately $45.54 (intercept). The coefficient for the treatment variable is -1.668, suggesting that, on average, donors assigned to the treatment group donate about $1.67 less than those in the control group. However, this difference is not statistically significant, as indicated by the large p-value (0.561). Therefore, we cannot confidently conclude that the treatment had any substantial effect on the donation amount among people who donated.</p>
 <p>Importantly, the treatment coefficient here does have a causal interpretation because the original experimental design involves random assignment of individuals to treatment and control groups. Thus, the observed effect (or lack thereof) can reasonably be interpreted as causal. In this case, we learn that, conditional on donating, the matching treatment does not significantly influence the donation size—supporting the earlier observation that the main benefit of matching grants appears primarily in encouraging participation, rather than increasing amounts among existing donors.</p>
-<div id="194a3f06" class="cell" data-execution_count="14">
+<div id="2d4b5bbf" class="cell" data-execution_count="14">
 <div class="cell-output cell-output-stdout">
 <pre><code>                            OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                 amount   R-squared:                       0.000
 Model:                            OLS   Adj. R-squared:                 -0.001
 Method:                 Least Squares   F-statistic:                    0.3374
-Date:                Sun, 08 Jun 2025   Prob (F-statistic):              0.561
-Time:                        21:00:04   Log-Likelihood:                -5326.8
+Date:                Mon, 09 Jun 2025   Prob (F-statistic):              0.561
+Time:                        20:46:07   Log-Likelihood:                -5326.8
 No. Observations:                1034   AIC:                         1.066e+04
 Df Residuals:                    1032   BIC:                         1.067e+04
 Df Model:                           1                                         
@@ -962,7 +962,7 @@ Notes:
 </div>
 </div>
 <p><em>todo: Make two plots: one for the treatment group and one for the control. Each plot should be a histogram of the donation amounts only among people who donated. Add a red vertical bar or some other annotation to indicate the sample average for each plot.</em></p>
-<div id="0e2b69b5" class="cell" data-execution_count="15">
+<div id="409d3fc2" class="cell" data-execution_count="15">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -985,7 +985,7 @@ Notes:
 <p>As a reminder of how the t-statistic “works,” in this section I use simulation to demonstrate the Law of Large Numbers and the Central Limit Theorem. Suppose the true distribution of respondents who do not get a charitable donation match is Bernoulli with probability p = 0.018 that a donation is made, and respondents who do get a charitable donation match of any size have a probability p = 0.022 of donating.</p>
 <p>The first plot illustrates the Law of Large Numbers by showing the cumulative average difference between simulated treatment and control groups across 10,000 draws. Initially, the differences fluctuate widely due to small sample sizes, but as the number of observations grows, the cumulative average difference gradually stabilizes and converges near the true difference of 0.004.</p>
 <p>The next four histograms demonstrate the Central Limit Theorem. Each histogram displays the distribution of 1000 repeated samples of average differences between the two groups for varying sample sizes (50, 200, 500, and 1000). For smaller samples (n=50), the distribution is wide, irregular, and centered near the true difference (0.004) but with considerable variation. As sample size increases (n=200, 500, and 1000), the distributions become progressively narrower and more symmetrical, clearly approximating a normal distribution and tightly centering around the true mean difference of 0.004. These results illustrate how increasing sample size improves precision, reduces variability, and provides the basis for robust statistical inference, as embodied by the t-statistic.</p>
-<div id="b0594da1" class="cell" data-execution_count="16">
+<div id="498d5729" class="cell" data-execution_count="16">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
