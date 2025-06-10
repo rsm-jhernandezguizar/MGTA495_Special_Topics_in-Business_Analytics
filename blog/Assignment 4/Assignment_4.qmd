@@ -37,7 +37,7 @@ _todo: compare the parameter estimates between (1) the aggregate MNL, and (2) th
 
 _todo: use the following code (or the python equivalent) to generate a synthetic dataset for the k-nearest neighbors algorithm.  The code generates a dataset with two features, `x1` and `x2`, and a binary outcome variable `y` that is determined by whether `x2` is above or below a wiggly boundary defined by a sin function._
 
-```{r}
+<!-- ```{r}
 # gen data -----
 set.seed(42)
 n <- 100
@@ -49,7 +49,7 @@ x <- cbind(x1, x2)
 boundary <- sin(4*x1) + x1
 y <- ifelse(x2 > boundary, 1, 0) |> as.factor()
 dat <- data.frame(x1 = x1, x2 = x2, y = y)
-```
+``` -->
 
 _todo: plot the data where the horizontal axis is `x1`, the vertical axis is `x2`, and the points are colored by the value of `y`.  You may optionally draw the wiggly boundary._
 
@@ -98,11 +98,15 @@ penguins = df[["bill_length_mm", "flipper_length_mm"]].dropna()
 print("Dataset shape:", penguins.shape)
 ```
 
-We have 342 penguin observations with bill length and flipper length. Now, let’s implement the K-Means algorithm from scratch for a chosen number of clusters, K=3. (Choosing 3 is a reasonable guess here given the three species, but we will later analyze different k values.)
+We have 332 penguin observations with bill length and flipper length. Now, let’s implement the K-Means algorithm from scratch for a chosen number of clusters, K=3. (Choosing 3 is a reasonable guess here given the three species, but we will later analyze different k values.)
+
+### Implementing K-Means from Scratch
 
 We’ll write a simple implementation of K-Means. The plan:
-	1.	Randomly initialize 3 centroids by selecting 3 random points from the dataset.
-	2.	Loop until convergence:
+
+1.	Randomly initialize 3 centroids by selecting 3 random points from the dataset.
+
+2.	Loop until convergence:
 	•	Compute the distance from each data point to each centroid.
 	•	Assign each point to the nearest centroid (forming 3 clusters).
 	•	Recompute each centroid as the mean of the points in its cluster.
@@ -159,3 +163,84 @@ final_centroids = centroids
 final_clusters = cluster_history[-1]
 print("Final centroids:\n", final_centroids)
 ```
+
+Next, we'll visualize the clustering process to see how K-Means reached this result.
+
+### Visualizing the K-Means Iterations
+
+To better understand K-Means, it helps to visualize how the centroids move and how points switch clusters over iterations. We will plot the data points colored by their cluster at each iteration, and show the centroid positions. An animated GIF can illustrate the process over time. Below, we generate plots for each iteration and combine them into a GIF:
+
+```{python}
+# | echo: false
+import matplotlib.pyplot as plt
+import imageio.v2 as imageio
+
+frames = []
+colors = ["#1f77b4", "#ff7f0e", "#2ca02c"]  # distinct colors for clusters 1,2,3
+for i in range(1, len(centroid_history)):
+    clusters = cluster_history[i - 1]
+    old_centroids = centroid_history[i - 1]
+    new_centroids = centroid_history[i]
+
+    plt.figure(figsize=(6, 5))
+    # Plot points, colored by cluster
+    for k in range(K):
+        pts = X[clusters == k]
+        plt.scatter(
+            pts[:, 0], pts[:, 1], c=colors[k], label=f"Cluster {k+1}", alpha=0.6
+        )
+    # Plot old and new centroids
+    plt.scatter(
+        old_centroids[:, 0],
+        old_centroids[:, 1],
+        marker="x",
+        s=100,
+        c="k",
+        label="Old Centroid",
+    )
+    plt.scatter(
+        new_centroids[:, 0],
+        new_centroids[:, 1],
+        marker="o",
+        s=100,
+        c="k",
+        edgecolors="white",
+        label="New Centroid",
+    )
+    # Draw arrows to show centroid movement
+    for k in range(K):
+        ox, oy = old_centroids[k]
+        nx, ny = new_centroids[k]
+        plt.arrow(
+            ox,
+            oy,
+            nx - ox,
+            ny - oy,
+            color="gray",
+            width=0.5,
+            head_width=2.0,
+            length_includes_head=True,
+        )
+    plt.title(f"K-Means Iteration {i}")
+    plt.xlabel("Bill Length (mm)")
+    plt.ylabel("Flipper Length (mm)")
+    plt.legend(loc="upper right")
+    plt.tight_layout()
+    # Save frame
+    filename = f"frame_{i}.png"
+    plt.savefig(filename)
+    plt.close()
+    frames.append(imageio.imread(filename))
+
+# Save frames as an animated GIF
+# duration  = seconds PER frame   (larger  = slower)
+# loop=0    = loop forever        (loop=1 would play once)
+imageio.mimsave(
+    "kmeans_steps.gif",
+    frames,
+    duration=10,
+    loop=0,  # 0 = infinite looping
+)
+```
+
+![](kmeans_steps.gif){fig-alt="Animated centroid updates" width=600}
