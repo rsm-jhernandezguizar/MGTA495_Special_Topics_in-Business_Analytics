@@ -166,6 +166,15 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#implementing-k-means-from-scratch" id="toc-implementing-k-means-from-scratch" class="nav-link" data-scroll-target="#implementing-k-means-from-scratch">Implementing K-Means from Scratch</a></li>
   <li><a href="#visualizing-the-k-means-iterations" id="toc-visualizing-the-k-means-iterations" class="nav-link" data-scroll-target="#visualizing-the-k-means-iterations">Visualizing the K-Means Iterations</a></li>
+  <li><a href="#comparing-with-scikit-learn" id="toc-comparing-with-scikit-learn" class="nav-link" data-scroll-target="#comparing-with-scikit-learn">Comparing with Scikit-Learn:</a></li>
+  <li><a href="#choosing-the-optimal-number-of-clusters" id="toc-choosing-the-optimal-number-of-clusters" class="nav-link" data-scroll-target="#choosing-the-optimal-number-of-clusters">Choosing the Optimal Number of Clusters</a></li>
+  </ul></li>
+  <li><a href="#k-nearest-neighbors-knn" id="toc-k-nearest-neighbors-knn" class="nav-link" data-scroll-target="#k-nearest-neighbors-knn">K-Nearest Neighbors (KNN)</a>
+  <ul class="collapse">
+  <li><a href="#synthetic-dataset-with-a-nonlinear-boundary" id="toc-synthetic-dataset-with-a-nonlinear-boundary" class="nav-link" data-scroll-target="#synthetic-dataset-with-a-nonlinear-boundary">Synthetic Dataset with a Nonlinear Boundary</a></li>
+  <li><a href="#implementing-knn-from-scratch" id="toc-implementing-knn-from-scratch" class="nav-link" data-scroll-target="#implementing-knn-from-scratch">Implementing KNN from Scratch</a></li>
+  <li><a href="#finding-the-best-k-accuracy-vs.-k" id="toc-finding-the-best-k-accuracy-vs.-k" class="nav-link" data-scroll-target="#finding-the-best-k-accuracy-vs.-k">Finding the Best k (Accuracy vs.&nbsp;k)</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -253,12 +262,18 @@ dat <- data.frame(x1 = x1, x2 = x2, y = y)
 </section>
 <section id="k-means-clustering" class="level2">
 <h2 class="anchored" data-anchor-id="k-means-clustering">K-Means Clustering</h2>
-<p>K-Means is an unsupervised learning algorithm that groups unlabeled data into k clusters based on similarity. The goal is to partition the data so that points in the same cluster are more similar to each other than to those in other clusters ￼. In essence, K-Means tries to find cluster centers (called centroids) that minimize the distance of each point to its nearest centroid ￼.</p>
-<p>How does K-Means work? At a high level, the algorithm follows an iterative refinement procedure ￼: • Initialize – Choose k initial centroids (often random picks from the data). • Assign – For each point, find the nearest centroid (by Euclidean distance) and assign the point to that cluster. • Update – Recompute each centroid as the average (mean) of all points assigned to it. • Repeat – Iterate the assign-update steps until centroids stop changing (convergence).</p>
+<p>K-Means is an <strong>unsupervised</strong> learning algorithm that groups unlabeled data into k clusters based on similarity. The goal is to partition the data so that points in the same cluster are more similar to each other than to those in other clusters ￼. In essence, K-Means tries to find cluster centers (called centroids) that minimize the distance of each point to its nearest centroid ￼.</p>
+<p>How does K-Means work? At a high level, the algorithm follows an iterative refinement procedure:</p>
+<ul>
+<li><p><strong>Initialize</strong> – Choose k initial centroids (often random picks from the data).</p></li>
+<li><p><strong>Assign</strong> – For each point, find the nearest centroid (by Euclidean distance) and assign the point to that cluster.</p></li>
+<li><p><strong>Update</strong> – Recompute each centroid as the average (mean) of all points assigned to it.</p></li>
+<li><p><strong>Repeat</strong> – Iterate the assign-update steps until centroids stop changing (convergence).</p></li>
+</ul>
 <p>This process will partition the dataset into k clusters such that each point belongs to the cluster with the closest centroid. The algorithm stops when successive iterations no longer change the centroids (or change them negligibly), meaning the clustering has stabilized. The result is a set of clusters and their centroid locations.</p>
 <p>To demonstrate K-Means, we’ll use the Palmer Penguins dataset, a popular alternative to the iris dataset. It contains measurements for three penguin species (Adelie, Chinstrap, Gentoo) from islands in Antarctica. We will use just two features for clustering: bill length and flipper length (both in mm). This gives us a 2D dataset that we can easily visualize. We will ignore the species labels during clustering (since K-Means is unsupervised), but it’s worth noting there are 3 true species in the data (which might correspond to 3 clusters).</p>
 <p>First, let’s load the dataset and take a peek at the data structure:</p>
-<div id="f393db82" class="cell" data-execution_count="1">
+<div id="62bcfad6" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-stdout">
 <pre><code>  species  bill_length_mm  flipper_length_mm
 0  Adelie            39.1                181
@@ -275,10 +290,16 @@ Dataset shape: (333, 2)</code></pre>
 <p>We’ll write a simple implementation of K-Means. The plan:</p>
 <ol type="1">
 <li><p>Randomly initialize 3 centroids by selecting 3 random points from the dataset.</p></li>
-<li><p>Loop until convergence: • Compute the distance from each data point to each centroid. • Assign each point to the nearest centroid (forming 3 clusters). • Recompute each centroid as the mean of the points in its cluster. • If centroids don’t change (or change very little), break out.</p></li>
+<li><p>Loop until convergence:</p></li>
 </ol>
+<ul>
+<li><p>Compute the distance from each data point to each centroid.</p></li>
+<li><p>Assign each point to the nearest centroid (forming 3 clusters).</p></li>
+<li><p>Recompute each centroid as the mean of the points in its cluster.</p></li>
+<li><p>If centroids don’t change (or change very little), break out.</p></li>
+</ul>
 <p>We’ll also keep track of the cluster assignments at each iteration so we can visualize the progression.</p>
-<div id="7ca52ba4" class="cell" data-execution_count="2">
+<div id="ca2c2c1d" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-stdout">
 <pre><code>Initial centroids (randomly chosen):
  [[ 39.5 178. ]
@@ -296,12 +317,129 @@ Final centroids:
 <section id="visualizing-the-k-means-iterations" class="level3">
 <h3 class="anchored" data-anchor-id="visualizing-the-k-means-iterations">Visualizing the K-Means Iterations</h3>
 <p>To better understand K-Means, it helps to visualize how the centroids move and how points switch clusters over iterations. We will plot the data points colored by their cluster at each iteration, and show the centroid positions. An animated GIF can illustrate the process over time. Below, we generate plots for each iteration and combine them into a GIF:</p>
-<div id="ba078b7c" class="cell" data-execution_count="3">
-<div class="cell-output cell-output-stdout">
-<pre><code>GIF saved as kmeans_steps_a93314.gif</code></pre>
-</div>
-</div>
 <p><img src="kmeans_steps.gif" class="img-fluid" alt="Animated centroid updates" width="600"></p>
+<p>Now we have an animation showing the algorithm’s progress. In the first frame, the centroids start at random positions. With each iteration, points get re-assigned (colors may change), and centroids move towards the center of their new clusters (arrows show the movement). The process continues until the movements are negligible.</p>
+<p>K-Means clustering on the penguins data – after the first iteration. Arrows indicate how the centroids (black X markers) moved from their initial random positions to new positions (black circles) after re-computing the means for each cluster.</p>
+<p>Final cluster assignment for K=3 on the Palmer Penguins data (bill length vs flipper length). Each color represents a cluster found by our algorithm, and black X’s are the final centroid positions.</p>
+<p>In the final clustering above, we see three distinct clusters of penguins. It turns out these clusters largely correspond to the three species (Adelie, Chinstrap, Gentoo), even though we did not use the species labels during clustering. Our K-Means algorithm essentially “discovered” groupings similar to the actual species by just using the two features.</p>
+</section>
+<section id="comparing-with-scikit-learn" class="level3">
+<h3 class="anchored" data-anchor-id="comparing-with-scikit-learn">Comparing with Scikit-Learn:</h3>
+<p>To ensure our implementation is correct, we can compare with scikit-learn’s built-in KMeans. Scikit-learn uses the same objective (minimizing sum of squared distances) and by default uses the K-Means++ initialization for centroids (a smart way to pick initial centroids). We fit scikit’s model on the same data:</p>
+<div id="1ca42940" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-stdout">
+<pre><code>Sklearn final centroids:
+ [[ 45.94574468 196.84042553]
+ [ 47.65       217.        ]
+ [ 38.45304348 187.05217391]]</code></pre>
+</div>
+</div>
+<p>If we check, the centroids from scikit-learn are very close to those from our implementation, and the cluster assignments are effectively the same (just label order might differ). This gives us confidence that our scratch implementation worked correctly.</p>
+</section>
+<section id="choosing-the-optimal-number-of-clusters" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-the-optimal-number-of-clusters">Choosing the Optimal Number of Clusters</h3>
+<p>In practice, we usually don’t know the best value of K upfront. Choosing K is part of the challenge in clustering. Two common methods to evaluate different K values are:</p>
+<ul>
+<li><p><strong>Within-Cluster Sum of Squares (WCSS):</strong> This is the sum of squared distances from each point to its cluster centroid (also known as cluster “inertia”). Lower WCSS means clusters are tighter. As K increases, WCSS always decreases (more clusters reduce within-cluster variance). We can plot WCSS for K=2,3,… and look for an “elbow point” – where the rate of improvement slows. This is the Elbow Method.</p></li>
+<li><p><strong>Silhouette Score:</strong> This measures how well-separated the clusters are. Silhouette score for a point is defined as (b - a) / max(a, b), where a is the average distance to other points in the same cluster (cohesion) and b is the average distance to points in the nearest other cluster (separation) ￼. The score ranges from -1 to 1; higher means the point is in the right cluster (well separated from others) ￼. We often use the average silhouette over all points to evaluate the clustering quality for a given K. A higher average silhouette indicates more distinct clustering structure.</p></li>
+</ul>
+<p>Let’s compute these metrics for K = 2 through 7 and see which K might be best for our penguin data:</p>
+<div id="5fb955e3" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-stdout">
+<pre><code>WCSS for K=2..7: [20949.785311278196, 13859.543763777467, 9587.135276652696, 7424.8815080702425, 6332.786502814989, 5257.088985919958]
+Silhouette scores for K=2..7: [0.6117940477662409, 0.48062618684371067, 0.4448839684032104, 0.42719392387268307, 0.41278625329909713, 0.4307326685776095]</code></pre>
+</div>
+</div>
+<p>Plotting these values:</p>
+<div id="e1307a3c" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_4_files/figure-html/cell-7-output-1.png" width="949" height="372" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Evaluating different cluster counts on the penguin data. Left: WCSS (sum of squared distances within clusters) for K=2 to 7. Right: Average silhouette score for K=2 to 7. Higher silhouette is better.</p>
+<p>From the above, WCSS steadily decreases as K increases (as expected), and there’s a bit of a knee around K=3-4 (the “elbow” is not super sharp here). The silhouette score peaks at K=2 (about 0.61) and then drops for higher K, hitting a low around 0.41–0.44 for K=4-6, with a slight uptick at K=7. A high silhouette means clusters are well separated, so this suggests that using 2 clusters yields the clearest separation in this 2D feature space.</p>
+<p>This is interesting because we know there are 3 species. What’s happening is that two of the species (Adelie and Chinstrap) have very similar bill/flipper measurements that overlap a lot, so the algorithm doesn’t find a clear separation between them and favors combining them into one cluster. The Gentoo penguins, on the other hand, form a very distinct cluster. Thus, K=2 gives two well-separated clusters (basically “Gentoo” and “Adelie+Chinstrap”), which yields a higher silhouette score than K=3 where the algorithm is forced to split the Adelie/Chinstrap group and ends up with one weaker separation. In a real analysis, we’d consider this trade-off: do we want 3 clusters to match known species, or 2 clusters that are most distinct in these features? There’s no single correct answer – it depends on the goal. But this illustrates how WCSS and silhouette can guide the choice of K.</p>
+</section>
+</section>
+<section id="k-nearest-neighbors-knn" class="level2">
+<h2 class="anchored" data-anchor-id="k-nearest-neighbors-knn">K-Nearest Neighbors (KNN)</h2>
+<p>Next, let’s switch gears to a <strong>supervised</strong> learning method: K-Nearest Neighbors. KNN is one of the simplest classification algorithms. The basic idea: to predict the class of a new point, look at the “k” closest points in the training data and take a majority vote. In other words, the label is determined by the plurality of the labels of its k nearest neighbors in the training set. If k=5, the 5 closest neighbors’ labels are used – if 3 of them are class A and 2 are class B, the new point is classified as A (majority wins). KNN makes no assumptions about data distribution (it’s a non-parametric, instance-based method), and it’s considered a “lazy” learner because it doesn’t build an explicit model; it just stores the training instances and defers computation to query time.</p>
+<p>Choosing k: The parameter k controls the model’s complexity. A small k (e.g.&nbsp;1) means the classifier can be very flexible and even noisy – essentially memorizing the training data (low bias, high variance). A large k means we smooth over more neighbors, making the classifier more stable but potentially less sensitive to local patterns (high bias, low variance). We’ll see this trade-off in action with a synthetic example.</p>
+<section id="synthetic-dataset-with-a-nonlinear-boundary" class="level3">
+<h3 class="anchored" data-anchor-id="synthetic-dataset-with-a-nonlinear-boundary">Synthetic Dataset with a Nonlinear Boundary</h3>
+<p>To illustrate KNN, we’ll create a 2D synthetic dataset for binary classification. We want something non-linear to show KNN’s strength at capturing complex boundaries. Let’s define the true decision boundary using a sine wave: say, <span class="math display">\[y = \begin{cases}1 &amp; \text{if } x_2 &gt; 5 + 4\sin(x_1) \ 0 &amp; \text{otherwise}\end{cases},\]</span> where <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> are the two input features. This creates a wavy boundary (the curve <span class="math inline">\(x_2 = 5 + 4\sin(x_1)\)</span> oscillates between 1 and 9 as <span class="math inline">\(x_1\)</span> goes from 0 to 10). We’ll sample points uniformly in the region <span class="math inline">\(0 \le x_1, x_2 \le 10\)</span> and label them according to this rule.</p>
+<div id="f5e83a66" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-stdout">
+<pre><code>Training set class counts: [164 136]
+Test set class counts: [106  94]</code></pre>
+</div>
+</div>
+<p>We have created a training set of 300 points and a test set of 200 points. Let’s visualize the training data and the true boundary:</p>
+<div id="b41d13af" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_4_files/figure-html/cell-9-output-1.png" width="510" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Synthetic dataset: 300 training points labeled in two classes (red and blue). The green dashed line is the true decision boundary <span class="math inline">\(x_2 = 5 + 4\sin(x_1)\)</span>. It’s clearly non-linear, making this a good test for KNN.</p>
+<p>You can see that class 0 (blue) occupies the area below the sine curve, and class 1 (red) is above the curve. The boundary wiggles up and down. No linear model could classify this perfectly, but KNN should do well given enough neighbors.</p>
+</section>
+<section id="implementing-knn-from-scratch" class="level3">
+<h3 class="anchored" data-anchor-id="implementing-knn-from-scratch">Implementing KNN from Scratch</h3>
+<p>The KNN algorithm for classification is straightforward to implement. For each query (test point), we need to find the distances to all training points, pick the k nearest, and take a majority vote of their labels. A basic implementation might be O(n) per query (where n is number of training points), which can be slow for large datasets, but for our data size it’s fine.</p>
+<p>We’ll write a function knn_predict(X_train, y_train, X_test, k) that returns predicted labels for the X_test points:</p>
+<div id="73645220" class="cell" data-execution_count="9">
+<div class="cell-output cell-output-stdout">
+<pre><code>True labels:      [1 0 1 0 1]
+Predicted labels: [1 0 0 0 1]</code></pre>
+</div>
+</div>
+<p>In practice, one can use spatial data structures (KD-trees, ball trees) for large datasets, but we’re keeping it simple. The majority vote is implemented by averaging the 0/1 labels and rounding – this works because if a majority are 1s, the average &gt; 0.5, otherwise it’s &lt; 0.5 (for multiclass, you’d do something like collections.Counter or np.bincount to get the mode).</p>
+<p>Let’s see how our scratch KNN performs and verify it against scikit-learn’s KNN classifier:</p>
+<div id="b4d8033a" class="cell" data-execution_count="10">
+<div class="cell-output cell-output-stdout">
+<pre><code>Our KNN vs sklearn KNN match: True
+Test accuracy (k=5) scratch: 0.925
+Test accuracy (k=5) sklearn: 0.925</code></pre>
+</div>
+</div>
+<p>If we run this, we find that our implementation’s predictions exactly match scikit-learn’s for k=5 (and indeed they should for any k). The accuracy on the test set for k=5 is around ~0.92 (92%). It’s good to confirm that our scratch code is working properly.</p>
+</section>
+<section id="finding-the-best-k-accuracy-vs.-k" class="level3">
+<h3 class="anchored" data-anchor-id="finding-the-best-k-accuracy-vs.-k">Finding the Best k (Accuracy vs.&nbsp;k)</h3>
+<p>Finally, let’s see how the choice of k affects the performance on this problem. We’ll evaluate k from 1 up to 30 and record the classification accuracy on the test set for each:</p>
+<div id="6acec407" class="cell" data-execution_count="11">
+<div class="cell-output cell-output-stdout">
+<pre><code>Best k = 1 with test accuracy = 0.970</code></pre>
+</div>
+</div>
+<p>Plotting these accuracies as a function of k:</p>
+<div id="175c8a80" class="cell" data-execution_count="12">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Assignment_4_files/figure-html/cell-13-output-1.png" width="523" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The exact numbers may vary slightly with random seed, but the trend is clear: the highest accuracy in this case was achieved at k = 1 (and k = 3) with about 97% accuracy, then it drops off as k increases. The plot of accuracy vs k would show a peak at a very low k, then a gradual decline.</p>
+<p>Why does this happen? Our synthetic data has a very clean, deterministic boundary (no noise in labels given the features). A very flexible model like 1-nearest-neighbor can trace that wavy boundary almost perfectly – in fact, 1-NN yields 97% accuracy on the test! It slightly overfits to the discrete sample (if we had infinite data, 1-NN would eventually perfectly model the true boundary). Using a larger k smooths the decision boundary. For instance, at k=5 we saw accuracy ~92.5% – some fine detail is lost, as the model sometimes errs on points near the boundary by averaging in neighbors from the other side of the wave. By k=30, accuracy drops further (~88%), because with such a large neighborhood, the classifier is getting too biased – it’s oversmoothing and doesn’t capture the wiggles at all (in the extreme, if you used k equal to the entire training set, it would always predict the majority class, ignoring the input features altogether!). This illustrates the bias-variance trade-off in KNN: small k = low bias, high variance; large k = high bias, low variance. The optimal k is often somewhere in between, and one usually uses cross-validation to find it in practice. In our case, since the data has no label noise, the best performance is at the most flexible end (k=1 or 3).</p>
+<p>To visualize what KNN is doing, here’s a depiction of the decision boundary learned by our model for two different k values: - For k=1, the decision boundary will essentially trace around every red point (each training point defines its own region via a Voronoi partition). It will be very jagged and pass through narrow gaps – perfectly fitting the training data, but potentially too wiggly for noisy data. - For k=15 (for example), the decision boundary will be much smoother – small irregularities are averaged out, and only broader trends remain. It might misclassify some points that lie in small “bays” of the opposite class, as it favors the overall majority in a larger neighborhood ￼.</p>
+<p>In our synthetic example, the boundary was truly sinusoidal, so a very flexible model wins. If we had added noise or outliers, a slightly larger k would likely be better to avoid chasing that noise. This is a great demonstration of how KNN’s parameter k influences the model complexity.</p>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
+<p>We’ve created a step-by-step walkthrough of K-Means and K-Nearest Neighbors, implementing both from scratch and validating against library implementations. For K-Means, we clustered penguins by their physical measurements and used WCSS and silhouette analysis to reason about the appropriate number of clusters. For KNN, we built a synthetic classification problem with a non-linear boundary and saw how the choice of neighbors affects performance. Along the way, we visualized the clustering process (with an animated centroid update plot) and the classification boundary (implicitly, through the accuracy vs k behavior and discussion).</p>
+<p>Key Takeaways: - K-Means is an unsupervised clustering algorithm that iteratively assigns points to the nearest centroid and updates centroids to the mean of points ￼. It aims to minimize within-cluster variance (WCSS). Choosing the number of clusters K is crucial – methods like the elbow plot and silhouette analysis help evaluate cluster quality. - K-Nearest Neighbors is a simple yet powerful supervised learning method that classifies points based on the majority label of their nearest neighbors. It is easy to implement and makes no distribution assumptions (non-parametric). The parameter k controls the bias-variance trade-off: smaller k can capture fine-grained patterns but may overfit, while larger k smooths out noise but may miss details. - Both algorithms are intuitive: K-Means finds natural groupings in data, and KNN makes predictions by “consulting” nearby examples. Despite their simplicity, they are effective for a wide range of problems and are excellent for building intuition about clustering and classification.</p>
+<p>Hopefully, this walkthrough helped clarify how K-Means and KNN work. Feel free to experiment with different parameters or datasets – tweak the number of clusters, or try KNN on a different boundary shape – to further solidify your understanding. Happy learning!</p>
 
 
 </section>
