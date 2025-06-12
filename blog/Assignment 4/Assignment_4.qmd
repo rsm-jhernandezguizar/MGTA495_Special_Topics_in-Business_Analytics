@@ -6,69 +6,6 @@ date: 2025-06-11
 author: Juan Hernández Guizar
 ---
 
-_todo: do two analyses.  Do one of either 1a or 1b, AND one of either 2a or 2b._
-
-
-## 1a. K-Means
-
-_todo: write your own code to implement the k-means algorithm.  Make plots of the various steps the algorithm takes so you can "see" the algorithm working.  Test your algorithm on the Palmer Penguins dataset, specifically using the bill length and flipper length variables.  Compare your results to the built-in `kmeans` function in R or Python._
-
-_todo: Calculate both the within-cluster-sum-of-squares and silhouette scores (you can use built-in functions to do so) and plot the results for various numbers of clusters (ie, K=2,3,...,7). What is the "right" number of clusters as suggested by these two metrics?_
-
-_If you want a challenge, add your plots as an animated gif on your website so that the result looks something like [this](https://www.youtube.com/shorts/XCsoWZU9oN8)._
-
-
-
-## 1b. Latent-Class MNL
-
-_todo: Use the Yogurt dataset to estimate a latent-class MNL model. This model was formally introduced in the paper by Kamakura & Russell (1989); you may want to read or reference page 2 of the pdf, which is described in the class slides, session 4, slides 56-57._
-
-_The data provides anonymized consumer identifiers (`id`), a vector indicating the chosen product (`y1`:`y4`), a vector indicating if any products were "featured" in the store as a form of advertising (`f1`:`f4`), and the products' prices in price-per-ounce (`p1`:`p4`). For example, consumer 1 purchased yogurt 4 at a price of 0.079/oz and none of the yogurts were featured/advertised at the time of consumer 1's purchase.  Consumers 2 through 7 each bought yogurt 2, etc. You may want to reshape the data from its current "wide" format into a "long" format._
-
-_todo: Fit the standard MNL model on these data.  Then fit the latent-class MNL on these data separately for 2, 3, 4, and 5 latent classes._
-
-_todo: How many classes are suggested by the $BIC = -2*\ell_n  + k*log(n)$? (where $\ell_n$ is the log-likelihood, $n$ is the sample size, and $k$ is the number of parameters.) The Bayesian-Schwarz Information Criterion [link](https://en.wikipedia.org/wiki/Bayesian_information_criterion) is a metric that assess the benefit of a better log likelihood at the expense of additional parameters to estimate -- akin to the adjusted R-squared for the linear regression model. Note, that a **lower** BIC indicates a better model fit, accounting for the number of parameters in the model._
-
-_todo: compare the parameter estimates between (1) the aggregate MNL, and (2) the latent-class MNL with the number of classes suggested by the BIC._
-
-
-
-## 2a. K Nearest Neighbors
-
-_todo: use the following code (or the python equivalent) to generate a synthetic dataset for the k-nearest neighbors algorithm.  The code generates a dataset with two features, `x1` and `x2`, and a binary outcome variable `y` that is determined by whether `x2` is above or below a wiggly boundary defined by a sin function._
-
-<!-- ```{r}
-# gen data -----
-set.seed(42)
-n <- 100
-x1 <- runif(n, -3, 3)
-x2 <- runif(n, -3, 3)
-x <- cbind(x1, x2)
-
-# define a wiggly boundary
-boundary <- sin(4*x1) + x1
-y <- ifelse(x2 > boundary, 1, 0) |> as.factor()
-dat <- data.frame(x1 = x1, x2 = x2, y = y)
-``` -->
-
-_todo: plot the data where the horizontal axis is `x1`, the vertical axis is `x2`, and the points are colored by the value of `y`.  You may optionally draw the wiggly boundary._
-
-_todo: generate a test dataset with 100 points, using the same code as above but with a different seed._
-
-_todo: implement KNN by hand.  Check you work with a built-in function -- eg, `class::knn()` or `caret::train(method="knn")` in R, or scikit-learn's `KNeighborsClassifier` in Python._
-
-_todo: run your function for k=1,...,k=30, each time noting the percentage of correctly-classified points from the test dataset. Plot the results, where the horizontal axis is 1-30 and the vertical axis is the percentage of correctly-classified points. What is the optimal value of k as suggested by your plot?_ 
-
-
-
-## 2b. Key Drivers Analysis
-
-_todo: replicate the table on slide 75 of the session 5 slides. Specifically, using the dataset provided in the file data_for_drivers_analysis.csv, calculate: pearson correlations, standardized regression coefficients, "usefulness", Shapley values for a linear regression, Johnson's relative weights, and the mean decrease in the gini coefficient from a random forest. You may use packages built into R or Python; you do not need to perform these calculations "by hand."_
-
-_If you want a challenge, add additional measures to the table such as the importance scores from XGBoost, from a Neural Network, or from any additional method that measures the importance of variables._
-
----
-
 ## K-Means Clustering
 
 K-Means is an **unsupervised** learning algorithm that groups unlabeled data into k clusters based on similarity. The goal is to partition the data so that points in the same cluster are more similar to each other than to those in other clusters ￼. In essence, K-Means tries to find cluster centers (called centroids) that minimize the distance of each point to its nearest centroid ￼.
@@ -76,11 +13,8 @@ K-Means is an **unsupervised** learning algorithm that groups unlabeled data int
 How does K-Means work? At a high level, the algorithm follows an iterative refinement procedure:
 
 - **Initialize** – Choose k initial centroids (often random picks from the data).
-
 - **Assign** – For each point, find the nearest centroid (by Euclidean distance) and assign the point to that cluster.
-
 - **Update** – Recompute each centroid as the average (mean) of all points assigned to it.
-
 - **Repeat** – Iterate the assign-update steps until centroids stop changing (convergence).
 
 This process will partition the dataset into k clusters such that each point belongs to the cluster with the closest centroid. The algorithm stops when successive iterations no longer change the centroids (or change them negligibly), meaning the clustering has stabilized. The result is a set of clusters and their centroid locations.
@@ -113,11 +47,8 @@ We’ll write a simple implementation of K-Means. The plan:
 2.	Loop until convergence:
 
 - Compute the distance from each data point to each centroid.
-
 - Assign each point to the nearest centroid (forming 3 clusters).
-
 - Recompute each centroid as the mean of the points in its cluster.
-
 - If centroids don’t change (or change very little), break out.
 
 We’ll also keep track of the cluster assignments at each iteration so we can visualize the progression.
@@ -262,7 +193,7 @@ Final cluster assignment for K=3 on the Palmer Penguins data (bill length vs fli
 In the final clustering above, we see three distinct clusters of penguins. It turns out these clusters largely correspond to the three species (Adelie, Chinstrap, Gentoo), even though we did not use the species labels during clustering. Our K-Means algorithm essentially “discovered” groupings similar to the actual species by just using the two features.
 
 ### Comparing with Scikit-Learn:
-To ensure our implementation is correct, we can compare with scikit-learn’s built-in KMeans. Scikit-learn uses the same objective (minimizing sum of squared distances) and by default uses the K-Means++ initialization for centroids (a smart way to pick initial centroids). We fit scikit’s model on the same data:
+To ensure our implementation is correct, we can compare with scikit-learn’s built-in K-Means. Scikit-learn uses the same objective (minimizing sum of squared distances) and by default uses the K-Means++ initialization for centroids (a smart way to pick initial centroids). We fit scikit’s model on the same data:
 
 ```{python}
 # | echo: false
@@ -339,57 +270,69 @@ Choosing k: The parameter k controls the model’s complexity. A small k (e.g. 1
 
 ### Synthetic Dataset with a Nonlinear Boundary
 
-To illustrate KNN, we’ll create a 2D synthetic dataset for binary classification. We want something non-linear to show KNN’s strength at capturing complex boundaries. Let’s define the true decision boundary using a sine wave: say, $$y = \begin{cases}1 & \text{if } x_2 > 5 + 4\sin(x_1) \ 0 & \text{otherwise}\end{cases},$$ where $x_1$ and $x_2$ are the two input features. This creates a wavy boundary (the curve $x_2 = 5 + 4\sin(x_1)$ oscillates between 1 and 9 as $x_1$ goes from 0 to 10). We’ll sample points uniformly in the region $0 \le x_1, x_2 \le 10$ and label them according to this rule.
+To illustrate KNN, we’ll create a 2D synthetic dataset for binary classification. We want something non-linear to show KNN’s strength at capturing complex boundaries. We generate **100** random points uniformly inside the square \(x_1,x_2\in[-3,3]\).  The true boundary is the wiggly curve
+\[
+x_2 = \sin(4x_1) + x_1,
+\]
+so we label a point **class 1** when \(x_2\) lies **above** the curve and **class 0** otherwise.  This produces two interwoven regions separated by a sine wave, giving KNN a genuinely non‑linear problem.
 
 ```{python}
 # | echo: false
 import numpy as np
 
-# Generate training data
-np.random.seed(1)  # for reproducibility
-N = 300  # number of training points
-X1 = np.random.rand(N) * 10   # uniform in [0, 10]
-X2 = np.random.rand(N) * 10
-# Define boundary function
-def boundary(x): 
-    return 5 + 4 * np.sin(x)
-y = (X2 > boundary(X1)).astype(int)  # class 1 if above the curve, else 0
+# Generate training data -------------------------------------------
+np.random.seed(42)  # reproducibility
+N = 100  # training points
+X1 = np.random.uniform(-3, 3, N)
+X2 = np.random.uniform(-3, 3, N)
+
+
+# Boundary function: sin(4x) + x
+def boundary(x):
+    return np.sin(4 * x) + x
+
+
+y = (X2 > boundary(X1)).astype(int)  # 1 if above the curve, else 0
 
 X_train = np.column_stack((X1, X2))
 y_train = y
 print("Training set class counts:", np.bincount(y_train))
 
-# Generate a test set similarly (different random seed)
-np.random.seed(2)
-M = 200  # number of test points
-X1_t = np.random.rand(M) * 10
-X2_t = np.random.rand(M) * 10
+# Generate a test set ------------------------------------------------
+np.random.seed(99)
+M = 100  # test points
+X1_t = np.random.uniform(-3, 3, M)
+X2_t = np.random.uniform(-3, 3, M)
 y_test = (X2_t > boundary(X1_t)).astype(int)
 X_test = np.column_stack((X1_t, X2_t))
 print("Test set class counts:", np.bincount(y_test))
 ```
 
-We have created a training set of 300 points and a test set of 200 points. Let’s visualize the training data and the true boundary:
+We have created a training set of 100 points and a test set of 100 points. Let’s visualize the training data and the true boundary:
 
 ```{python}
 # | echo: false
 import matplotlib.pyplot as plt
 
 plt.figure(figsize=(6,5))
-plt.scatter(X_train[y_train==0][:,0], X_train[y_train==0][:,1], color='blue', label='Class 0')
-plt.scatter(X_train[y_train==1][:,0], X_train[y_train==1][:,1], color='red', label='Class 1')
-# Plot the true decision boundary curve
-x_line = np.linspace(0, 10, 400)
+plt.scatter(X_train[y_train==0][:,0], X_train[y_train==0][:,1],
+            color='blue', label='Class 0')
+plt.scatter(X_train[y_train==1][:,0], X_train[y_train==1][:,1],
+            color='red', label='Class 1')
+
+# Plot the true decision boundary
+x_line = np.linspace(-3, 3, 400)
 y_line = boundary(x_line)
 plt.plot(x_line, y_line, color='green', linestyle='--', label='True Boundary')
+
 plt.xlabel("$x_1$")
 plt.ylabel("$x_2$")
-plt.title("Synthetic Training Data and True Boundary")
+plt.title("Synthetic Training Data and True Boundary ($x_2 = \\sin(4x_1)+x_1$)")
 plt.legend()
 plt.show()
 ```
 
-Synthetic dataset: 300 training points labeled in two classes (red and blue). The green dashed line is the true decision boundary $x_2 = 5 + 4\sin(x_1)$. It’s clearly non-linear, making this a good test for KNN.
+*Synthetic dataset: 100 training points (blue = class 0, red = class 1) in the square \([-3,3]^2\).  The green dashed line is the true boundary \(x_2=\sin(4x_1)+x_1\).*
 
 You can see that class 0 (blue) occupies the area below the sine curve, and class 1 (red) is above the curve. The boundary wiggles up and down. No linear model could classify this perfectly, but KNN should do well given enough neighbors.
 
@@ -447,7 +390,7 @@ print("Test accuracy (k=5) scratch: %.3f" % (np.mean(y_pred_scratch == y_test)))
 print("Test accuracy (k=5) sklearn: %.3f" % (np.mean(y_pred_sklearn == y_test)))
 ```
 
-If we run this, we find that our implementation’s predictions exactly match scikit-learn’s for k=5 (and indeed they should for any k). The accuracy on the test set for k=5 is around ~0.92 (92%). It’s good to confirm that our scratch code is working properly.
+If we run this, we find that our implementation’s predictions exactly match scikit-learn’s for k=5 (and indeed they should for any k). The accuracy on the test set for k=5 is around 0.9 (90%). It’s good to confirm that our scratch code is working properly.
 
 ### Finding the Best k (Accuracy vs. k)
 
@@ -482,9 +425,9 @@ plt.legend()
 plt.show()
 ```
 
-The exact numbers may vary slightly with random seed, but the trend is clear: the highest accuracy in this case was achieved at k = 1 (and k = 3) with about 97% accuracy, then it drops off as k increases. The plot of accuracy vs k would show a peak at a very low k, then a gradual decline.
+The exact numbers may vary slightly with random seed, but the trend is clear: the highest accuracy in this case is about 92 % for the best k, then it drops off as k increases. The plot of accuracy vs k would show a peak at a very low k, then a gradual decline.
 
-Why does this happen? Our synthetic data has a very clean, deterministic boundary (no noise in labels given the features). A very flexible model like 1-nearest-neighbor can trace that wavy boundary almost perfectly – in fact, 1-NN yields 97% accuracy on the test! It slightly overfits to the discrete sample (if we had infinite data, 1-NN would eventually perfectly model the true boundary). Using a larger k smooths the decision boundary. For instance, at k=5 we saw accuracy ~92.5% – some fine detail is lost, as the model sometimes errs on points near the boundary by averaging in neighbors from the other side of the wave. By k=30, accuracy drops further (~88%), because with such a large neighborhood, the classifier is getting too biased – it’s oversmoothing and doesn’t capture the wiggles at all (in the extreme, if you used k equal to the entire training set, it would always predict the majority class, ignoring the input features altogether!). This illustrates the bias-variance trade-off in KNN: small k = low bias, high variance; large k = high bias, low variance. The optimal k is often somewhere in between, and one usually uses cross-validation to find it in practice. In our case, since the data has no label noise, the best performance is at the most flexible end (k=1 or 3).
+Why does this happen? Our synthetic data has a very clean, deterministic boundary (no noise in labels given the features). A very flexible model like 1-nearest-neighbor can trace that wavy boundary almost perfectly – in fact, 1-NN yields about 92 % accuracy on the test! It slightly overfits to the discrete sample (if we had infinite data, 1-NN would eventually perfectly model the true boundary). Using a larger k smooths the decision boundary. For instance, at k=5 we saw accuracy around 0.9 (90%) – some fine detail is lost, as the model sometimes errs on points near the boundary by averaging in neighbors from the other side of the wave. By k=30, accuracy drops further, because with such a large neighborhood, the classifier is getting too biased – it’s oversmoothing and doesn’t capture the wiggles at all (in the extreme, if you used k equal to the entire training set, it would always predict the majority class, ignoring the input features altogether!). This illustrates the bias-variance trade-off in KNN: small k = low bias, high variance; large k = high bias, low variance. The optimal k is often somewhere in between, and one usually uses cross-validation to find it in practice. In our case, since the data has no label noise, the best performance is at the most flexible end (k=1 or 3).
 
 To visualize what KNN is doing, here’s a depiction of the decision boundary learned by our model for two different k values:
 - For k=1, the decision boundary will essentially trace around every red point (each training point defines its own region via a Voronoi partition). It will be very jagged and pass through narrow gaps – perfectly fitting the training data, but potentially too wiggly for noisy data.
@@ -497,8 +440,11 @@ In our synthetic example, the boundary was truly sinusoidal, so a very flexible 
 We’ve created a step-by-step walkthrough of K-Means and K-Nearest Neighbors, implementing both from scratch and validating against library implementations. For K-Means, we clustered penguins by their physical measurements and used WCSS and silhouette analysis to reason about the appropriate number of clusters. For KNN, we built a synthetic classification problem with a non-linear boundary and saw how the choice of neighbors affects performance. Along the way, we visualized the clustering process (with an animated centroid update plot) and the classification boundary (implicitly, through the accuracy vs k behavior and discussion).
 
 Key Takeaways:
-- K-Means is an unsupervised clustering algorithm that iteratively assigns points to the nearest centroid and updates centroids to the mean of points ￼. It aims to minimize within-cluster variance (WCSS). Choosing the number of clusters K is crucial – methods like the elbow plot and silhouette analysis help evaluate cluster quality.
-- K-Nearest Neighbors is a simple yet powerful supervised learning method that classifies points based on the majority label of their nearest neighbors. It is easy to implement and makes no distribution assumptions (non-parametric). The parameter k controls the bias-variance trade-off: smaller k can capture fine-grained patterns but may overfit, while larger k smooths out noise but may miss details.
-- Both algorithms are intuitive: K-Means finds natural groupings in data, and KNN makes predictions by “consulting” nearby examples. Despite their simplicity, they are effective for a wide range of problems and are excellent for building intuition about clustering and classification.
+
+- **K-Means** is an unsupervised clustering algorithm that iteratively assigns points to the nearest centroid and updates centroids to the mean of points ￼. It aims to minimize within-cluster variance (WCSS). Choosing the number of clusters K is crucial – methods like the elbow plot and silhouette analysis help evaluate cluster quality.
+
+- **K-Nearest Neighbors** is a simple yet powerful supervised learning method that classifies points based on the majority label of their nearest neighbors. It is easy to implement and makes no distribution assumptions (non-parametric). The parameter k controls the bias-variance trade-off: smaller k can capture fine-grained patterns but may overfit, while larger k smooths out noise but may miss details.
+
+- **Both algorithms are intuitive** K-Means finds natural groupings in data, and KNN makes predictions by “consulting” nearby examples. Despite their simplicity, they are effective for a wide range of problems and are excellent for building intuition about clustering and classification.
 
 Hopefully, this walkthrough helped clarify how K-Means and KNN work. Feel free to experiment with different parameters or datasets – tweak the number of clusters, or try KNN on a different boundary shape – to further solidify your understanding. Happy learning!
