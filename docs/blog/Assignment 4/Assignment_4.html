@@ -23,6 +23,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -70,6 +104,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -198,7 +261,7 @@ ul.task-list li input[type="checkbox"] {
 <p>This process will partition the dataset into k clusters such that each point belongs to the cluster with the closest centroid. The algorithm stops when successive iterations no longer change the centroids (or change them negligibly), meaning the clustering has stabilized. The result is a set of clusters and their centroid locations.</p>
 <p>To demonstrate K-Means, we’ll use the Palmer Penguins dataset, a popular alternative to the iris dataset. It contains measurements for three penguin species (Adelie, Chinstrap, Gentoo) from islands in Antarctica. We will use just two features for clustering: bill length and flipper length (both in mm). This gives us a 2D dataset that we can easily visualize. We will ignore the species labels during clustering (since K-Means is unsupervised), but it’s worth noting there are 3 true species in the data (which might correspond to 3 clusters).</p>
 <p>First, let’s load the dataset and take a peek at the data structure:</p>
-<div id="8b2ac632" class="cell" data-execution_count="1">
+<div id="137689d6" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-stdout">
 <pre><code>  species  bill_length_mm  flipper_length_mm
 0  Adelie            39.1                181
@@ -224,7 +287,53 @@ Dataset shape: (333, 2)</code></pre>
 <li>If centroids don’t change (or change very little), break out.</li>
 </ul>
 <p>We’ll also keep track of the cluster assignments at each iteration so we can visualize the progression.</p>
-<div id="bb8654ca" class="cell" data-execution_count="2">
+<div id="e8b4b040" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data as a numpy array for convenience</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> penguins.to_numpy()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># K-Means parameters</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Randomly choose K unique indices for initial centroids</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>initial_idx <span class="op">=</span> np.random.choice(<span class="bu">len</span>(X), K, replace<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>centroids <span class="op">=</span> X[initial_idx]</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Initial centroids (randomly chosen):</span><span class="ch">\n</span><span class="st">"</span>, centroids)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># K-Means iterative process</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>max_iters <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>centroid_history <span class="op">=</span> [centroids.copy()]  <span class="co"># store centroids at each iteration</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>cluster_history <span class="op">=</span> []  <span class="co"># store cluster assignments at each iteration</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> itr <span class="kw">in</span> <span class="bu">range</span>(max_iters):</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 1: Assign points to the nearest centroid</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    distances <span class="op">=</span> np.linalg.norm(</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        X[:, <span class="va">None</span>] <span class="op">-</span> centroids[<span class="va">None</span>, :], axis<span class="op">=</span><span class="dv">2</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    )  <span class="co"># distance to each centroid</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    clusters <span class="op">=</span> np.argmin(distances, axis<span class="op">=</span><span class="dv">1</span>)  <span class="co"># index of nearest centroid for each point</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    cluster_history.append(clusters)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 2: Update centroids to the mean of assigned points</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    new_centroids <span class="op">=</span> np.array(</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        [</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>            X[clusters <span class="op">==</span> k].mean(axis<span class="op">=</span><span class="dv">0</span>) <span class="cf">if</span> np.<span class="bu">any</span>(clusters <span class="op">==</span> k) <span class="cf">else</span> centroids[k]</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(K)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check for convergence (if centroids are unchanged)</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.allclose(new_centroids, centroids):</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        centroids <span class="op">=</span> new_centroids</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        centroid_history.append(centroids.copy())</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Converged after </span><span class="sc">{</span>itr<span class="sc">}</span><span class="ss"> iterations."</span>)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    centroids <span class="op">=</span> new_centroids</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    centroid_history.append(centroids.copy())</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Final centroids and cluster assignment</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>final_centroids <span class="op">=</span> centroids</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>final_clusters <span class="op">=</span> cluster_history[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Final centroids:</span><span class="ch">\n</span><span class="st">"</span>, final_centroids)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Initial centroids (randomly chosen):
  [[ 39.5 178. ]
@@ -251,7 +360,7 @@ Final centroids:
 <section id="comparing-with-scikit-learn" class="level3">
 <h3 class="anchored" data-anchor-id="comparing-with-scikit-learn">Comparing with Scikit-Learn:</h3>
 <p>To ensure our implementation is correct, we can compare with scikit-learn’s built-in K-Means. Scikit-learn uses the same objective (minimizing sum of squared distances) and by default uses the K-Means++ initialization for centroids (a smart way to pick initial centroids). We fit scikit’s model on the same data:</p>
-<div id="7cc616f4" class="cell" data-execution_count="4">
+<div id="acc97f61" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-stdout">
 <pre><code>Sklearn final centroids:
  [[ 45.94574468 196.84042553]
@@ -269,14 +378,14 @@ Final centroids:
 <li><p><strong>Silhouette Score:</strong> This measures how well-separated the clusters are. Silhouette score for a point is defined as (b - a) / max(a, b), where a is the average distance to other points in the same cluster (cohesion) and b is the average distance to points in the nearest other cluster (separation) ￼. The score ranges from -1 to 1; higher means the point is in the right cluster (well separated from others) ￼. We often use the average silhouette over all points to evaluate the clustering quality for a given K. A higher average silhouette indicates more distinct clustering structure.</p></li>
 </ul>
 <p>Let’s compute these metrics for K = 2 through 7 and see which K might be best for our penguin data:</p>
-<div id="51328467" class="cell" data-execution_count="5">
+<div id="3817a819" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-stdout">
-<pre><code>WCSS for K=2..7: [20949.785311278196, 13859.543763777467, 9587.135276652696, 7424.8815080702425, 6332.78650281499, 5257.088985919958]
+<pre><code>WCSS for K=2..7: [20949.7853112782, 13859.543763777467, 9587.135276652694, 7424.8815080702425, 6332.78650281499, 5257.088985919958]
 Silhouette scores for K=2..7: [0.6117940477662409, 0.48062618684371067, 0.4448839684032104, 0.42719392387268307, 0.41278625329909713, 0.4307326685776095]</code></pre>
 </div>
 </div>
 <p>Plotting these values:</p>
-<div id="2c523242" class="cell" data-execution_count="6">
+<div id="b49deb69" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -296,15 +405,22 @@ Silhouette scores for K=2..7: [0.6117940477662409, 0.48062618684371067, 0.444883
 <p>Choosing k: The parameter k controls the model’s complexity. A small k (e.g.&nbsp;1) means the classifier can be very flexible and even noisy – essentially memorizing the training data (low bias, high variance). A large k means we smooth over more neighbors, making the classifier more stable but potentially less sensitive to local patterns (high bias, low variance). We’ll see this trade-off in action with a synthetic example.</p>
 <section id="synthetic-dataset-with-a-nonlinear-boundary" class="level3">
 <h3 class="anchored" data-anchor-id="synthetic-dataset-with-a-nonlinear-boundary">Synthetic Dataset with a Nonlinear Boundary</h3>
-<p>To illustrate KNN, we’ll create a 2D synthetic dataset for binary classification. We want something non-linear to show KNN’s strength at capturing complex boundaries. We generate <strong>100</strong> random points uniformly inside the square (x_1,x_2). The true boundary is the wiggly curve [ x_2 = (4x_1) + x_1, ] so we label a point <strong>class 1</strong> when (x_2) lies <strong>above</strong> the curve and <strong>class 0</strong> otherwise. This produces two interwoven regions separated by a sine wave, giving KNN a genuinely non‑linear problem.</p>
-<div id="a5073ed1" class="cell" data-execution_count="7">
+<p>To illustrate KNN, we’ll create a 2D synthetic dataset for binary classification. We want something non-linear to show KNN’s strength at capturing complex boundaries. We generate <strong>100</strong> random points uniformly inside the square <span class="math display">\[
+(x_1,x_2)\in[-3,3]
+\]</span></p>
+<p>The true boundary is the wiggly curve</p>
+<p><span class="math display">\[
+x_2 \;=\; \sin(4x_1)+x_1,
+\]</span></p>
+<p>so we label a point <strong>class 1</strong> when <span class="math inline">\(x_2\)</span> lies <strong>above</strong> the curve and <strong>class 0</strong> otherwise. This produces two interwoven regions separated by a sine wave, giving KNN a genuinely non‑linear problem.</p>
+<div id="181e817a" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-stdout">
 <pre><code>Training set class counts: [49 51]
 Test set class counts: [53 47]</code></pre>
 </div>
 </div>
 <p>We have created a training set of 100 points and a test set of 100 points. Let’s visualize the training data and the true boundary:</p>
-<div id="848df6e2" class="cell" data-execution_count="8">
+<div id="eb5d5744" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -313,14 +429,40 @@ Test set class counts: [53 47]</code></pre>
 </div>
 </div>
 </div>
-<p><em>Synthetic dataset: 100 training points (blue = class 0, red = class 1) in the square ([-3,3]^2). The green dashed line is the true boundary (x_2=(4x_1)+x_1).</em></p>
+<p>*Synthetic dataset: 100 training points (blue = class 0, red = class 1) in the square <span class="math inline">\([-3,3]^2\)</span></p>
+<p>The green dashed line is the true boundary</p>
+<p><span class="math display">\[
+x_2 \;=\; \sin(4x_1)+x_1,
+\]</span></p>
 <p>You can see that class 0 (blue) occupies the area below the sine curve, and class 1 (red) is above the curve. The boundary wiggles up and down. No linear model could classify this perfectly, but KNN should do well given enough neighbors.</p>
 </section>
 <section id="implementing-knn-from-scratch" class="level3">
 <h3 class="anchored" data-anchor-id="implementing-knn-from-scratch">Implementing KNN from Scratch</h3>
 <p>The KNN algorithm for classification is straightforward to implement. For each query (test point), we need to find the distances to all training points, pick the k nearest, and take a majority vote of their labels. A basic implementation might be O(n) per query (where n is number of training points), which can be slow for large datasets, but for our data size it’s fine.</p>
 <p>We’ll write a function knn_predict(X_train, y_train, X_test, k) that returns predicted labels for the X_test points:</p>
-<div id="885034d6" class="cell" data-execution_count="9">
+<div id="f5877433" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> knn_predict(X_train, y_train, X_test, k):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> []</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> X_test:</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Compute distance from x to all points in X_train (Euclidean)</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        distances <span class="op">=</span> np.linalg.norm(X_train <span class="op">-</span> x, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Find the indices of the k nearest neighbors</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        nn_idx <span class="op">=</span> np.argsort(distances)[:k]</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        nn_labels <span class="op">=</span> y_train[nn_idx]</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Majority vote: the predicted class is the mode of the neighbor labels</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># For binary labels 0/1, we can just take the mean and round it</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        vote <span class="op">=</span> <span class="dv">1</span> <span class="cf">if</span> nn_labels.mean() <span class="op">&gt;=</span> <span class="fl">0.5</span> <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        predictions.append(vote)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(predictions)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Try out the KNN predictor for k=5 on a few test points</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>y_pred_test_k5 <span class="op">=</span> knn_predict(X_train, y_train, X_test[:<span class="dv">5</span>], k<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"True labels:     "</span>, y_test[:<span class="dv">5</span>])</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Predicted labels:"</span>, y_pred_test_k5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>True labels:      [1 1 0 1 1]
 Predicted labels: [1 1 0 1 1]</code></pre>
@@ -328,7 +470,7 @@ Predicted labels: [1 1 0 1 1]</code></pre>
 </div>
 <p>In practice, one can use spatial data structures (KD-trees, ball trees) for large datasets, but we’re keeping it simple. The majority vote is implemented by averaging the 0/1 labels and rounding – this works because if a majority are 1s, the average &gt; 0.5, otherwise it’s &lt; 0.5 (for multiclass, you’d do something like collections.Counter or np.bincount to get the mode).</p>
 <p>Let’s see how our scratch KNN performs and verify it against scikit-learn’s KNN classifier:</p>
-<div id="522e75b1" class="cell" data-execution_count="10">
+<div id="5a8b2ffa" class="cell" data-execution_count="10">
 <div class="cell-output cell-output-stdout">
 <pre><code>Our KNN vs sklearn KNN match: True
 Test accuracy (k=5) scratch: 0.900
@@ -340,13 +482,13 @@ Test accuracy (k=5) sklearn: 0.900</code></pre>
 <section id="finding-the-best-k-accuracy-vs.-k" class="level3">
 <h3 class="anchored" data-anchor-id="finding-the-best-k-accuracy-vs.-k">Finding the Best k (Accuracy vs.&nbsp;k)</h3>
 <p>Finally, let’s see how the choice of k affects the performance on this problem. We’ll evaluate k from 1 up to 30 and record the classification accuracy on the test set for each:</p>
-<div id="4c2ac19a" class="cell" data-execution_count="11">
+<div id="a1271d00" class="cell" data-execution_count="11">
 <div class="cell-output cell-output-stdout">
 <pre><code>Best k = 1 with test accuracy = 0.920</code></pre>
 </div>
 </div>
 <p>Plotting these accuracies as a function of k:</p>
-<div id="3be0750b" class="cell" data-execution_count="12">
+<div id="6ca78f55" class="cell" data-execution_count="12">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">

@@ -54,7 +54,7 @@ We’ll write a simple implementation of K-Means. The plan:
 We’ll also keep track of the cluster assignments at each iteration so we can visualize the progression.
 
 ```{python}
-# | echo: false
+# | echo: true
 import numpy as np
 
 # Prepare data as a numpy array for convenience
@@ -270,11 +270,18 @@ Choosing k: The parameter k controls the model’s complexity. A small k (e.g. 1
 
 ### Synthetic Dataset with a Nonlinear Boundary
 
-To illustrate KNN, we’ll create a 2D synthetic dataset for binary classification. We want something non-linear to show KNN’s strength at capturing complex boundaries. We generate **100** random points uniformly inside the square \(x_1,x_2\in[-3,3]\).  The true boundary is the wiggly curve
-\[
-x_2 = \sin(4x_1) + x_1,
-\]
-so we label a point **class 1** when \(x_2\) lies **above** the curve and **class 0** otherwise.  This produces two interwoven regions separated by a sine wave, giving KNN a genuinely non‑linear problem.
+To illustrate KNN, we’ll create a 2D synthetic dataset for binary classification. We want something non-linear to show KNN’s strength at capturing complex boundaries. We generate **100** random points uniformly inside the square
+$$
+(x_1,x_2)\in[-3,3]
+$$
+
+The true boundary is the wiggly curve
+
+$$
+x_2 \;=\; \sin(4x_1)+x_1,
+$$
+
+so we label a point **class 1** when $x_2$ lies **above** the curve and **class 0** otherwise. This produces two interwoven regions separated by a sine wave, giving KNN a genuinely non‑linear problem.
 
 ```{python}
 # | echo: false
@@ -332,7 +339,14 @@ plt.legend()
 plt.show()
 ```
 
-*Synthetic dataset: 100 training points (blue = class 0, red = class 1) in the square \([-3,3]^2\).  The green dashed line is the true boundary \(x_2=\sin(4x_1)+x_1\).*
+*Synthetic dataset: 100 training points (blue = class 0, red = class 1) in the square 
+$[-3,3]^2$
+
+The green dashed line is the true boundary 
+
+$$
+x_2 \;=\; \sin(4x_1)+x_1,
+$$
 
 You can see that class 0 (blue) occupies the area below the sine curve, and class 1 (red) is above the curve. The boundary wiggles up and down. No linear model could classify this perfectly, but KNN should do well given enough neighbors.
 
@@ -343,7 +357,7 @@ The KNN algorithm for classification is straightforward to implement. For each q
 We’ll write a function knn_predict(X_train, y_train, X_test, k) that returns predicted labels for the X_test points:
 
 ```{python}
-# | echo: false
+# | echo: true
 import math
 
 
