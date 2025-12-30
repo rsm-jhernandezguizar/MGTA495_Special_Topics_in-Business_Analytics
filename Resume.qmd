@@ -2,6 +2,6 @@
 title: "Juan's Resume"
 ---
 
-_Last updated: 2025-04-05_
+_Last updated: 2025-29-12_
 
-{{< pdf resume_files/juan_hernandez_resume.pdf width=100% height=800 >}}
+{{< pdf resume_files/251229_JHG_Resume.pdf width=100% height=800 >}}
